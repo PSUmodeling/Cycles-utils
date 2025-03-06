@@ -1,14 +1,14 @@
-import setuptools
+from setuptools import setup, find_packages
 
 with open('README.md', 'r') as f:
     long_description = f.read()
 
-setuptools.setup(
+setup(
     name='Cycles-utils',
     version='0.1.0',
     author='Yuning Shi',
     author_email="shiyuning@gmail.com",
-    packages=['cycles'],
+    packages=find_packages(),
     description='Python scripts to build Cycles input files and post-process Cycles output files',
     long_description=long_description,
     long_description_content_type='text/markdown',
