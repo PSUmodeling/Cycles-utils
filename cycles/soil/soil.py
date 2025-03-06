@@ -37,7 +37,7 @@ def calculate_parameter(soil_df, parameter, top, bottom):
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
 
 
-def generate_soil_file(fn, source, location, hsg, slope, soil_depth, soil_df, lat=-999, lon=-999):
+def generate_soil_file(fn, desc, hsg, slope, soil_depth, soil_df):
     df = pd.DataFrame.from_dict(
         {v: [layer[v] for layer in SOIL_LAYERS if layer['bottom'] <= soil_depth] for v in SOIL_LAYERS[0]}
     )
@@ -50,19 +50,7 @@ def generate_soil_file(fn, source, location, hsg, slope, soil_depth, soil_df, la
     cn = -999 if not hsg else CURVE_NUMBERS[hsg[0]]
 
     with open(fn, 'w') as f:
-        f.write(f"# Cycles soil file for {location}\n#\n")
-        f.write(f"# Clay, sand, soil organic carbon, and bulk density are obtained from {source}.\n")
-        f.write("# Hydrologic soil group, slope, and soil depth are obtained from gSSURGO.\n")
-        if source == 'SoilGrids':
-            f.write(f"# The data are sampled at Latitude {f'%.4f' % lat}, Longitude {f'%.4f' % lon}.\n")
-        else:
-            f.write(f"# The data are sampled from MUNAME: {soil_df.iloc[0]['muname']}, MUKEY: {soil_df.iloc[0]['mukey']}\n")
-        f.write("# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n#\n")
-        if hsg == '':
-            f.write("# Hydrologic soil group MISSING DATA.\n")
-        else:
-            f.write(f"# Hydrologic soil group {hsg}.\n")
-            f.write("# The curve number for row crops with straight row treatment is used.\n")
+        f.write(desc)
 
         f.write("%-15s\t%d\n" % ("CURVE_NUMBER", cn))
         f.write("%-15s\t%.2f\n" % ("SLOPE", slope))

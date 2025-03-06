@@ -62,14 +62,13 @@ STATE_ABBREVIATIONS = {
     'USA.51_1': 'WY',
 }
 
+
 def read_gadm(path, country, level, conus=True):
     level = GADM_LEVELS[level.lower()]
     gdf = gpd.read_file(GADM(path, country, level))
     gdf.set_index(f'GID_{level}', inplace=True)
     gdf['GID'] = gdf.index
 
-    if country == 'USA' and conus:
+
         # Generate a CONUS GeoDataFrame by removing Alaska and Hawaii
-        return gdf[~gdf['NAME_1'].isin(['Alaska', 'Hawaii'])]
-    else:
-        return gdf
+    return gdf[~gdf['NAME_1'].isin(['Alaska', 'Hawaii'])] if country == 'USA' and conus else gdf
