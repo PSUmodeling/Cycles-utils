@@ -1,5 +1,6 @@
 import geopandas as gpd
 import pandas as pd
+import shapely
 
 GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb/'
 GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
@@ -58,11 +59,13 @@ def read_state_luts(path, state_abbreviation, group=False):
     return gssurgo_luts
 
 
-def read_state_gssurgo(path, state_abbreviation, group=False):
+def read_state_gssurgo(path, state_abbreviation, boundary=None, group=False):
     gdf = gpd.read_file(
             GSSURGO(path, state_abbreviation),
             layer='MUPOLYGON',
+            mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None
         )
+    if boundary is not None: gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
     gdf.columns = [x.lower() for x in gdf.columns]
     gdf.mukey = gdf.mukey.astype(int)
 
