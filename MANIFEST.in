@@ -1,1 +1,1 @@
-recursive-include source/project/data *
+recursive-include cycles/data *
