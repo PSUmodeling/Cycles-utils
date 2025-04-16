@@ -2,15 +2,18 @@ import geopandas as gpd
 import pandas as pd
 import shapely
 
-GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb/'
+GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb'
 GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
 GSSURGO_PARAMETERS = {
-    'clay': {'variable': 'claytotal_r', 'multiplier': 1.0}, # %
-    'sand': {'variable': 'sandtotal_r', 'multiplier': 1.0}, # %
-    'soc': {'variable': 'om_r', 'multiplier': 0.58},    # %
-    'bulk_density': {'variable': 'dbthirdbar_r', 'multiplier': 1.0},    # Mg/m3
-    'top': {'variable': 'hzdept_r', 'multiplier': 0.01},    # m
-    'bottom': {'variable': 'hzdepb_r', 'multiplier': 0.01}, # m
+    'clay': {'variable': 'claytotal_r', 'multiplier': 1.0, 'table': 'horizon'}, # %
+    'silt': {'variable': 'silttotal_r', 'multiplier': 1.0, 'table': 'horizon'}, # %
+    'sand': {'variable': 'sandtotal_r', 'multiplier': 1.0, 'table': 'horizon'}, # %
+    'soc': {'variable': 'om_r', 'multiplier': 0.58, 'table': 'horizon'},    # %
+    'bulk_density': {'variable': 'dbthirdbar_r', 'multiplier': 1.0, 'table': 'horizon'},    # Mg/m3
+    'coarse_fragments': {'variable': 'fragvol_r', 'multiplier': 1.0, 'table': 'horizon'},   # %
+    'area_fraction': {'variable': 'comppct_r', 'multiplier': 1.0, 'table': 'component'},    # %
+    'top': {'variable': 'hzdept_r', 'multiplier': 0.01, 'table': 'horizon'},    # m
+    'bottom': {'variable': 'hzdepb_r', 'multiplier': 0.01, 'table': 'horizon'}, # m
 }
 GSSURGO_NON_SOIL_TYPES = [
     'Acidic rock land',
@@ -30,31 +33,48 @@ NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 
 
 def read_state_luts(path, state_abbreviation, group=False):
-    tables = {
-        'component': ['mukey', 'cokey', 'majcompflag'],
-        'chorizon': ['hzname', 'hzdept_r', 'hzdepb_r', 'sandtotal_r', 'silttotal_r', 'claytotal_r', 'om_r', 'dbthirdbar_r', 'cokey'],
-        'muaggatt': ['hydgrpdcd', 'muname', 'slopegradwta', 'mukey'],
+    TABLES = {
+        'mapunit':{
+            'muaggatt': ['hydgrpdcd', 'muname', 'slopegradwta', 'mukey'],
+        },
+        'component':{
+            'component': ['comppct_r', 'majcompflag', 'mukey', 'cokey'],
+        },
+        'horizon': {
+            'chorizon': ['hzname', 'hzdept_r', 'hzdepb_r', 'sandtotal_r', 'silttotal_r', 'claytotal_r', 'om_r', 'dbthirdbar_r', 'cokey', 'chkey'],
+            'chfrags': ['fragvol_r', 'chkey'],
+        },
     }
 
     gssurgo_luts = {}
-    for t in tables:
-        gssurgo_luts[t] = pd.read_csv(
-            GSSURGO_LUT(path, t, state_abbreviation),
-            usecols=tables[t],
+    for t in TABLES:
+        gssurgo_luts[t] = pd.DataFrame()
+        for tt in TABLES[t]:
+            _df = pd.read_csv(
+                GSSURGO_LUT(path, tt, state_abbreviation),
+                usecols=TABLES[t][tt],
+            )
+
+            if tt == 'chfrags': _df = _df.groupby('chkey').sum().reset_index()
+            try:
+                gssurgo_luts[t] = pd.merge(gssurgo_luts[t], _df, how='outer')
+            except:
+                gssurgo_luts[t] = _df.copy()
+
+        # Rename table columns
+        gssurgo_luts[t] = gssurgo_luts[t].rename(
+            columns={GSSURGO_PARAMETERS[v]['variable']: v for v in GSSURGO_PARAMETERS}
         )
 
-    # Rename table columns
-    gssurgo_luts['chorizon'] = gssurgo_luts['chorizon'].rename(
-        columns={GSSURGO_PARAMETERS[v]['variable']: v for v in GSSURGO_PARAMETERS}
-    )
     # Convert units (note that organic matter is also converted to soil organic carbon in this case)
-    for v in GSSURGO_PARAMETERS: gssurgo_luts['chorizon'][v] *= GSSURGO_PARAMETERS[v]['multiplier']
+    for v in GSSURGO_PARAMETERS:
+        gssurgo_luts[GSSURGO_PARAMETERS[v]['table']][v] *= GSSURGO_PARAMETERS[v]['multiplier']
 
     # In the gSSURGO database many map units are the same soil texture with different slopes, etc. To find the dominant
     # soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map unit
     # names to identify the same soil textures among different soil map units.
     if group:
-        gssurgo_luts['muaggatt']['muname'] = gssurgo_luts['muaggatt']['muname'].map(lambda name: name.split(',')[0])
+        gssurgo_luts['mapunit']['muname'] = gssurgo_luts['mapunit']['muname'].map(lambda name: name.split(',')[0])
 
     return gssurgo_luts
 
@@ -72,17 +92,51 @@ def read_state_gssurgo(path, state_abbreviation, boundary=None, group=False):
     luts = read_state_luts(path, state_abbreviation, group=group)
 
     # Merge the mapunit polygon table with the mapunit aggregated attribute table
-    gdf = gdf.merge(luts['muaggatt'], on='mukey')
+    gdf = gdf.merge(luts['mapunit'], on='mukey')
 
     return gdf, luts
 
 
-def get_soil_profile_parameters(luts, mukey):
-    df = luts['component'][luts['component'].mukey == int(mukey)].merge(luts['chorizon'], on='cokey')
-    if not df[df['majcompflag'] == 'Yes'].empty:
-        df = df[df['majcompflag'] == 'Yes'].sort_values(by='top')
-    else:
-        print(f'{index} {t} no major component')
-        df = df.sort_values(by='top')
+def get_soil_profile_parameters(luts, mukey, major_only=True):
+    df = luts['component'][luts['component']['mukey'] == int(mukey)].copy()
 
-    return df[df['hzname'] != 'R']
+    if major_only is True: df = df[df['majcompflag'] == 'Yes']
+
+    df = pd.merge(df, luts['horizon'], on='cokey')
+
+    return df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
+
+
+def musym(str):
+    if str == 'N/A' or len(str) < 2:
+        return str
+
+    if str[-1].isupper() and (str[-2].isnumeric() or str[-2].islower()):
+        return str[:-1]
+
+    if str[-1].isnumeric() and str[-2].isupper() and (str[-3].isnumeric() or str[-3].islower()):
+        return str[:-2]
+
+    return str
+
+
+def non_soil_mask(df):
+    return df['mukey'].isna() | df['muname'].isin(GSSURGO_NON_SOIL_TYPES) | df['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
+
+
+def group_map_units(soil_df):
+    # Combine the soil map units that have the same names
+    df = soil_df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first'}).reset_index()
+
+    # Use the same name for all non-soil map units
+    mask = non_soil_mask(df)
+    df.loc[mask, 'muname'] = 'Water, urban, etc.'
+    df.loc[mask, 'mukey'] = None
+    df.loc[mask, 'musym'] = 'N/A'
+
+    # Combine non-soil map units
+    df = df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first'}).reset_index()
+
+    df['musym'] = df['musym'].map(musym)
+
+    return df

@@ -3,5 +3,7 @@ from . gssurgo import GSSURGO_PARAMETERS
 from . gssurgo import GSSURGO_URBAN_TYPES
 from . gssurgo import NAD83
 from . gssurgo import get_soil_profile_parameters
+from . gssurgo import group_map_units
+from . gssurgo import non_soil_mask
 from . gssurgo import read_state_gssurgo
 from . gssurgo import read_state_luts
