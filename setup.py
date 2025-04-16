@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='Cycles-utils',
-    version='1.2.1',
+    version='1.2.2',
     author='Yuning Shi',
     author_email="shiyuning@gmail.com",
     packages=find_packages(),
@@ -22,6 +22,6 @@ setup(
         'gssurgo': ['shapely>=1.7.1'],
         'plot': ['cartopy>=0.18.0', 'matplotlib>=3.4.2'],
         'soilgrids': ['rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'shapely>=1.7.1'],
-        'weather': ['shapely>=1.7.1', 'xarray>=0.20.2'],
+        'weather': ['netCDF4>=1.5.7'],
     }
 )
