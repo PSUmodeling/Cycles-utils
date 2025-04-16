@@ -129,5 +129,7 @@ def read_weather(cycles_path, weather, start_year=0, end_year=9999):
     )
     df = df.iloc[NUM_HEADER_LINES:, :]
     df = df.astype(columns)
+    df['date'] = pd.to_datetime(df['YEAR'].astype(str) + '-' + df['DOY'].astype(str), format='%Y-%j')
+    df.set_index('date', inplace=True)
 
     return df[(df['YEAR'] <= end_year) & (df['YEAR'] >= start_year)]
