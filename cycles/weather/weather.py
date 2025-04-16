@@ -3,8 +3,7 @@ import math
 import numpy as np
 import os
 import pandas as pd
-import xarray
-from shapely.geometry import Point
+from netCDF4 import Dataset
 
 pt = os.path.dirname(os.path.realpath(__file__))
 LAND_MASK_FILES = {
@@ -18,14 +17,14 @@ ELEVATION_FILES = {
     'NLDAS': os.path.join(pt, '../data/NLDAS_elevation.nc4'),
 }
 VARIABLES = {
-    'ELEVATION': {
-        'gridMET': 'elevation',
+    'elevation': {
         'GLDAS': 'GLDAS_elevation',
+        'gridMET': 'elevation',
         'NLDAS': 'NLDAS_elev',
     },
-    'MASK': {
-        'gridMET': 'elevation', # For gridMET, mask and elevation are the same file
+    'mask': {
         'GLDAS': 'GLDAS_mask',
+        'gridMET': 'elevation', # For gridMET, mask and elevation are the same file
         'NLDAS': 'CONUS_mask',
     },
 }
@@ -50,8 +49,8 @@ DJ = {
     'gridMET': -1.0 / 24.0,
     'NLDAS': 0.125,
 }
-IND_J = lambda ldas, lat: int(round((lat - LA1[ldas]) / DJ[ldas]))
-IND_I = lambda ldas, lon: int(round((lon - LO1[ldas]) / DI[ldas]))
+IND_J = lambda reanalysis, lat: int(round((lat - LA1[reanalysis]) / DJ[reanalysis]))
+IND_I = lambda reanalysis, lon: int(round((lon - LO1[reanalysis]) / DI[reanalysis]))
 SHAPES = {
     'GLDAS': (600, 1440),
     'gridMET': (585, 1386),
@@ -59,18 +58,22 @@ SHAPES = {
 }
 
 
-def read_land_mask(ldas):
-    ds = xarray.open_dataset(LAND_MASK_FILES[ldas])
+def read_land_mask(reanalysis):
+    with Dataset(LAND_MASK_FILES[reanalysis]) as nc:
+        mask =  nc[VARIABLES['mask'][reanalysis]][:, :] if reanalysis == 'gridMET' else nc[VARIABLES['mask'][reanalysis]][0]
+        lats, lons = np.meshgrid(nc['lat'][:], nc['lon'][:], indexing='ij')
 
-    lats, lons = np.meshgrid(ds['lat'].values, ds['lon'].values, indexing='ij')
+    with Dataset(ELEVATION_FILES[reanalysis]) as nc:
+        elevations = nc[VARIABLES['elevation'][reanalysis]][:, :] if reanalysis == 'gridMET' else nc[VARIABLES['elevation'][reanalysis]][0][:, :]
 
     df = pd.DataFrame({
         'latitude': lats.flatten(),
         'longitude': lons.flatten(),
-        'mask': ds[VARIABLES['MASK'][ldas]].values.flatten(),
+        'mask': mask.flatten(),
+        'elevation': elevations.flatten(),
     })
 
-    if ldas == 'gridMET':
+    if reanalysis == 'gridMET':
         df.loc[~df['mask'].isna(), 'mask'] = 1
         df.loc[df['mask'].isna(), 'mask'] = 0
 
@@ -79,21 +82,44 @@ def read_land_mask(ldas):
     return df
 
 
-def find_grids(ldas, locations):
-    df = read_land_mask(ldas)
+def find_grids(reanalysis, locations=None, model=None, rcp=None):
+    mask_df = read_land_mask(reanalysis)
+
+    if locations is None:
+        indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
+    else:
+        indices = []
+
+        for (lat, lon) in locations:
+            ind = np.ravel_multi_index((IND_J(reanalysis, lat), IND_I(reanalysis, lon)), SHAPES[reanalysis])
+
+            if mask_df.loc[ind]['mask'] == 0:
+                mask_df['distance'] = mask_df.apply(
+                    lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
+                    axis=1,
+                )
+                mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
+                ind = mask_df['distance'].idxmin()
+
+            indices.append(ind)
 
     grids = []
-    for (lat, lon) in locations:
-        grid_ind = np.ravel_multi_index((IND_J(ldas, lat), IND_I(ldas, lon)), SHAPES[ldas])
+    for ind in indices:
+        grid_lat, grid_lon = mask_df.loc[ind, ['latitude', 'longitude']]
 
-        if df.loc[grid_ind]['mask'] == 0:
-            df['distance'] = df.apply(
-                lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
-                axis=1,
-            )
-            df.loc[df['mask'] == 0, 'distance'] = 1E6
-            grid_ind = df['distance'].idxmin()
+        grid_str = '%.3f%sx%.3f%s' % (
+            abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E'
+        )
 
-        grids.append(grid_ind)
+        if reanalysis == 'MACA':
+            fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}.weather'
+        else:
+            fn = f'{reanalysis}_{grid_str}.weather'
 
-    return grids
+        grids.append({
+            'grid_index': ind,
+            'weather_file': fn,
+            'elevation': mask_df.loc[ind, 'elevation'],
+        })
+
+    return pd.DataFrame(grids)
