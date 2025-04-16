@@ -126,7 +126,7 @@ def non_soil_mask(df):
 
 def group_map_units(soil_df):
     # Combine the soil map units that have the same names
-    df = soil_df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first'}).reset_index()
+    df = soil_df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first', 'area': sum, 'shape_area': sum}).reset_index()
 
     # Use the same name for all non-soil map units
     mask = non_soil_mask(df)
@@ -135,7 +135,7 @@ def group_map_units(soil_df):
     df.loc[mask, 'musym'] = 'N/A'
 
     # Combine non-soil map units
-    df = df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first'}).reset_index()
+    df = df.dissolve(by='muname', aggfunc={'mukey': 'first', 'musym': 'first', 'area': sum, 'shape_area': sum}).reset_index()
 
     df['musym'] = df['musym'].map(musym)
 
