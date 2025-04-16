@@ -111,7 +111,7 @@ def read_weather(cycles_path, weather, start_year=0, end_year=9999):
         'WIND': float,
     }
     df = pd.read_csv(
-        f,
+        f'{cycles_path}/input/{weather}.weather',
         usecols=list(range(len(columns))),
         names=columns.keys(),
         comment='#',
