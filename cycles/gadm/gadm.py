@@ -66,8 +66,8 @@ STATE_ABBREVIATIONS = {
 def read_gadm(path, country, level, conus=True):
     level = GADM_LEVELS[level.lower()]
     gdf = gpd.read_file(GADM(path, country, level))
-    gdf.set_index(f'GID_{level}', inplace=True)
-    gdf['GID'] = gdf.index
+    gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
+    gdf.set_index('GID', inplace=True)
 
 
         # Generate a CONUS GeoDataFrame by removing Alaska and Hawaii
