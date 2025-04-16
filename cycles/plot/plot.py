@@ -35,3 +35,5 @@ def conus_plot(gdf, column, projection=ccrs.PlateCarree(), cmap='viridis', title
     cbar.ax.tick_params(labelsize=14)
     if title is not None: cbar.set_label(title, size=16)
     cbar.ax.xaxis.set_label_position('top')
+
+    return fig, ax
