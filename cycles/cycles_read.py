@@ -30,6 +30,10 @@ def read_season(cycles_path, simulation):
     return df
 
 
+def read_operation_parameters(type, line_no, lines):
+    return type(lines[line_no].split()[1])
+
+
 def read_operations(cycles_path, operation):
     with open(f'{cycles_path}/input/{operation}.operation') as f:
         lines = f.read().splitlines()
@@ -43,39 +47,44 @@ def read_operations(cycles_path, operation):
             operations.append(
                 {
                     'type': 'fertilization',
-                    'year': int(lines[k + 1].split()[1]),
-                    'doy': int(lines[k + 2].split()[1]),
-                    'source': lines[k + 3].split()[1],
-                    'mass': lines[k + 4].split()[1],
+                    'year': read_operation_parameters(int, k + 1, lines),
+                    'doy': read_operation_parameters(int, k + 2, lines),
+                    'source': read_operation_parameters(str, k + 3, lines),
+                    'mass': read_operation_parameters(float, k + 4, lines),
                 }
             )
             k += 5
         elif lines[k] == 'TILLAGE':
-            if lines[k + 3].split()[1].strip().lower() in HARVEST_TOOLS:
+            tool = read_operation_parameters(str, k + 3, lines)
+            year = read_operation_parameters(int, k + 1, lines)
+            doy = read_operation_parameters(int, k + 2, lines)
+            crop = read_operation_parameters(str, k + 7, lines)
+
+            if tool.strip().lower() in HARVEST_TOOLS:
                 operations.append(
                     {
                         'type': 'harvest',
-                        'year': int(lines[k + 1].split()[1]),
-                        'doy': int(lines[k + 2].split()[1]),
-                        'crop': lines[k + 7].split()[1],
+                        'year': year,
+                        'doy': doy,
+                        'crop': crop,
                     }
                 )
-            elif lines[k + 3].split()[1].strip().lower() == 'kill_crop':
+            elif tool.strip().lower() == 'kill_crop':
                 operations.append(
                     {
                         'type': 'kill',
-                        'year': int(lines[k + 1].split()[1]),
-                        'doy': int(lines[k + 2].split()[1]),
-                        'crop': lines[k + 7].split()[1],
+                        'year': year,
+                        'doy': doy,
+                        'crop': crop,
                     }
                 )
             else:
                 operations.append(
                     {
                         'type': 'tillage',
-                        'year': int(lines[k + 1].split()[1]),
-                        'doy': int(lines[k + 2].split()[1]),
-                        'tool': lines[k + 3].split()[1],
+                        'year': year,
+                        'doy': doy,
+                        'tool': tool,
                     }
                 )
             k += 8
@@ -83,9 +92,9 @@ def read_operations(cycles_path, operation):
             operations.append(
                 {
                     'type': 'planting',
-                    'year': int(lines[k + 1].split()[1]),
-                    'doy': int(lines[k + 2].split()[1]),
-                    'crop': lines[k + 8].split()[1],
+                    'year': read_operation_parameters(int, k + 1, lines),
+                    'doy': read_operation_parameters(int, k + 2, lines),
+                    'crop': read_operation_parameters(str, k + 8, lines),
                 }
             )
             k += 9
