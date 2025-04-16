@@ -37,7 +37,14 @@ def calculate_parameter(soil_df, parameter, top, bottom):
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
 
 
-def generate_soil_file(fn, desc, hsg, slope, soil_depth, soil_df):
+def generate_soil_file(fn, desc, hsg, slope, soil_df, soil_depth=None):
+    layer_depths = np.array([layer['bottom'] for layer in SOIL_LAYERS])
+
+    if soil_depth is not None:
+        layer_depths = layer_depths[layer_depths <= soil_depth]
+
+    soil_depth = min(layer_depths, key=lambda x: abs(x - soil_df.iloc[-1]['bottom']))
+
     df = pd.DataFrame.from_dict(
         {v: [layer[v] for layer in SOIL_LAYERS if layer['bottom'] <= soil_depth] for v in SOIL_LAYERS[0]}
     )
