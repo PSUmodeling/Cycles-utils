@@ -12,7 +12,7 @@ HARVEST_TOOLS = [
 ]
 
 
-def read_season(cycles_path, simulation):
+def read_harvest(cycles_path, simulation):
     '''Read season output file for harvested crop, harvest time, plant time, and yield
     '''
     df = pd.read_csv(
