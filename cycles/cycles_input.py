@@ -24,6 +24,41 @@ CURVE_NUMBERS = {
     'C': 85,
     'D': 89,
 }
+CONTROL_PARAMETERS = {
+    'simulation years': {
+        'simulation_start_date': None,
+        'simulation_end_date': None,
+        'rotation_size': None,
+    },
+    'other input files': {
+        'crop_file': 'GenericCrops.crop',
+        'operation_file': None,
+        'soil_file': None,
+        'weather_file': None,
+        'reinit_file': 'N/A',
+    },
+    'simulation options': {
+        'co2_level': -999,
+        'use_reinitialization': 0,
+        'adjusted_yields': 0,
+        'hourly_infiltration': 1,
+        'automatic_nitrogen': 0,
+        'automatic_phosphorus': 0,
+        'automatic_sulfur': 0,
+    },
+    'output control': {
+        'daily_weather_out': 1,
+        'daily_crop_out': 1,
+        'daily_residue_out': 1,
+        'daily_water_out': 1,
+        'daily_nitrogen_out': 1,
+        'daily_soil_carbon_out': 1,
+        'daily_soil_lyr_cn_out': 1,
+        'annual_soil_out': 1,
+        'annual_profile_out': 1,
+        'annual_nflux_out': 1,
+    }
+}
 
 
 def overlapping_depth(top1, bottom1, top2, bottom2):
@@ -81,3 +116,18 @@ def generate_soil_file(fn, desc, hsg, slope, soil_df, soil_depth=None):
             f.write(('%-7d\t'*3 + '%-7.1f\t'*2 + '%-7.1f\t%.1f\n') % (
                 -999, -999, -999, float(row['no3']), float(row['nh4']), 0.0, 0.0
             ))
+
+
+def generate_control_file(fn, user_control_dict):
+    with open(fn, 'w') as f:
+        for block, parameters in CONTROL_PARAMETERS.items():
+            f.write(f'## {block.upper()} ##\n')
+            for name, value in parameters.items():
+                if value is None:
+                    try:
+                        value = user_control_dict[name]
+                    except:
+                        raise KeyError(f'Parameter {name,upper()} must be defined')
+
+                f.write('%-23s\t%s\n' % (name.upper(), str(value)))
+            f.write('\n')
