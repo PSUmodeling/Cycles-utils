@@ -47,16 +47,16 @@ CONTROL_PARAMETERS = {
         'automatic_sulfur': 0,
     },
     'output control': {
-        'daily_weather_out': 1,
-        'daily_crop_out': 1,
-        'daily_residue_out': 1,
-        'daily_water_out': 1,
-        'daily_nitrogen_out': 1,
-        'daily_soil_carbon_out': 1,
-        'daily_soil_lyr_cn_out': 1,
-        'annual_soil_out': 1,
-        'annual_profile_out': 1,
-        'annual_nflux_out': 1,
+        'daily_weather_out': 0,
+        'daily_crop_out': 0,
+        'daily_residue_out': 0,
+        'daily_water_out': 0,
+        'daily_nitrogen_out': 0,
+        'daily_soil_carbon_out': 0,
+        'daily_soil_lyr_cn_out': 0,
+        'annual_soil_out': 0,
+        'annual_profile_out': 0,
+        'annual_nflux_out': 0,
     }
 }
 
