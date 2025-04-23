@@ -127,7 +127,7 @@ def generate_control_file(fn, user_control_dict):
                     try:
                         value = user_control_dict[name]
                     except:
-                        raise KeyError(f'Parameter {name,upper()} must be defined')
+                        raise KeyError(f'Parameter {name.upper()} must be defined')
 
                 f.write('%-23s\t%s\n' % (name.upper(), str(value)))
             f.write('\n')
