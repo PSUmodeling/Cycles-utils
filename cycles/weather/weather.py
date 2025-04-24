@@ -16,7 +16,6 @@ URLS = {
 }
 NETCDF_EXTENSIONS = {
     'GLDAS': 'nc4',
-    'gridMET': 'nc',
     'NLDAS': 'nc',
 }
 NETCDF_PREFIXES = {
@@ -32,40 +31,22 @@ NETCDF_SHAPES = {
     'gridMET': (585, 1386),
     'NLDAS': (224, 464),
 }
-DATA_INTERVALS = {   # Data interval in hours
+DATA_INTERVALS = {
+    # Data interval in hours
     'GLDAS': 3,
     'NLDAS': 1,
 }
-GRIDMET_VARIABLES = {
-    'pr': 'precipitation_amount',
-    'tmmx': 'air_temperature',
-    'tmmn': 'air_temperature',
-    'srad': 'surface_downwelling_shortwave_flux_in_air',
-    'rmax': 'relative_humidity',
-    'rmin': 'relative_humidity',
-    'vs': 'wind_speed',
+LAND_MASKS = {
+    'GLDAS': {'file': os.path.join(pt, '../data/GLDASp5_landmask_025d.nc4'), 'variable': 'GLDAS_mask'},
+    'gridMET': {'file': os.path.join(pt, '../data/gridMET_elevation_mask.nc'), 'variable': 'elevation'},    # For gridMET, mask and elevation are the same file
+    'NLDAS': {'file': os.path.join(pt, '../data/NLDAS_masks-veg-soil.nc4'), 'variable': 'CONUS_mask'},
 }
-LAND_MASK_FILES = {
-    'GLDAS': os.path.join(pt, '../data/GLDASp5_landmask_025d.nc4'),
-    'gridMET': os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
-    'NLDAS': os.path.join(pt, '../data/NLDAS_masks-veg-soil.nc4'),
-}
-ELEVATION_FILES = {
-    'GLDAS': os.path.join(pt, '../data/GLDASp5_elevation_025d.nc4'),
-    'gridMET': os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
-    'NLDAS': os.path.join(pt, '../data/NLDAS_elevation.nc4'),
+ELEVATIONS = {
+    'GLDAS': {'file': os.path.join(pt, '../data/GLDASp5_elevation_025d.nc4'), 'variable': 'GLDAS_elevation'},
+    'gridMET': {'file': os.path.join(pt, '../data/gridMET_elevation_mask.nc'), 'variable': 'elevation'},
+    'NLDAS': {'file': os.path.join(pt, '../data/NLDAS_elevation.nc4'), 'variable': 'NLDAS_elev'},
 }
 NETCDF_VARIABLES = {
-    'elevation': {
-        'GLDAS': 'GLDAS_elevation',
-        'gridMET': 'elevation',
-        'NLDAS': 'NLDAS_elev',
-    },
-    'mask': {
-        'GLDAS': 'GLDAS_mask',
-        'gridMET': 'elevation', # For gridMET, mask and elevation are the same file
-        'NLDAS': 'CONUS_mask',
-    },
     'precipitation': {
         'GLDAS': 'Rainf_f_tavg',
         'NLDAS': 'Rainf',
@@ -90,10 +71,10 @@ NETCDF_VARIABLES = {
         'GLDAS': 'SWdown_f_tavg',
         'NLDAS': 'SWdown',
     },
-    'longwave': {
-        'GLDAS': 'LWdown_f_tavg',
-        'NLDAS': 'LWdown',
-    },
+    #'longwave': {
+    #    'GLDAS': 'LWdown_f_tavg',
+    #    'NLDAS': 'LWdown',
+    #},
     'air_pressure': {
         'GLDAS': 'Psurf_f_inst',
         'NLDAS': 'PSurf',
@@ -135,38 +116,80 @@ WEATHER_FILE_VARIABLES = {
     # func is the function that converts the raw data to corresponding weather file variables
     # format is the output format in weather files
     'PP': {
-        'variable': 'precipitation',
-        'func': lambda x: x.resample('D').mean() * 86400,
+        'XLDAS':{
+            'variable': 'precipitation',
+            'func': lambda x: x.resample('D').mean() * 86400,
+        },
+        'gridMET':{
+            'variable': ('pr', 'precipitation_amount'),
+            'func': lambda x: x,
+        },
         'format': lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x,
     },
     'TX': {
-        'variable': 'air_temperature',
-        'func': lambda x: x.resample('D').max() - 273.15,
+        'XLDAS': {
+            'variable': 'air_temperature',
+            'func': lambda x: x.resample('D').max() - 273.15,
+        },
+        'gridMET':{
+            'variable': ('tmmx', 'air_temperature'),
+            'func': lambda x: x - 273.15,
+        },
         'format': lambda x: '%-7.2f' % x,
     },
     'TN': {
-        'variable': 'air_temperature',
-        'func': lambda x: x.resample('D').min() - 273.15,
+        'XLDAS': {
+            'variable': 'air_temperature',
+            'func': lambda x: x.resample('D').min() - 273.15,
+        },
+        'gridMET':{
+            'variable': ('tmmn', 'air_temperature'),
+            'func': lambda x: x - 273.15,
+        },
         'format': lambda x: '%-7.2f' % x,
     },
     'SOLAR': {
-        'variable': 'solar',
-        'func': lambda x: x.resample('D').mean() * 86400.0 * 1.0E-6,
+        'XLDAS': {
+            'variable': 'solar',
+            'func': lambda x: x.resample('D').mean() * 86400.0 * 1.0E-6,
+        },
+        'gridMET':{
+            'variable': ('srad', 'surface_downwelling_shortwave_flux_in_air'),
+            'func': lambda x: x * 86400.0 * 1.0E-6,
+        },
         'format': lambda x: '%-7.3f' % x,
     },
     'RHX': {
-        'variable': 'relative_humidity',
-        'func': lambda x: x.resample('D').max() * 100.0,
+        'XLDAS': {
+            'variable': 'relative_humidity',
+            'func': lambda x: x.resample('D').max() * 100.0,
+        },
+        'gridMET':{
+            'variable': ('rmax', 'relative_humidity'),
+            'func': lambda x: x,
+        },
         'format': lambda x: '%-7.2f' % x,
     },
     'RHN': {
-        'variable': 'relative_humidity',
-        'func': lambda x: x.resample('D').min() * 100.0,
+        'XLDAS': {
+            'variable': 'relative_humidity',
+            'func': lambda x: x.resample('D').min() * 100.0,
+        },
+        'gridMET':{
+            'variable': ('rmin', 'relative_humidity'),
+            'func': lambda x: x,
+        },
         'format': lambda x: '%-7.2f' % x,
     },
     'WIND': {
-        'variable': 'wind',
-        'func': lambda x: x.resample('D').mean(),
+        'XLDAS': {
+            'variable': 'wind',
+            'func': lambda x: x.resample('D').mean(),
+        },
+        'gridMET':{
+            'variable': ('vs', 'wind_speed'),
+            'func': lambda x: x,
+        },
         'format': lambda x: '%-.2f' % x,
     },
 }
@@ -203,6 +226,8 @@ def _download_daily_xldas(path, xldas, day):
 
 
 def download_xldas(data_path, xldas, date_start, date_end):
+    os.makedirs(f'{data_path}/', exist_ok=True)
+
     d = date_start
     while d <= date_end:
         _download_daily_xldas(data_path, xldas, d)
@@ -214,15 +239,13 @@ def download_gridmet(data_path, year):
     """
     os.makedirs(f'{data_path}/', exist_ok=True)
 
-    print(f'    Downloading {year} data...')
-
-    for var in GRIDMET_VARIABLES:
+    for var in WEATHER_FILE_VARIABLES:
         cmd = [
             'wget',
-            '-nc',
             '-c',
+            '-N',
             '-nd',
-            f'{URLS["gridMET"]}/{var}_{year}.nc',
+            f'{URLS["gridMET"]}/{WEATHER_FILE_VARIABLES[var]["gridMET"]["variable"][0]}_{year}.nc',
             '-P',
             f'{data_path}/',
         ]
@@ -234,12 +257,18 @@ def download_gridmet(data_path, year):
 
 
 def read_land_mask(reanalysis):
-    with Dataset(LAND_MASK_FILES[reanalysis]) as nc:
-        mask = nc[NETCDF_VARIABLES['mask'][reanalysis]][:, :] if reanalysis == 'gridMET' else nc[NETCDF_VARIABLES['mask'][reanalysis]][0]
+    with Dataset(LAND_MASKS[reanalysis]['file']) as nc:
+        if reanalysis == 'gridMET':
+            mask = nc[LAND_MASKS[reanalysis]['variable']][:, :]
+        else:
+            mask = nc[LAND_MASKS[reanalysis]['variable']][0]
         lats, lons = np.meshgrid(nc['lat'][:], nc['lon'][:], indexing='ij')
 
-    with Dataset(ELEVATION_FILES[reanalysis]) as nc:
-        elevations = nc[NETCDF_VARIABLES['elevation'][reanalysis]][:, :] if reanalysis == 'gridMET' else nc[NETCDF_VARIABLES['elevation'][reanalysis]][0][:, :]
+    with Dataset(ELEVATIONS[reanalysis]['file']) as nc:
+        if reanalysis == 'gridMET':
+            elevations = nc[ELEVATIONS[reanalysis]['variable']][:, :]
+        else:
+            elevations = nc[ELEVATIONS[reanalysis]['variable']][0][:, :]
 
     grid_df = pd.DataFrame({
         'latitude': lats.flatten(),
@@ -335,8 +364,8 @@ def _read_var(t, xldas, nc, indices, df):
     """
     #df['precipitation'] = nc[VARIABLES['precipitation'][xldas]][0].flatten()[np.array(df['grid_index'])]
     values = {}
-    for var in ['precipitation', 'air_temperature', 'wind_u', 'wind_v', 'solar', 'specific_humidity', 'air_pressure']:
-        values[var] = nc[NETCDF_VARIABLES[var][xldas]][0].flatten()[indices]
+    for key in NETCDF_VARIABLES:
+        values[key] = nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
 
     if xldas == 'NLDAS':     # NLDAS precipitation unit is kg m-2. Convert to kg m-2 s-1 to be consistent with GLDAS
         values['precipitation'] /= DATA_INTERVALS[xldas] * 3600.0
@@ -344,15 +373,42 @@ def _read_var(t, xldas, nc, indices, df):
     values['wind'] = np.sqrt(values['wind_u'] **2 + values['wind_v'] **2)
 
     ## Calculate relative humidity from specific humidity
-    values['relative_humidity'] = relative_humidity(values['air_temperature'], values['air_pressure'], values['specific_humidity'])
+    values['relative_humidity'] = relative_humidity(
+        values['air_temperature'], values['air_pressure'], values['specific_humidity']
+    )
 
     for var in ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']:
         df.loc[t, df.columns.get_level_values(1) == var] = values[var]
 
 
-def process_xldas(data_path, weather_path, xldas, date_start, date_end, grid_df):
+def _write_weather_files(weather_path, daily_df, grid_df):
+    daily_df['YEAR'] = daily_df.index.year.map(lambda x: "%-7d" % x)
+    daily_df['DOY'] = daily_df.index.map(lambda x: "%-7d" % x.timetuple().tm_yday)
+
+    for grid in grid_df['grid_index']:
+        output_df = daily_df.loc[:, pd.IndexSlice[grid, :]].copy()
+        output_df.columns = output_df.columns.droplevel()
+        output_df = daily_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
+
+        for v in WEATHER_FILE_VARIABLES:
+            output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
+
+        with open(f'{weather_path}/{grid_df[grid_df["grid_index"] == grid]["weather_file"].iloc[0]}', 'a') as f:
+            output_df.to_csv(
+                f,
+                sep='\t',
+                header=False,
+                index=False,
+        )
+
+
+def process_xldas(data_path, weather_path, xldas, date_start, date_end, locations=None, header=True):
     """Process daily XLDAS data and write them to meteorological files
     """
+    grid_df = find_grids(xldas, locations)
+
+    if header == True: write_headers(weather_path,  grid_df)
+
     ## Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
     columns = pd.MultiIndex.from_product([grid_df['grid_index'], variables], names=('grids', 'variables'))
@@ -373,27 +429,54 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, grid_df)
 
     daily_df = pd.DataFrame()
 
-    for v in WEATHER_FILE_VARIABLES:
+    for key in WEATHER_FILE_VARIABLES:
+        variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
+        func = WEATHER_FILE_VARIABLES[key]['XLDAS']['func']
         daily_df = pd.concat(
-            [daily_df, WEATHER_FILE_VARIABLES[v]['func'](df.loc[:, df.columns.get_level_values(1) ==  WEATHER_FILE_VARIABLES[v]['variable']]).rename(columns={WEATHER_FILE_VARIABLES[v]['variable']: v}, level=1)],
+            [
+                daily_df,
+                func(df.loc[:, df.columns.get_level_values(1) == variable]).rename(columns={variable: key}, level=1)
+            ],
             axis=1,
         )
 
-    daily_df['YEAR'] = daily_df.index.year.map(lambda x: "%-7d" % x)
-    daily_df['DOY'] = daily_df.index.map(lambda x: "%-7d" % x.timetuple().tm_yday)
+    _write_weather_files(weather_path, daily_df, grid_df)
 
-    for grid in grid_df['grid_index']:
-        output_df = daily_df.loc[:, pd.IndexSlice[grid, :]].copy()
-        output_df.columns = output_df.columns.droplevel()
-        output_df = daily_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
 
-        for v in WEATHER_FILE_VARIABLES:
-            output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
+def process_gridmet(data_path, weather_path, date_start, date_end, locations=None, header=True):
+    """Process annual gridMET data and write them to weather files
+    """
+    grid_df = find_grids('gridMET', locations)
 
-        with open(f'{weather_path}/{grid_df[grid_df["grid_index"] == grid]["weather_file"].iloc[0]}', 'a') as f:
-            output_df.to_csv(
-                f,
-                sep='\t',
-                header=False,
-                index=False,
-        )
+    if header == True: write_headers(weather_path,  grid_df)
+
+    year = -9999
+    variables = list(WEATHER_FILE_VARIABLES.keys())
+    columns = pd.MultiIndex.from_product([grid_df['grid_index'], variables], names=('grids', 'variables'))
+    df = pd.DataFrame(columns=columns)
+
+    t = date_start
+    while t < date_end + timedelta(days=1):
+        if t.year != year:
+            # Close netCDF files that are open
+            if year != -9999:
+                for key in WEATHER_FILE_VARIABLES: ncs[key].close()
+
+            year = t.year
+            ncs = {
+                key: Dataset(f'{data_path}/{value["gridMET"]["variable"][0]}_{year}.nc')
+                for key, value in WEATHER_FILE_VARIABLES.items()
+            }
+
+        for key in WEATHER_FILE_VARIABLES:
+            variable = WEATHER_FILE_VARIABLES[key]['gridMET']['variable'][1]
+            func = WEATHER_FILE_VARIABLES[key]['gridMET']['func']
+            df.loc[t, df.columns.get_level_values(1) == key] = func(
+                ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df['grid_index'])]
+            )
+
+        t += timedelta(days=1)
+
+    for key in WEATHER_FILE_VARIABLES: ncs[key].close()
+
+    _write_weather_files(weather_path, df, grid_df)
