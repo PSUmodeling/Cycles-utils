@@ -65,7 +65,7 @@ NETCDF_VARIABLES = {
         'NLDAS': 'Wind_E',
     },
     'wind_v': {
-        'GLDAS': 'Wind_f_inst',
+        'GLDAS': '',
         'NLDAS': 'Wind_N',
     },
     'solar': {
@@ -384,6 +384,10 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
     """
     values = {}
     for key in NETCDF_VARIABLES:
+        if not NETCDF_VARIABLES[key][xldas]:
+            values[key] = 0.0
+            continue
+
         values[key] = nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
 
     if xldas == 'NLDAS':     # NLDAS precipitation unit is kg m-2. Convert to kg m-2 s-1 to be consistent with GLDAS
