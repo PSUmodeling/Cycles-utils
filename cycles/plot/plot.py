@@ -189,9 +189,11 @@ def operation_plot(operation_df, rotation_size, axes=None, fontsize=None):
         axes[y].set_xticks(mdoys)
         axes[y].set_xticklabels(months)
 
-        axes[y].legend(
-            loc='center left',
-            bbox_to_anchor=(1.1, 0.5),
-            ncols=5,
-            frameon=False,
-        )
+        handles, _ = axes[y].get_legend_handles_labels()
+        if handles:
+            axes[y].legend(
+                loc='center left',
+                bbox_to_anchor=(1.1, 0.5),
+                ncols=5,
+                frameon=False,
+            )
