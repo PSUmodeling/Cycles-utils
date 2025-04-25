@@ -341,6 +341,8 @@ def find_grids(reanalysis, locations=None, model=None, rcp=None):
         df = df.drop_duplicates(subset=['grid_index'], keep='first')
         print(df[['input_coordinate', 'weather_file']].to_string(index=False))
         print()
+    
+    df.set_index('grid_index', inplace=True)
 
     return df
 
@@ -399,7 +401,7 @@ def _write_weather_files(weather_path, daily_df, grid_df):
     daily_df['YEAR'] = daily_df.index.year.map(lambda x: "%-7d" % x)
     daily_df['DOY'] = daily_df.index.map(lambda x: "%-7d" % x.timetuple().tm_yday)
 
-    for grid in grid_df['grid_index']:
+    for grid in grid_df.index:
         output_df = daily_df.loc[:, pd.IndexSlice[grid, :]].copy()
         output_df.columns = output_df.columns.droplevel()
         output_df = daily_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
@@ -407,7 +409,7 @@ def _write_weather_files(weather_path, daily_df, grid_df):
         for v in WEATHER_FILE_VARIABLES:
             output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
 
-        with open(f'{weather_path}/{grid_df[grid_df["grid_index"] == grid]["weather_file"].iloc[0]}', 'a') as f:
+        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}', 'a') as f:
             output_df.to_csv(
                 f,
                 sep='\t',
@@ -433,7 +435,7 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
 
     ## Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
-    columns = pd.MultiIndex.from_product([grid_df['grid_index'], variables], names=('grids', 'variables'))
+    columns = pd.MultiIndex.from_product([grid_df.index, variables], names=('grids', 'variables'))
     df = pd.DataFrame(columns=columns)
 
     t = date_start
@@ -445,7 +447,7 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
 
         # Read one netCDF file
         with Dataset(f'{data_path}/{fn}') as nc:
-            _read_var(t, xldas, nc, np.array(grid_df['grid_index']), df)
+            _read_var(t, xldas, nc, np.array(grid_df.index), df)
 
         t += timedelta(hours=DATA_INTERVALS[xldas])
 
@@ -472,7 +474,7 @@ def process_gridmet(data_path, weather_path, date_start, date_end, locations=Non
 
     year = -9999
     variables = list(WEATHER_FILE_VARIABLES.keys())
-    columns = pd.MultiIndex.from_product([grid_df['grid_index'], variables], names=('grids', 'variables'))
+    columns = pd.MultiIndex.from_product([grid_df.index, variables], names=('grids', 'variables'))
     df = pd.DataFrame(columns=columns)
 
     t = date_start
@@ -492,7 +494,7 @@ def process_gridmet(data_path, weather_path, date_start, date_end, locations=Non
             variable = WEATHER_FILE_VARIABLES[key]['gridMET']['variable'][1]
             func = WEATHER_FILE_VARIABLES[key]['gridMET']['func']
             df.loc[t, df.columns.get_level_values(1) == key] = func(
-                ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df['grid_index'])]
+                ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]
             )
 
         t += timedelta(days=1)
