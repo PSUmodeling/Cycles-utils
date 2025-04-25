@@ -6,6 +6,7 @@ import pandas as pd
 import subprocess
 from datetime import datetime, timedelta
 from netCDF4 import Dataset
+from tqdm import tqdm
 
 pt = os.path.dirname(os.path.realpath(__file__))
 
@@ -229,9 +230,11 @@ def download_xldas(data_path, xldas, date_start, date_end):
     os.makedirs(f'{data_path}/', exist_ok=True)
 
     d = date_start
-    while d <= date_end:
-        _download_daily_xldas(data_path, xldas, d)
-        d += timedelta(days=1)
+    with tqdm(total=(date_end - date_start).days + 1, desc=f'Download {xldas} files', unit=' days') as progress_bar:
+        while d <= date_end:
+            _download_daily_xldas(data_path, xldas, d)
+            d += timedelta(days=1)
+            progress_bar.update(1)
 
 
 def download_gridmet(data_path, year):
@@ -256,7 +259,7 @@ def download_gridmet(data_path, year):
         )
 
 
-def read_land_mask(reanalysis):
+def _read_land_mask(reanalysis):
     with Dataset(LAND_MASKS[reanalysis]['file']) as nc:
         if reanalysis == 'gridMET':
             mask = nc[LAND_MASKS[reanalysis]['variable']][:, :]
@@ -302,7 +305,7 @@ def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
 
 
 def find_grids(reanalysis, locations=None, model=None, rcp=None):
-    mask_df = read_land_mask(reanalysis)
+    mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
         indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
@@ -341,7 +344,7 @@ def find_grids(reanalysis, locations=None, model=None, rcp=None):
         df = df.drop_duplicates(subset=['grid_index'], keep='first')
         print(df[['input_coordinate', 'weather_file']].to_string(index=False))
         print()
-    
+
     df.set_index('grid_index', inplace=True)
 
     return df
@@ -359,7 +362,7 @@ def _write_header(weather_path, fn, latitude, elevation, screening_height=10.0):
             ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
 
 
-def write_headers(weather_path, grid_df):
+def _write_weather_headers(weather_path, grid_df):
     grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation']), axis=1)
 
 
@@ -374,7 +377,7 @@ def relative_humidity(air_temperature, air_pressure, specific_humidity):
     return rh
 
 
-def _read_var(t, xldas, nc, indices, df):
+def _read_xldas_netcdf(t, xldas, nc, indices, df):
     """Read meteorological variables of an array of desired grids from netCDF
 
     The netCDF variable arrays are flattened to make reading faster
@@ -399,7 +402,7 @@ def _read_var(t, xldas, nc, indices, df):
 
 def _write_weather_files(weather_path, daily_df, grid_df):
     daily_df['YEAR'] = daily_df.index.year.map(lambda x: "%-7d" % x)
-    daily_df['DOY'] = daily_df.index.map(lambda x: "%-7d" % x.timetuple().tm_yday)
+    daily_df['DOY'] = daily_df.index.map(lambda x: "%-7.3d" % x.timetuple().tm_yday)
 
     for grid in grid_df.index:
         output_df = daily_df.loc[:, pd.IndexSlice[grid, :]].copy()
@@ -423,7 +426,7 @@ def _initialize_weather_files(weather_path, reanalysis, locations, header):
 
     grid_df = find_grids(reanalysis, locations)
 
-    if header == True: write_headers(weather_path,  grid_df)
+    if header == True: _write_weather_headers(weather_path,  grid_df)
 
     return grid_df
 
@@ -439,17 +442,20 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
     df = pd.DataFrame(columns=columns)
 
     t = date_start
-    while t < date_end + timedelta(days=1):
-        if t < START_DATES[xldas] + timedelta(hours=START_HOURS[xldas]): continue
+    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {xldas} files', unit=' days') as progress_bar:
+        while t < date_end + timedelta(days=1):
+            if t < START_DATES[xldas] + timedelta(hours=START_HOURS[xldas]): continue
 
-        # netCDF file name
-        fn = f'{t.strftime("%Y/%j")}/{NETCDF_PREFIXES[xldas]}{t.strftime("%Y%m%d.%H%M")}.{NETCDF_SUFFIXES[xldas]}'
+            # netCDF file name
+            fn = f'{t.strftime("%Y/%j")}/{NETCDF_PREFIXES[xldas]}{t.strftime("%Y%m%d.%H%M")}.{NETCDF_SUFFIXES[xldas]}'
 
-        # Read one netCDF file
-        with Dataset(f'{data_path}/{fn}') as nc:
-            _read_var(t, xldas, nc, np.array(grid_df.index), df)
+            # Read one netCDF file
+            with Dataset(f'{data_path}/{fn}') as nc:
+                _read_xldas_netcdf(t, xldas, nc, np.array(grid_df.index), df)
 
-        t += timedelta(hours=DATA_INTERVALS[xldas])
+            t += timedelta(hours=DATA_INTERVALS[xldas])
+            if (t - date_start).total_seconds() % 86400 == 0:
+                progress_bar.update(1)
 
     daily_df = pd.DataFrame()
 
@@ -478,26 +484,28 @@ def process_gridmet(data_path, weather_path, date_start, date_end, locations=Non
     df = pd.DataFrame(columns=columns)
 
     t = date_start
-    while t < date_end + timedelta(days=1):
-        if t.year != year:
-            # Close netCDF files that are open
-            if year != -9999:
-                for key in WEATHER_FILE_VARIABLES: ncs[key].close()
+    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process gridMET files', unit=' days') as progress_bar:
+        while t < date_end + timedelta(days=1):
+            if t.year != year:
+                # Close netCDF files that are open
+                if year != -9999:
+                    for key in WEATHER_FILE_VARIABLES: ncs[key].close()
 
-            year = t.year
-            ncs = {
-                key: Dataset(f'{data_path}/{value["gridMET"]["variable"][0]}_{year}.nc')
-                for key, value in WEATHER_FILE_VARIABLES.items()
-            }
+                year = t.year
+                ncs = {
+                    key: Dataset(f'{data_path}/{value["gridMET"]["variable"][0]}_{year}.nc')
+                    for key, value in WEATHER_FILE_VARIABLES.items()
+                }
 
-        for key in WEATHER_FILE_VARIABLES:
-            variable = WEATHER_FILE_VARIABLES[key]['gridMET']['variable'][1]
-            func = WEATHER_FILE_VARIABLES[key]['gridMET']['func']
-            df.loc[t, df.columns.get_level_values(1) == key] = func(
-                ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]
-            )
+            for key in WEATHER_FILE_VARIABLES:
+                variable = WEATHER_FILE_VARIABLES[key]['gridMET']['variable'][1]
+                func = WEATHER_FILE_VARIABLES[key]['gridMET']['func']
+                df.loc[t, df.columns.get_level_values(1) == key] = func(
+                    ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]
+                )
 
-        t += timedelta(days=1)
+            t += timedelta(days=1)
+            progress_bar.update(1)
 
     for key in WEATHER_FILE_VARIABLES: ncs[key].close()
 
