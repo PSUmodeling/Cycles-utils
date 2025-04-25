@@ -286,11 +286,27 @@ def read_land_mask(reanalysis):
     return grid_df
 
 
+def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
+    grid_lat, grid_lon = mask_df.loc[grid_ind, ['latitude', 'longitude']]
+
+    grid_str = '%.3f%sx%.3f%s' % (
+            abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E'
+    )
+
+    if reanalysis == 'MACA':
+        fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}.weather'
+    else:
+        fn = f'{reanalysis}_{grid_str}.weather'
+
+    return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']
+
+
 def find_grids(reanalysis, locations=None, model=None, rcp=None):
     mask_df = read_land_mask(reanalysis)
 
     if locations is None:
         indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
+        df = pd.DataFrame({'grid_index': indices})
     else:
         indices = []
 
@@ -306,28 +322,27 @@ def find_grids(reanalysis, locations=None, model=None, rcp=None):
                 ind = mask_df['distance'].idxmin()
 
             indices.append(ind)
+        df = pd.DataFrame({'grid_index': indices, 'input_coordinate': locations})
 
-    grids = []
-    for ind in indices:
-        grid_lat, grid_lon = mask_df.loc[ind, ['latitude', 'longitude']]
+    df[['grid_latitude', 'weather_file', 'elevation']] = df.apply(
+        lambda x: _find_grid(reanalysis, x['grid_index'], mask_df, model, rcp),
+        axis=1,
+        result_type='expand',
+    )
 
-        grid_str = '%.3f%sx%.3f%s' % (
-            abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E'
-        )
+    if locations is not None:
+        if any(df.duplicated(subset=['grid_index'])):
+            print(f"The following input coordinates share {reanalysis} grids:")
+            indices = df['grid_index']
+            print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
+            print()
 
-        if reanalysis == 'MACA':
-            fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}.weather'
-        else:
-            fn = f'{reanalysis}_{grid_str}.weather'
+        print(f"{reanalysis} weather files:")
+        df = df.drop_duplicates(subset=['grid_index'], keep='first')
+        print(df[['input_coordinate', 'weather_file']].to_string(index=False))
+        print()
 
-        grids.append({
-            'grid_index': ind,
-            'grid_latitude': grid_lat,
-            'weather_file': fn,
-            'elevation': mask_df.loc[ind, 'elevation'],
-        })
-
-    return pd.DataFrame(grids)
+    return df
 
 
 def _write_header(weather_path, fn, latitude, elevation, screening_height=10.0):
@@ -362,7 +377,6 @@ def _read_var(t, xldas, nc, indices, df):
 
     The netCDF variable arrays are flattened to make reading faster
     """
-    #df['precipitation'] = nc[VARIABLES['precipitation'][xldas]][0].flatten()[np.array(df['grid_index'])]
     values = {}
     for key in NETCDF_VARIABLES:
         values[key] = nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
@@ -402,12 +416,20 @@ def _write_weather_files(weather_path, daily_df, grid_df):
         )
 
 
+def _initialize_weather_files(weather_path, reanalysis, locations, header):
+    os.makedirs(f'{weather_path}/', exist_ok=True)
+
+    grid_df = find_grids(reanalysis, locations)
+
+    if header == True: write_headers(weather_path,  grid_df)
+
+    return grid_df
+
+
 def process_xldas(data_path, weather_path, xldas, date_start, date_end, locations=None, header=True):
     """Process daily XLDAS data and write them to meteorological files
     """
-    grid_df = find_grids(xldas, locations)
-
-    if header == True: write_headers(weather_path,  grid_df)
+    grid_df = _initialize_weather_files(weather_path, xldas, locations, header)
 
     ## Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
@@ -446,9 +468,7 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
 def process_gridmet(data_path, weather_path, date_start, date_end, locations=None, header=True):
     """Process annual gridMET data and write them to weather files
     """
-    grid_df = find_grids('gridMET', locations)
-
-    if header == True: write_headers(weather_path,  grid_df)
+    grid_df = _initialize_weather_files(weather_path, 'gridMET', locations, header)
 
     year = -9999
     variables = list(WEATHER_FILE_VARIABLES.keys())
