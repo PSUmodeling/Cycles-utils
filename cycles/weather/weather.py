@@ -292,9 +292,7 @@ def _read_land_mask(reanalysis):
 def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
     grid_lat, grid_lon = mask_df.loc[grid_ind, ['latitude', 'longitude']]
 
-    grid_str = '%.3f%sx%.3f%s' % (
-            abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E'
-    )
+    grid_str = '%.3f%sx%.3f%s' % (abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E')
 
     if reanalysis == 'MACA':
         fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}.weather'
@@ -356,10 +354,8 @@ def _write_header(weather_path, fn, latitude, elevation, screening_height=10.0):
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
         f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
-        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' %
-            ('YEAR', 'DOY', 'PP', 'TX', 'TN', 'SOLAR', 'RHX', 'RHN', 'WIND'))
-        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' %
-            ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
+        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('YEAR', 'DOY', 'PP', 'TX', 'TN', 'SOLAR', 'RHX', 'RHN', 'WIND'))
+        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
 
 
 def _write_weather_headers(weather_path, grid_df):
@@ -390,15 +386,13 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
 
         values[key] = nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
 
-    if xldas == 'NLDAS':     # NLDAS precipitation unit is kg m-2. Convert to kg m-2 s-1 to be consistent with GLDAS
-        values['precipitation'] /= DATA_INTERVALS[xldas] * 3600.0
+    # NLDAS precipitation unit is kg m-2. Convert to kg m-2 s-1 to be consistent with GLDAS
+    if xldas == 'NLDAS': values['precipitation'] /= DATA_INTERVALS[xldas] * 3600.0
 
     values['wind'] = np.sqrt(values['wind_u'] **2 + values['wind_v'] **2)
 
     ## Calculate relative humidity from specific humidity
-    values['relative_humidity'] = relative_humidity(
-        values['air_temperature'], values['air_pressure'], values['specific_humidity']
-    )
+    values['relative_humidity'] = relative_humidity(values['air_temperature'], values['air_pressure'], values['specific_humidity'])
 
     for var in ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']:
         df.loc[t, df.columns.get_level_values(1) == var] = values[var]
@@ -436,11 +430,9 @@ def _initialize_weather_files(weather_path, reanalysis, locations, header):
 
 
 def process_xldas(data_path, weather_path, xldas, date_start, date_end, locations=None, header=True):
-    """Process daily XLDAS data and write them to meteorological files
-    """
     grid_df = _initialize_weather_files(weather_path, xldas, locations, header)
 
-    ## Arrays to store daily values
+    # Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
     columns = pd.MultiIndex.from_product([grid_df.index, variables], names=('grids', 'variables'))
     df = pd.DataFrame(columns=columns)
@@ -458,8 +450,7 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
                 _read_xldas_netcdf(t, xldas, nc, np.array(grid_df.index), df)
 
             t += timedelta(hours=DATA_INTERVALS[xldas])
-            if (t - date_start).total_seconds() % 86400 == 0:
-                progress_bar.update(1)
+            if (t - date_start).total_seconds() % 86400 == 0: progress_bar.update(1)
 
     daily_df = pd.DataFrame()
 
@@ -467,10 +458,7 @@ def process_xldas(data_path, weather_path, xldas, date_start, date_end, location
         variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
         func = WEATHER_FILE_VARIABLES[key]['XLDAS']['func']
         daily_df = pd.concat(
-            [
-                daily_df,
-                func(df.loc[:, df.columns.get_level_values(1) == variable]).rename(columns={variable: key}, level=1)
-            ],
+            [daily_df, func(df.loc[:, df.columns.get_level_values(1) == variable]).rename(columns={variable: key}, level=1)],
             axis=1,
         )
 
@@ -496,17 +484,12 @@ def process_gridmet(data_path, weather_path, date_start, date_end, locations=Non
                     for key in WEATHER_FILE_VARIABLES: ncs[key].close()
 
                 year = t.year
-                ncs = {
-                    key: Dataset(f'{data_path}/{value["gridMET"]["variable"][0]}_{year}.nc')
-                    for key, value in WEATHER_FILE_VARIABLES.items()
-                }
+                ncs = {key: Dataset(f'{data_path}/{value["gridMET"]["variable"][0]}_{year}.nc') for key, value in WEATHER_FILE_VARIABLES.items()}
 
             for key in WEATHER_FILE_VARIABLES:
                 variable = WEATHER_FILE_VARIABLES[key]['gridMET']['variable'][1]
                 func = WEATHER_FILE_VARIABLES[key]['gridMET']['func']
-                df.loc[t, df.columns.get_level_values(1) == key] = func(
-                    ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]
-                )
+                df.loc[t, df.columns.get_level_values(1) == key] = func(ncs[key][variable][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)])
 
             t += timedelta(days=1)
             progress_bar.update(1)

@@ -58,7 +58,6 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 
-
 """Read SoilGrids data
 
 Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map

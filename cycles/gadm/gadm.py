@@ -69,6 +69,5 @@ def read_gadm(path, country, level, conus=True):
     gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
     gdf.set_index('GID', inplace=True)
 
-
-        # Generate a CONUS GeoDataFrame by removing Alaska and Hawaii
+    # Generate a CONUS GeoDataFrame by removing Alaska and Hawaii
     return gdf[~gdf['NAME_1'].isin(['Alaska', 'Hawaii'])] if country == 'USA' and conus else gdf

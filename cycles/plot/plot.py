@@ -71,7 +71,6 @@ def yield_plot(harvest_df, ax=None, fontsize=None):
                 ms=8,
             )
 
-
     # Set Y label
     ax.set_ylabel('Crop yield (Mg ha$^{-1}$)')
 
@@ -144,7 +143,7 @@ def operation_plot(operation_df, rotation_size, axes=None, fontsize=None):
             if len(sub_df) == 0: continue
 
             label = op
-            if op == 'planting' or op == 'harvest' or op == 'kill':
+            if op in ['planting', 'harvest', 'kill']:
                 doys = sub_df['doy'].to_list()
                 crops = sub_df['crop'].to_list()
                 for i in range(len(crops)):

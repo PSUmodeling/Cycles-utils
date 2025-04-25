@@ -61,12 +61,12 @@ CONTROL_PARAMETERS = {
 }
 
 
-def overlapping_depth(top1, bottom1, top2, bottom2):
+def _overlapping_depth(top1, bottom1, top2, bottom2):
     return max(0.0, min(bottom1, bottom2) - max(top1, top2))
 
 
-def calculate_parameter(soil_df, parameter, top, bottom):
-    soil_df['weight'] = soil_df.apply(lambda x: overlapping_depth(x['top'], x['bottom'], top, bottom) / (bottom - top), axis=1)
+def _calculate_parameter(soil_df, parameter, top, bottom):
+    soil_df['weight'] = soil_df.apply(lambda x: _overlapping_depth(x['top'], x['bottom'], top, bottom) / (bottom - top), axis=1)
     soil_df = soil_df[soil_df['weight'] > 0]
 
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
@@ -80,14 +80,12 @@ def generate_soil_file(fn, desc, hsg, slope, soil_df, soil_depth=None):
 
     soil_depth = min(layer_depths, key=lambda x: abs(x - soil_df.iloc[-1]['bottom']))
 
-    df = pd.DataFrame.from_dict(
-        {v: [layer[v] for layer in SOIL_LAYERS if layer['bottom'] <= soil_depth] for v in SOIL_LAYERS[0]}
-    )
+    df = pd.DataFrame({v: [layer[v] for layer in SOIL_LAYERS if layer['bottom'] <= soil_depth] for v in SOIL_LAYERS[0]})
 
     df['layer'] = range(1, len(df) + 1)
 
     for v in SOIL_PARAMETERS:
-        df[v] = df.apply(lambda x: calculate_parameter(soil_df, v, x['top'], x['bottom']), axis=1)
+        df[v] = df.apply(lambda x: _calculate_parameter(soil_df, v, x['top'], x['bottom']), axis=1)
 
     cn = -999 if not hsg else CURVE_NUMBERS[hsg[0]]
 
