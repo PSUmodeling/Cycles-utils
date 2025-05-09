@@ -2,6 +2,7 @@ import geopandas as gpd
 import pandas as pd
 import rioxarray
 from owslib.wcs import WebCoverageService
+from pyproj import Transformer
 from rasterio.enums import Resampling
 from shapely.geometry import Point
 
@@ -72,6 +73,17 @@ def read_soilgrids_maps(path, maps, crs=None):
         if crs is not None: soilgrids_xds[m] = soilgrids_xds[m].rio.reproject(crs)
 
     return soilgrids_xds
+
+
+def extract_values(soilgrids_xds, coordinate):
+    transformer = Transformer.from_crs('EPSG:4326', HOMOLOSINE, always_xy=True)
+    x, y = transformer.transform(coordinate[1], coordinate[0])
+
+    values = {}
+
+    values = {m: xds.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[m.split('@')[0]]['multiplier'] for m, xds in soilgrids_xds.items()}
+
+    return values
 
 
 def reproject_match_soilgrids_maps(soilgrids_xds, reference_xds, reference_name, boundary):
