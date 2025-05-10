@@ -72,7 +72,7 @@ def _calculate_parameter(soil_df, parameter, top, bottom):
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
 
 
-def generate_soil_file(fn, desc, hsg, slope, soil_df, soil_depth=None):
+def generate_soil_file(fn: str, desc: str, hsg: str, slope: float, soil_df: pd.DataFrame, soil_depth: float=None) -> None:
     layer_depths = np.array([layer['bottom'] for layer in SOIL_LAYERS])
 
     if soil_depth is not None:
@@ -116,7 +116,7 @@ def generate_soil_file(fn, desc, hsg, slope, soil_df, soil_depth=None):
             ))
 
 
-def generate_control_file(fn, user_control_dict):
+def generate_control_file(fn: str, user_control_dict: dict) -> None:
     with open(fn, 'w') as f:
         for block, parameters in CONTROL_PARAMETERS.items():
             f.write(f'## {block.upper()} ##\n')

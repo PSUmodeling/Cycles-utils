@@ -13,7 +13,7 @@ GADM_LEVELS = {
 STATE_CSV = os.path.join(pt, '../data/us_states.csv')
 
 
-def read_gadm(path, country, level, conus=True):
+def read_gadm(path: str, country: str, level: str, conus: bool=True) -> gpd.GeoDataFrame:
     level = GADM_LEVELS[level.lower()]
     gdf = gpd.read_file(GADM(path, country, level))
     gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)

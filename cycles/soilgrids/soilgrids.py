@@ -59,12 +59,12 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 
-"""Read SoilGrids data
+def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, rioxarray.DataArray]:
+    """Read SoilGrids data
 
-Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map
-name for 0-5 cm bulk density should be "bulk_density@0-5cm".
-"""
-def read_soilgrids_maps(path, maps, crs=None):
+    Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map
+    name for 0-5 cm bulk density should be "bulk_density@0-5cm".
+    """
     soilgrids_xds = {}
     for m in maps:
         [v, layer] = m.split('@')
@@ -75,7 +75,7 @@ def read_soilgrids_maps(path, maps, crs=None):
     return soilgrids_xds
 
 
-def extract_values(soilgrids_xds, coordinate):
+def extract_values(soilgrids_xds: dict[str, rioxarray.DataArray], coordinate: tuple[float, float]) -> dict[str, float]:
     transformer = Transformer.from_crs('EPSG:4326', HOMOLOSINE, always_xy=True)
     x, y = transformer.transform(coordinate[1], coordinate[0])
 
@@ -86,7 +86,7 @@ def extract_values(soilgrids_xds, coordinate):
     return values
 
 
-def reproject_match_soilgrids_maps(soilgrids_xds, reference_xds, reference_name, boundary):
+def reproject_match_soilgrids_maps(soilgrids_xds: dict[str, rioxarray.DataArrary], reference_xds: rioxarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> pd.DataFrame:
     reference_xds = reference_xds.rio.clip([boundary], from_disk=True)
     df = pd.DataFrame(reference_xds[0].to_series().rename(reference_name))
 
@@ -100,9 +100,9 @@ def reproject_match_soilgrids_maps(soilgrids_xds, reference_xds, reference_name,
     return df
 
 
-"""Convert bounding boxes to SoilGrids CRS
-"""
-def get_bounding_box(bbox, crs):
+def get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[float, float, float, float]:
+    """Convert bounding boxes to SoilGrids CRS
+    """
     d = {'col1': ['NW', 'SE'], 'geometry': [Point(bbox[0], bbox[3]), Point(bbox[2], bbox[1])]}
     gdf = gpd.GeoDataFrame(d, crs=crs).set_index('col1')
 
@@ -116,13 +116,13 @@ def get_bounding_box(bbox, crs):
     ]
 
 
-"""Use WebCoverageService to get SoilGrids data
+def download_soilgrids_data(maps: dict[str, rioxarray.DataArray], path: str, bbox: tuple[float, float, float, float], crs) -> None:
+    """Use WebCoverageService to get SoilGrids data
 
-bbox should be in the order of [west, south, east, north]
-Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map
-name for 0-5 cm bulk density should be "bulk_density@0-5cm".
-"""
-def download_soilgrids_data(maps, path, bbox, crs):
+    bbox should be in the order of [west, south, east, north]
+    Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map
+    name for 0-5 cm bulk density should be "bulk_density@0-5cm".
+    """
     # Convert bounding box to SoilGrids CRS
     bbox = get_bounding_box(bbox, crs)
 

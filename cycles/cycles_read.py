@@ -12,8 +12,8 @@ HARVEST_TOOLS = [
 ]
 
 
-def read_harvest(cycles_path, simulation):
-    '''Read season output file for harvested crop, harvest time, plant time, and yield
+def read_harvest(cycles_path: str, simulation: str) -> pd.DataFrame:
+    '''Read harvest output file for harvested crops, harvest , plan dates, and yield
     '''
     df = pd.read_csv(
         f'{cycles_path}/output/{simulation}/harvest.txt',
@@ -30,11 +30,11 @@ def read_harvest(cycles_path, simulation):
     return df
 
 
-def read_operation_parameter(type, line_no, lines):
+def read_operation_parameter(type: type, line_no: int, lines: list[str]) -> str:
     return type(lines[line_no].split()[1])
 
 
-def read_operations(cycles_path, operation):
+def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
     with open(f'{cycles_path}/input/{operation}.operation') as f:
         lines = f.read().splitlines()
 
@@ -97,7 +97,7 @@ def read_operations(cycles_path, operation):
     return df
 
 
-def read_weather(cycles_path, weather, start_year=0, end_year=9999):
+def read_weather(cycles_path: str, weather: str, start_year: int=0, end_year: int=9999) -> pd.DataFrame:
     NUM_HEADER_LINES = 4
     columns = {
         'YEAR': int,

@@ -32,7 +32,7 @@ GSSURGO_URBAN_TYPES = [
 NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 
 
-def _read_lut(path, state, table, columns):
+def _read_lut(path: str, state: str, table: str, columns: list[str]) -> pd.DataFrame:
     df = pd.read_csv(
         GSSURGO_LUT(path, table, state),
         usecols=columns,
@@ -53,7 +53,7 @@ def _read_lut(path, state, table, columns):
     return df
 
 
-def _read_all_luts(path, state):
+def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
     TABLES = {
         'mapunit':{
             'muaggatt': ['hydgrpdcd', 'muname', 'slopegradwta', 'mukey'],
@@ -80,7 +80,7 @@ def _read_all_luts(path, state):
     return lookup_tables
 
 
-def _read_mupolygon(path: str, state: str, boundary_gdf: gpd.GeoDataFrame=None):
+def _read_mupolygon(path: str, state: str, boundary_gdf: gpd.GeoDataFrame=None) -> gpd.GeoDataFrame:
     if boundary_gdf is not None:
         boundary_gdf = boundary_gdf.to_crs(NAD83)
 
@@ -98,7 +98,7 @@ def _read_mupolygon(path: str, state: str, boundary_gdf: gpd.GeoDataFrame=None):
     return gdf
 
 
-def _musym(str):
+def _musym(str) -> str:
     if str == 'N/A' or len(str) < 2:
         return str
 
@@ -151,7 +151,7 @@ class Gssurgo:
             ).reset_index()
 
 
-    def non_soil_mask(self):
+    def non_soil_mask(self) -> pd.Series:
         return self.mapunits['mukey'].isna() | self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
 
 
