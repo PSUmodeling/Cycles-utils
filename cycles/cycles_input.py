@@ -121,11 +121,11 @@ def generate_control_file(fn, user_control_dict):
         for block, parameters in CONTROL_PARAMETERS.items():
             f.write(f'## {block.upper()} ##\n')
             for name, value in parameters.items():
-                if value is None:
-                    try:
-                        value = user_control_dict[name]
-                    except:
-                        raise KeyError(f'Parameter {name.upper()} must be defined')
+                if name in user_control_dict:
+                    # Overwrite default values with user input values
+                    value = user_control_dict[name]
+                elif value is None:
+                    raise KeyError(f'Parameter {name.upper()} must be defined')
 
                 f.write('%-23s\t%s\n' % (name.upper(), str(value)))
             f.write('\n')
