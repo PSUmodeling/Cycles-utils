@@ -1,0 +1,52 @@
+state,gid,abbreviation,fips
+Alabama,USA.1_1,AL,1000
+Alaska,USA.2_1,AK,2000
+Arizona,USA.3_1,AZ,4000
+Arkansas,USA.4_1,AR,5000
+California,USA.5_1,CA,6000
+Colorado,USA.6_1,CO,8000
+Connecticut,USA.7_1,CT,9000
+Delaware,USA.8_1,DE,10000
+District of Columbia,USA.9_1,DC,11000
+Florida,USA.10_1,FL,12000
+Georgia,USA.11_1,GA,13000
+Hawaii,USA.12_1,HI,15000
+Idaho,USA.13_1,ID,16000
+Illinois,USA.14_1,IL,17000
+Indiana,USA.15_1,IN,18000
+Iowa,USA.16_1,IA,19000
+Kansas,USA.17_1,KS,20000
+Kentucky,USA.18_1,KY,21000
+Louisiana,USA.19_1,LA,22000
+Maine,USA.20_1,ME,23000
+Maryland,USA.21_1,MD,24000
+Massachusetts,USA.22_1,MA,25000
+Michigan,USA.23_1,MI,26000
+Minnesota,USA.24_1,MN,27000
+Mississippi,USA.25_1,MS,28000
+Missouri,USA.26_1,MO,29000
+Montana,USA.27_1,MT,30000
+Nebraska,USA.28_1,NE,31000
+Nevada,USA.29_1,NV,32000
+New Hampshire,USA.30_1,NH,33000
+New Jersey,USA.31_1,NJ,34000
+New Mexico,USA.32_1,NM,35000
+New York,USA.33_1,NY,36000
+North Carolina,USA.34_1,NC,37000
+North Dakota,USA.35_1,ND,38000
+Ohio,USA.36_1,OH,39000
+Oklahoma,USA.37_1,OK,40000
+Oregon,USA.38_1,OR,41000
+Pennsylvania,USA.39_1,PA,42000
+Rhode Island,USA.40_1,RI,44000
+South Carolina,USA.41_1,SC,45000
+South Dakota,USA.42_1,SD,46000
+Tennessee,USA.43_1,TN,47000
+Texas,USA.44_1,TX,48000
+Utah,USA.45_1,UT,49000
+Vermont,USA.46_1,VT,50000
+Virginia,USA.47_1,VA,51000
+Washington,USA.48_1,WA,53000
+West Virginia,USA.49_1,WV,54000
+Wisconsin,USA.50_1,WI,55000
+Wyoming,USA.51_1,WY,56000
