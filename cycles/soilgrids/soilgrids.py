@@ -1,6 +1,7 @@
 import geopandas as gpd
 import pandas as pd
 import rioxarray
+import xarray
 from owslib.wcs import WebCoverageService
 from pyproj import Transformer
 from rasterio.enums import Resampling
@@ -59,11 +60,11 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 
-def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, rioxarray.DataArray]:
+def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, xarray.DataArray]:
     """Read SoilGrids data
 
-    Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the map
-    name for 0-5 cm bulk density should be "bulk_density@0-5cm".
+    Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the
+    map name for 0-5 cm bulk density should be "bulk_density@0-5cm".
     """
     soilgrids_xds = {}
     for m in maps:
@@ -75,7 +76,7 @@ def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, rioxa
     return soilgrids_xds
 
 
-def extract_values(soilgrids_xds: dict[str, rioxarray.DataArray], coordinate: tuple[float, float]) -> dict[str, float]:
+def extract_values(soilgrids_xds: dict[str, xarray.DataArray], coordinate: tuple[float, float]) -> dict[str, float]:
     transformer = Transformer.from_crs('EPSG:4326', HOMOLOSINE, always_xy=True)
     x, y = transformer.transform(coordinate[1], coordinate[0])
 
@@ -86,7 +87,7 @@ def extract_values(soilgrids_xds: dict[str, rioxarray.DataArray], coordinate: tu
     return values
 
 
-def reproject_match_soilgrids_maps(soilgrids_xds: dict[str, rioxarray.DataArrary], reference_xds: rioxarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> pd.DataFrame:
+def reproject_match_soilgrids_maps(soilgrids_xds: dict[str, xarray.DataArray], reference_xds: xarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> pd.DataFrame:
     reference_xds = reference_xds.rio.clip([boundary], from_disk=True)
     df = pd.DataFrame(reference_xds[0].to_series().rename(reference_name))
 
@@ -116,7 +117,7 @@ def get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[floa
     ]
 
 
-def download_soilgrids_data(maps: dict[str, rioxarray.DataArray], path: str, bbox: tuple[float, float, float, float], crs) -> None:
+def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: tuple[float, float, float, float], crs) -> None:
     """Use WebCoverageService to get SoilGrids data
 
     bbox should be in the order of [west, south, east, north]

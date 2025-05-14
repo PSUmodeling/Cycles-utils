@@ -15,7 +15,7 @@ GSSURGO_PARAMETERS = {
     'top': {'variable': 'hzdept_r', 'multiplier': 0.01, 'table': 'horizon', 'unit': 'm'},
     'bottom': {'variable': 'hzdepb_r', 'multiplier': 0.01, 'table': 'horizon', 'unit': 'm'},
 }
-GSSURGO_NON_SOIL_TYPES = [
+GSSURGO_NON_SOIL_TYPES = (
     'Acidic rock land',
     'Area not surveyed',
     'Dam',
@@ -24,11 +24,11 @@ GSSURGO_NON_SOIL_TYPES = [
     'No Digital Data Available',
     'Pits',
     'Water',
-]
-GSSURGO_URBAN_TYPES = [
+)
+GSSURGO_URBAN_TYPES = (
     'Udorthents',
     'Urban land',
-]
+)
 NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 
 
@@ -80,17 +80,17 @@ def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
     return lookup_tables
 
 
-def _read_mupolygon(path: str, state: str, boundary_gdf: gpd.GeoDataFrame=None) -> gpd.GeoDataFrame:
-    if boundary_gdf is not None:
-        boundary_gdf = boundary_gdf.to_crs(NAD83)
+def _read_mupolygon(path, state, boundary=None):
+    if boundary is not None:
+        boundary = boundary.to_crs(NAD83)
 
     gdf = gpd.read_file(
             GSSURGO(path, state),
             layer='MUPOLYGON',
-            mask=shapely.union_all(boundary_gdf['geometry'].values) if boundary_gdf is not None else None
+            mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None
         )
 
-    if boundary_gdf is not None: gdf = gpd.clip(gdf, boundary_gdf, keep_geom_type=False)
+    if boundary is not None: gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
 
     gdf.columns = [x.lower() for x in gdf.columns]
     gdf['mukey'] = gdf['mukey'].astype(int)
@@ -98,7 +98,7 @@ def _read_mupolygon(path: str, state: str, boundary_gdf: gpd.GeoDataFrame=None) 
     return gdf
 
 
-def _musym(str) -> str:
+def _musym(str):
     if str == 'N/A' or len(str) < 2:
         return str
 
@@ -112,13 +112,13 @@ def _musym(str) -> str:
 
 
 class Gssurgo:
-    def __init__(self, *, path, state, boundary_gdf=None, lut_only=False):
+    def __init__(self, *, path: str, state: str, boundary: gpd.GeoDataFrame=None, lut_only: bool=False):
         self.state = state
 
         luts = _read_all_luts(path, state)
 
         if lut_only is False:
-            gdf = _read_mupolygon(path, state, boundary_gdf)
+            gdf = _read_mupolygon(path, state, boundary)
             self.mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
         else:
             self.mapunits = luts['mapunit']
@@ -126,7 +126,7 @@ class Gssurgo:
         self.components = luts['component']
         self.horizons = luts['horizon']
 
-        if boundary_gdf is not None:
+        if boundary is not None:
             self.components = self.components[self.components['mukey'].isin(self.mapunits['mukey'].unique())]
             self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
@@ -152,7 +152,9 @@ class Gssurgo:
 
 
     def non_soil_mask(self) -> pd.Series:
-        return self.mapunits['mukey'].isna() | self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
+        return self.mapunits['mukey'].isna() | \
+            self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | \
+            self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
 
 
     def get_soil_profile_parameters(self, *, mukey, major_only=True) -> pd.DataFrame:

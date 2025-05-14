@@ -237,26 +237,27 @@ def download_xldas(data_path: str, xldas: str, date_start: datetime, date_end: d
             progress_bar.update(1)
 
 
-def download_gridmet(data_path, year):
+def download_gridmet(data_path: str, year_start: int, year_end: int) -> None:
     """Download gridMET forcing files
     """
     os.makedirs(f'{data_path}/', exist_ok=True)
 
-    for var in WEATHER_FILE_VARIABLES:
-        cmd = [
-            'wget',
-            '-c',
-            '-N',
-            '-nd',
-            f'{URLS["gridMET"]}/{WEATHER_FILE_VARIABLES[var]["gridMET"]["variable"][0]}_{year}.nc',
-            '-P',
-            f'{data_path}/',
-        ]
-        subprocess.run(
-            cmd,
-            stdout=subprocess.DEVNULL,
-            stderr=subprocess.DEVNULL,
-        )
+    for year in range(year_start, year_end + 1):
+        for var in WEATHER_FILE_VARIABLES:
+            cmd = [
+                'wget',
+                '-c',
+                '-N',
+                '-nd',
+                f'{URLS["gridMET"]}/{WEATHER_FILE_VARIABLES[var]["gridMET"]["variable"][0]}_{year}.nc',
+                '-P',
+                f'{data_path}/',
+            ]
+            subprocess.run(
+                cmd,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
 
 
 def _read_land_mask(reanalysis):
@@ -302,7 +303,7 @@ def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']
 
 
-def find_grids(reanalysis: str, locations: list[tuple[float, float]]=None, model: str=None, rcp:str=None) -> pd.DataFrame:
+def find_grids(reanalysis: str, locations: list[tuple[float, float]]=None, model: str=None, rcp:str=None, screen_output=True) -> pd.DataFrame:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
@@ -333,15 +334,15 @@ def find_grids(reanalysis: str, locations: list[tuple[float, float]]=None, model
 
     if locations is not None:
         if any(df.duplicated(subset=['grid_index'])):
-            print(f"The following input coordinates share {reanalysis} grids:")
+            if screen_output is True: print(f"The following input coordinates share {reanalysis} grids:")
             indices = df['grid_index']
-            print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
-            print()
+            if screen_output is True: print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
+            if screen_output is True: print()
 
-        print(f"{reanalysis} weather files:")
+        if screen_output is True: print(f"{reanalysis} weather files:")
         df = df.drop_duplicates(subset=['grid_index'], keep='first')
-        print(df[['input_coordinate', 'weather_file']].to_string(index=False))
-        print()
+        if screen_output is True: print(df[['input_coordinate', 'weather_file']].to_string(index=False))
+        if screen_output is True: print()
 
     df.set_index('grid_index', inplace=True)
 

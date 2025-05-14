@@ -33,8 +33,7 @@ def _read_state_csv(index_col: str) -> pd.DataFrame:
 
 def state_gid(state: str=None, abbreviation: str=None, fips: int=None) -> str:
     for name, value in locals().items():
-        if value is None:
-            continue
+        if value is None: continue
 
         df = _read_state_csv(name)
         try:
@@ -45,8 +44,7 @@ def state_gid(state: str=None, abbreviation: str=None, fips: int=None) -> str:
 
 def state_abbreviation(gid: str=None, state: str=None, fips: int=None) -> str:
     for name, value in locals().items():
-        if value is None:
-            continue
+        if value is None: continue
 
         df = _read_state_csv(name)
         try:
@@ -57,8 +55,7 @@ def state_abbreviation(gid: str=None, state: str=None, fips: int=None) -> str:
 
 def state_fips(gid: str=None, state: str=None, abbreviation: str=None) -> int:
     for name, value in locals().items():
-        if value is None:
-            continue
+        if value is None: continue
 
         df = _read_state_csv(name)
         try:
@@ -69,8 +66,7 @@ def state_fips(gid: str=None, state: str=None, abbreviation: str=None) -> int:
 
 def state_name(gid: str=None, abbreviation: str=None, fips: int=None) -> str:
     for name, value in locals().items():
-        if value is None:
-            continue
+        if value is None: continue
 
         df = _read_state_csv(name)
         try:

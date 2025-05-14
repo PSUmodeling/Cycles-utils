@@ -151,12 +151,12 @@ def operation_plot(operation_df, rotation_size, axes=None, fontsize=None):
                         crops[i] = 'All'
                 for i in range(len(doys)):
                     label += f'\n{doys[i]}: {crops[i]}'
-            if op == 'tillage':
+            elif op == 'tillage':
                 doys = sub_df['doy'].to_list()
                 tools = sub_df['tool'].to_list()
                 for i in range(len(doys)):
                     label += f'\n{doys[i]}: {tools[i]}'
-            if op == 'fertilization':
+            elif op == 'fertilization':
                 doys = sub_df['doy'].to_list()
                 sources = sub_df['source'].to_list()
                 for i in range(len(doys)):
