@@ -1,20 +1,29 @@
 import geopandas as gpd
 import pandas as pd
 import shapely
+from dataclasses import dataclass
 
 GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb'
 GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
+@dataclass
+class GssurgoParameters:
+    gssurgo_name: str
+    multiplier: float
+    table: str
+    unit: str
+
 GSSURGO_PARAMETERS = {
-    'clay': {'variable': 'claytotal_r', 'multiplier': 1.0, 'table': 'horizon', 'unit': '%'},
-    'silt': {'variable': 'silttotal_r', 'multiplier': 1.0, 'table': 'horizon', 'unit': '%'},
-    'sand': {'variable': 'sandtotal_r', 'multiplier': 1.0, 'table': 'horizon', 'unit': '%'},
-    'soc': {'variable': 'om_r', 'multiplier': 0.58, 'table': 'horizon', 'unit': '%'},
-    'bulk_density': {'variable': 'dbthirdbar_r', 'multiplier': 1.0, 'table': 'horizon', 'unit': 'Mg/m3'},
-    'coarse_fragments': {'variable': 'fragvol_r', 'multiplier': 1.0, 'table': 'horizon', 'unit': '%'},
-    'area_fraction': {'variable': 'comppct_r', 'multiplier': 1.0, 'table': 'component', 'unit': '%'},
-    'top': {'variable': 'hzdept_r', 'multiplier': 0.01, 'table': 'horizon', 'unit': 'm'},
-    'bottom': {'variable': 'hzdepb_r', 'multiplier': 0.01, 'table': 'horizon', 'unit': 'm'},
+    'clay': GssurgoParameters('claytotal_r', 1.0, 'horizon', '%'),
+    'silt': GssurgoParameters('silttotal_r', 1.0, 'horizon', '%'),
+    'sand': GssurgoParameters('sandtotal_r', 1.0, 'horizon', '%'),
+    'soc': GssurgoParameters('om_r', 0.58, 'horizon', '%'),
+    'bulk_density': GssurgoParameters('dbthirdbar_r', 1.0, 'horizon', 'g/m3'),
+    'coarse_fragments': GssurgoParameters('fragvol_r', 1.0, 'horizon', '%'),
+    'area_fraction': GssurgoParameters('comppct_r', 1.0, 'component', '%'),
+    'top': GssurgoParameters('hzdept_r', 0.01, 'horizon', 'm'),
+    'bottom': GssurgoParameters('hzdepb_r', 0.01, 'horizon', 'm'),
 }
+
 GSSURGO_NON_SOIL_TYPES = (
     'Acidic rock land',
     'Area not surveyed',
@@ -42,13 +51,13 @@ def _read_lut(path: str, state: str, table: str, columns: list[str]) -> pd.DataF
         df = df.groupby('chkey').sum().reset_index()
 
     df.rename(
-        columns={value['variable']: key for key, value in GSSURGO_PARAMETERS.items()},
+        columns={value.gssurgo_name: key for key, value in GSSURGO_PARAMETERS.items()},
         inplace=True,
     )
 
     for key, value in GSSURGO_PARAMETERS.items():
         if key in df.columns:
-            df[key] *= value['multiplier']
+            df[key] *= value.multiplier
 
     return df
 
@@ -155,6 +164,34 @@ class Gssurgo:
         return self.mapunits['mukey'].isna() | \
             self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | \
             self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
+
+
+    def select_major_mapunit(self) -> tuple[int, str, str]:
+        gdf = self.mapunits[~self.non_soil_mask()]
+        gdf['area'] = gdf.area
+
+        mapunit = gdf.loc[gdf['area'].idxmax()]
+
+        return int(mapunit['mukey']), mapunit['musym'], mapunit['muname']
+
+
+    def average_slope_hsg(self) -> tuple[float, str]:
+        gdf = self.mapunits[~self.non_soil_mask()]
+        gdf['area'] = gdf.area
+
+        _df = gdf[['area', 'slopegradwta']].dropna()
+        slope = (_df['slopegradwta'] * _df['area']).sum() / _df['area'].sum()
+
+        _df = gdf[['area', 'hydgrpdcd']].dropna()
+
+        if _df.empty:
+            hsg = ''
+        else:
+            _df['hydgrpdcd'] = _df['hydgrpdcd'].map(lambda x: x[0])
+            _df = _df.groupby('hydgrpdcd').sum()
+            hsg = _df['area'].idxmax()
+
+        return slope, hsg
 
 
     def get_soil_profile_parameters(self, *, mukey, major_only=True) -> pd.DataFrame:

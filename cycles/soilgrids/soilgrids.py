@@ -2,56 +2,43 @@ import geopandas as gpd
 import pandas as pd
 import rioxarray
 import xarray
+from dataclasses import dataclass
 from owslib.wcs import WebCoverageService
 from pyproj import Transformer
 from rasterio.enums import Resampling
 from shapely.geometry import Point
 
+@dataclass
+class SoilGridsProperties:
+    soilgrids_name: str
+    layers: list[str]
+    multiplier: float
+    unit: str
+
 SOILGRIDS_PROPERTIES = {
-    'clay': {
-        'name': 'clay',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.1,  # %
-    },
-    'sand': {
-        'name': 'sand',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.1,  # %
-    },
-    'soc': {
-        'name': 'soc',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.01, # %
-    },
-    'bulk_density': {
-        'name': 'bdod',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.01, # Mg/m3
-    },
-    'coarse_fragments': {
-        'name': 'cfvo',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.1,  # %
-    },
-    'organic_carbon_density': {
-        'name': 'ocd',
-        'layers': ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'],
-        'multiplier': 0.1,  # kg/m3
-    },
-    'organic_carbon_stocks': {
-        'name': 'ocs',
-        'layers': ['0-30cm'],
-        'multiplier': 1.0,  # Mg/ha
-    },
+    'clay': SoilGridsProperties('clay', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.1, '%'),
+    'sand': SoilGridsProperties('sand', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.1, '%'),
+    'soc': SoilGridsProperties('soc', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.01, '%'),
+    'bulk_density': SoilGridsProperties('bdod', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.01, 'Mg/m3'),
+    'coarse_fragments': SoilGridsProperties('cfvo', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.1, '%'),
+    'organic_carbon_density': SoilGridsProperties('ocd', ['0-5cm', '5-15cm', '15-30cm', '30-60cm', '60-100cm', '100-200cm'], 0.1, 'kg/m3'),
+    'organic_carbon_stocks': SoilGridsProperties('ocs', ['0-30cm'], 1.0, 'Mg/ha'),
 }
-SOILGRIDS_LAYERS = {
+
+@dataclass
+class SoilGridsLayers:
     # units: m
-    '0-5cm': {'top': 0, 'bottom': 0.05, 'thickness': 0.05},
-    '5-15cm': {'top': 0.05, 'bottom': 0.15, 'thickness': 0.10},
-    '15-30cm': {'top': 0.15, 'bottom': 0.3, 'thickness': 0.15},
-    '30-60cm': {'top': 0.3, 'bottom': 0.6, 'thickness': 0.3},
-    '60-100cm': {'top': 0.6, 'bottom': 1.0, 'thickness': 0.4},
-    '100-200cm': {'top': 1.0, 'bottom': 2.0, 'thickness': 1.0},
+    top: float
+    bottom: float
+    thickness: float
+
+SOILGRIDS_LAYERS = {
+    '0-5cm': SoilGridsLayers(0, 0.05, 0.05),
+    '5-15cm': SoilGridsLayers(0.05, 0.15, 0.10),
+    '15-30cm': SoilGridsLayers(0.15, 0.3, 0.15),
+    '30-60cm': SoilGridsLayers(0.3, 0.6, 0.3),
+    '60-100cm': SoilGridsLayers(0.6, 1.0, 0.4),
+    '100-200cm': SoilGridsLayers(1.0, 2.0, 1.0),
 }
 HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'GEOGCS["GCS_unnamed ellipse",DATUM["D_unknown",SPHEROID["Unknown",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],' \
@@ -69,7 +56,7 @@ def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, xarra
     soilgrids_xds = {}
     for m in maps:
         [v, layer] = m.split('@')
-        soilgrids_xds[m] = rioxarray.open_rasterio(f'{path}/{SOILGRIDS_PROPERTIES[v]["name"]}_{layer}.tif', masked=True)
+        soilgrids_xds[m] = rioxarray.open_rasterio(f'{path}/{SOILGRIDS_PROPERTIES[v].soilgrids_name}_{layer}.tif', masked=True)
 
         if crs is not None: soilgrids_xds[m] = soilgrids_xds[m].rio.reproject(crs)
 
@@ -82,7 +69,7 @@ def extract_values(soilgrids_xds: dict[str, xarray.DataArray], coordinate: tuple
 
     values = {}
 
-    values = {m: xds.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[m.split('@')[0]]['multiplier'] for m, xds in soilgrids_xds.items()}
+    values = {m: xds.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[m.split('@')[0]].multiplier for m, xds in soilgrids_xds.items()}
 
     return values
 
@@ -95,7 +82,7 @@ def reproject_match_soilgrids_maps(soilgrids_xds: dict[str, xarray.DataArray], r
         soil_xds = soilgrids_xds[m].rio.reproject_match(reference_xds, resampling=Resampling.nearest)
         soil_xds = soil_xds.rio.clip([boundary], from_disk=True)
 
-        soil_df = pd.DataFrame(soil_xds[0].to_series().rename(m)) * SOILGRIDS_PROPERTIES[m.split('@')[0]]['multiplier']
+        soil_df = pd.DataFrame(soil_xds[0].to_series().rename(m)) * SOILGRIDS_PROPERTIES[m.split('@')[0]].multiplier
         df = pd.concat([df, soil_df], axis=1)
 
     return df
@@ -129,7 +116,7 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: 
 
     for m in maps:
         [parameter, layer] = m.split('@')
-        v = SOILGRIDS_PROPERTIES[parameter]['name']
+        v = SOILGRIDS_PROPERTIES[parameter].soilgrids_name
         wcs = WebCoverageService(f'http://maps.isric.org/mapserv?map=/map/{v}.map', version='1.0.0')
         while True:
             try:
