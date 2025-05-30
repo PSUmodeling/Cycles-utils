@@ -1,0 +1,3147 @@
+fips,place name,gid,name_1,name_2
+1001,Autauga County,USA.1.1_1,Alabama,Autauga
+1003,Baldwin County,USA.1.2_1,Alabama,Baldwin
+1005,Barbour County,USA.1.3_1,Alabama,Barbour
+1007,Bibb County,USA.1.4_1,Alabama,Bibb
+1009,Blount County,USA.1.5_1,Alabama,Blount
+1011,Bullock County,USA.1.6_1,Alabama,Bullock
+1013,Butler County,USA.1.7_1,Alabama,Butler
+1015,Calhoun County,USA.1.8_1,Alabama,Calhoun
+1017,Chambers County,USA.1.9_1,Alabama,Chambers
+1019,Cherokee County,USA.1.10_1,Alabama,Cherokee
+1021,Chilton County,USA.1.11_1,Alabama,Chilton
+1023,Choctaw County,USA.1.12_1,Alabama,Choctaw
+1025,Clarke County,USA.1.13_1,Alabama,Clarke
+1027,Clay County,USA.1.14_1,Alabama,Clay
+1029,Cleburne County,USA.1.15_1,Alabama,Cleburne
+1031,Coffee County,USA.1.16_1,Alabama,Coffee
+1033,Colbert County,USA.1.17_1,Alabama,Colbert
+1035,Conecuh County,USA.1.18_1,Alabama,Conecuh
+1037,Coosa County,USA.1.19_1,Alabama,Coosa
+1039,Covington County,USA.1.20_1,Alabama,Covington
+1041,Crenshaw County,USA.1.21_1,Alabama,Crenshaw
+1043,Cullman County,USA.1.22_1,Alabama,Cullman
+1045,Dale County,USA.1.23_1,Alabama,Dale
+1047,Dallas County,USA.1.24_1,Alabama,Dallas
+1049,DeKalb County,USA.1.25_1,Alabama,De Kalb
+1051,Elmore County,USA.1.26_1,Alabama,Elmore
+1053,Escambia County,USA.1.27_1,Alabama,Escambia
+1055,Etowah County,USA.1.28_1,Alabama,Etowah
+1057,Fayette County,USA.1.29_1,Alabama,Fayette
+1059,Franklin County,USA.1.30_1,Alabama,Franklin
+1061,Geneva County,USA.1.31_1,Alabama,Geneva
+1063,Greene County,USA.1.32_1,Alabama,Greene
+1065,Hale County,USA.1.33_1,Alabama,Hale
+1067,Henry County,USA.1.34_1,Alabama,Henry
+1069,Houston County,USA.1.35_1,Alabama,Houston
+1071,Jackson County,USA.1.36_1,Alabama,Jackson
+1073,Jefferson County,USA.1.37_1,Alabama,Jefferson
+1075,Lamar County,USA.1.38_1,Alabama,Lamar
+1077,Lauderdale County,USA.1.39_1,Alabama,Lauderdale
+1079,Lawrence County,USA.1.40_1,Alabama,Lawrence
+1081,Lee County,USA.1.41_1,Alabama,Lee
+1083,Limestone County,USA.1.42_1,Alabama,Limestone
+1085,Lowndes County,USA.1.43_1,Alabama,Lowndes
+1087,Macon County,USA.1.44_1,Alabama,Macon
+1089,Madison County,USA.1.45_1,Alabama,Madison
+1091,Marengo County,USA.1.46_1,Alabama,Marengo
+1093,Marion County,USA.1.47_1,Alabama,Marion
+1095,Marshall County,USA.1.48_1,Alabama,Marshall
+1097,Mobile County,USA.1.49_1,Alabama,Mobile
+1099,Monroe County,USA.1.50_1,Alabama,Monroe
+1101,Montgomery County,USA.1.51_1,Alabama,Montgomery
+1103,Morgan County,USA.1.52_1,Alabama,Morgan
+1105,Perry County,USA.1.53_1,Alabama,Perry
+1107,Pickens County,USA.1.54_1,Alabama,Pickens
+1109,Pike County,USA.1.55_1,Alabama,Pike
+1111,Randolph County,USA.1.56_1,Alabama,Randolph
+1113,Russell County,USA.1.57_1,Alabama,Russell
+1115,St. Clair County,USA.1.58_1,Alabama,Saint Clair
+1117,Shelby County,USA.1.59_1,Alabama,Shelby
+1119,Sumter County,USA.1.60_1,Alabama,Sumter
+1121,Talladega County,USA.1.61_1,Alabama,Talladega
+1123,Tallapoosa County,USA.1.62_1,Alabama,Tallapoosa
+1125,Tuscaloosa County,USA.1.63_1,Alabama,Tuscaloosa
+1127,Walker County,USA.1.64_1,Alabama,Walker
+1129,Washington County,USA.1.65_1,Alabama,Washington
+1131,Wilcox County,USA.1.66_1,Alabama,Wilcox
+1133,Winston County,USA.1.67_1,Alabama,Winston
+2013,Aleutians East Borough,USA.2.1_1,Alaska,Aleutians East
+2016,Aleutians West Census Area,USA.2.2_1,Alaska,Aleutians West
+2020,Anchorage Borough,USA.2.3_1,Alaska,Anchorage
+2050,Bethel Census Area,USA.2.4_1,Alaska,Bethel
+2060,Bristol Bay Borough,USA.2.5_1,Alaska,Bristol Bay
+2068,Denali Borough (created after 1990),USA.2.6_1,Alaska,Denali
+2070,Dillingham Census Area,USA.2.7_1,Alaska,Dillingham
+2090,Fairbanks North Star Borough,USA.2.8_1,Alaska,Fairbanks North Star
+2100,Haines Borough,USA.2.9_1,Alaska,Haines
+2110,Juneau Borough,USA.2.10_1,Alaska,Juneau
+2122,Kenai Peninsula Borough,USA.2.11_1,Alaska,Kenai Peninsula
+2130,Ketchikan Gateway Borough,USA.2.12_1,Alaska,Ketchikan Gateway
+2150,Kodiak Island Borough,USA.2.13_1,Alaska,Kodiak Island
+2164,Lake and Peninsula Borough,USA.2.14_1,Alaska,Lake and Peninsula
+2170,Matanuska-Susitna Borough,USA.2.15_1,Alaska,Matanuska-Susitna
+2180,Nome Census Area,USA.2.16_1,Alaska,Nome
+2185,North Slope Borough,USA.2.17_1,Alaska,North Slope
+2188,Northwest Arctic Borough,USA.2.18_1,Alaska,Northwest Arctic
+2201,Prince of Wales-Outer Ketchikan Census Area,USA.2.19_1,Alaska,Prince of Wales-Outer Ketchi
+2220,Sitka Borough,USA.2.20_1,Alaska,Sitka
+2231,Skagway-Yakutat-Angoon Census Area (1990 Census Area),USA.2.21_1,Alaska,Skagway-Yakutat-Angoon
+2232,Skagway-Hoonah-Angoon Census Area (created after 1990),,,
+2240,Southeast Fairbanks Census Area,USA.2.22_1,Alaska,Southeast Fairbanks
+2261,Valdez-Cordova Census Area,USA.2.23_1,Alaska,Valdez-Cordova
+2270,Wade Hampton Census Area,USA.2.24_1,Alaska,Wade Hampton
+2280,Wrangell-Petersburg Census Area,USA.2.25_1,Alaska,Wrangell-Petersburg
+2282,Yakutat Borough (created after 1990),,,
+2290,Yukon-Koyukuk Census Area,USA.2.26_1,Alaska,Yukon-Koyukuk
+4001,Apache County,USA.3.1_1,Arizona,Apache
+4003,Cochise County,USA.3.2_1,Arizona,Cochise
+4005,Coconino County,USA.3.3_1,Arizona,Coconino
+4007,Gila County,USA.3.4_1,Arizona,Gila
+4009,Graham County,USA.3.5_1,Arizona,Graham
+4011,Greenlee County,USA.3.6_1,Arizona,Greenlee
+4012,La Paz County,USA.3.7_1,Arizona,La Paz
+4013,Maricopa County,USA.3.8_1,Arizona,Maricopa
+4015,Mohave County,USA.3.9_1,Arizona,Mohave
+4017,Navajo County,USA.3.10_1,Arizona,Navajo
+4019,Pima County,USA.3.11_1,Arizona,Pima
+4021,Pinal County,USA.3.12_1,Arizona,Pinal
+4023,Santa Cruz County,USA.3.13_1,Arizona,Santa Cruz
+4025,Yavapai County,USA.3.14_1,Arizona,Yavapai
+4027,Yuma County,USA.3.15_1,Arizona,Yuma
+5001,Arkansas County,USA.4.1_1,Arkansas,Arkansas
+5003,Ashley County,USA.4.2_1,Arkansas,Ashley
+5005,Baxter County,USA.4.3_1,Arkansas,Baxter
+5007,Benton County,USA.4.4_1,Arkansas,Benton
+5009,Boone County,USA.4.5_1,Arkansas,Boone
+5011,Bradley County,USA.4.6_1,Arkansas,Bradley
+5013,Calhoun County,USA.4.7_1,Arkansas,Calhoun
+5015,Carroll County,USA.4.8_1,Arkansas,Carroll
+5017,Chicot County,USA.4.9_1,Arkansas,Chicot
+5019,Clark County,USA.4.10_1,Arkansas,Clark
+5021,Clay County,USA.4.11_1,Arkansas,Clay
+5023,Cleburne County,USA.4.12_1,Arkansas,Cleburne
+5025,Cleveland County,USA.4.13_1,Arkansas,Cleveland
+5027,Columbia County,USA.4.14_1,Arkansas,Columbia
+5029,Conway County,USA.4.15_1,Arkansas,Conway
+5031,Craighead County,USA.4.16_1,Arkansas,Craighead
+5033,Crawford County,USA.4.17_1,Arkansas,Crawford
+5035,Crittenden County,USA.4.18_1,Arkansas,Crittenden
+5037,Cross County,USA.4.19_1,Arkansas,Cross
+5039,Dallas County,USA.4.20_1,Arkansas,Dallas
+5041,Desha County,USA.4.21_1,Arkansas,Desha
+5043,Drew County,USA.4.22_1,Arkansas,Drew
+5045,Faulkner County,USA.4.23_1,Arkansas,Faulkner
+5047,Franklin County,USA.4.24_1,Arkansas,Franklin
+5049,Fulton County,USA.4.25_1,Arkansas,Fulton
+5051,Garland County,USA.4.26_1,Arkansas,Garland
+5053,Grant County,USA.4.27_1,Arkansas,Grant
+5055,Greene County,USA.4.28_1,Arkansas,Greene
+5057,Hempstead County,USA.4.29_1,Arkansas,Hempstead
+5059,Hot Spring County,USA.4.30_1,Arkansas,Hot Spring
+5061,Howard County,USA.4.31_1,Arkansas,Howard
+5063,Independence County,USA.4.32_1,Arkansas,Independence
+5065,Izard County,USA.4.33_1,Arkansas,Izard
+5067,Jackson County,USA.4.34_1,Arkansas,Jackson
+5069,Jefferson County,USA.4.35_1,Arkansas,Jefferson
+5071,Johnson County,USA.4.36_1,Arkansas,Johnson
+5073,Lafayette County,USA.4.37_1,Arkansas,Lafayette
+5075,Lawrence County,USA.4.38_1,Arkansas,Lawrence
+5077,Lee County,USA.4.39_1,Arkansas,Lee
+5079,Lincoln County,USA.4.40_1,Arkansas,Lincoln
+5081,Little River County,USA.4.41_1,Arkansas,Little River
+5083,Logan County,USA.4.42_1,Arkansas,Logan
+5085,Lonoke County,USA.4.43_1,Arkansas,Lonoke
+5087,Madison County,USA.4.44_1,Arkansas,Madison
+5089,Marion County,USA.4.45_1,Arkansas,Marion
+5091,Miller County,USA.4.46_1,Arkansas,Miller
+5093,Mississippi County,USA.4.47_1,Arkansas,Mississippi
+5095,Monroe County,USA.4.48_1,Arkansas,Monroe
+5097,Montgomery County,USA.4.49_1,Arkansas,Montgomery
+5099,Nevada County,USA.4.50_1,Arkansas,Nevada
+5101,Newton County,USA.4.51_1,Arkansas,Newton
+5103,Ouachita County,USA.4.52_1,Arkansas,Ouachita
+5105,Perry County,USA.4.53_1,Arkansas,Perry
+5107,Phillips County,USA.4.54_1,Arkansas,Phillips
+5109,Pike County,USA.4.55_1,Arkansas,Pike
+5111,Poinsett County,USA.4.56_1,Arkansas,Poinsett
+5113,Polk County,USA.4.57_1,Arkansas,Polk
+5115,Pope County,USA.4.58_1,Arkansas,Pope
+5117,Prairie County,USA.4.59_1,Arkansas,Prairie
+5119,Pulaski County,USA.4.60_1,Arkansas,Pulaski
+5121,Randolph County,USA.4.61_1,Arkansas,Randolph
+5123,St. Francis County,USA.4.62_1,Arkansas,Saint Francis
+5125,Saline County,USA.4.63_1,Arkansas,Saline
+5127,Scott County,USA.4.64_1,Arkansas,Scott
+5129,Searcy County,USA.4.65_1,Arkansas,Searcy
+5131,Sebastian County,USA.4.66_1,Arkansas,Sebastian
+5133,Sevier County,USA.4.67_1,Arkansas,Sevier
+5135,Sharp County,USA.4.68_1,Arkansas,Sharp
+5137,Stone County,USA.4.69_1,Arkansas,Stone
+5139,Union County,USA.4.70_1,Arkansas,Union
+5141,Van Buren County,USA.4.71_1,Arkansas,Van Buren
+5143,Washington County,USA.4.72_1,Arkansas,Washington
+5145,White County,USA.4.73_1,Arkansas,White
+5147,Woodruff County,USA.4.74_1,Arkansas,Woodruff
+5149,Yell County,USA.4.75_1,Arkansas,Yell
+6001,Alameda County,USA.5.1_1,California,Alameda
+6003,Alpine County,USA.5.2_1,California,Alpine
+6005,Amador County,USA.5.3_1,California,Amador
+6007,Butte County,USA.5.4_1,California,Butte
+6009,Calaveras County,USA.5.5_1,California,Calaveras
+6011,Colusa County,USA.5.6_1,California,Colusa
+6013,Contra Costa County,USA.5.7_1,California,Contra Costa
+6015,Del Norte County,USA.5.8_1,California,Del Norte
+6017,El Dorado County,USA.5.9_1,California,El Dorado
+6019,Fresno County,USA.5.10_1,California,Fresno
+6021,Glenn County,USA.5.11_1,California,Glenn
+6023,Humboldt County,USA.5.12_1,California,Humboldt
+6025,Imperial County,USA.5.13_1,California,Imperial
+6027,Inyo County,USA.5.14_1,California,Inyo
+6029,Kern County,USA.5.15_1,California,Kern
+6031,Kings County,USA.5.16_1,California,Kings
+6033,Lake County,USA.5.17_1,California,Lake
+6035,Lassen County,USA.5.18_1,California,Lassen
+6037,Los Angeles County,USA.5.19_1,California,Los Angeles
+6039,Madera County,USA.5.20_1,California,Madera
+6041,Marin County,USA.5.21_1,California,Marin
+6043,Mariposa County,USA.5.22_1,California,Mariposa
+6045,Mendocino County,USA.5.23_1,California,Mendocino
+6047,Merced County,USA.5.24_1,California,Merced
+6049,Modoc County,USA.5.25_1,California,Modoc
+6051,Mono County,USA.5.26_1,California,Mono
+6053,Monterey County,USA.5.27_1,California,Monterey
+6055,Napa County,USA.5.28_1,California,Napa
+6057,Nevada County,USA.5.29_1,California,Nevada
+6059,Orange County,USA.5.30_1,California,Orange
+6061,Placer County,USA.5.31_1,California,Placer
+6063,Plumas County,USA.5.32_1,California,Plumas
+6065,Riverside County,USA.5.33_1,California,Riverside
+6067,Sacramento County,USA.5.34_1,California,Sacramento
+6069,San Benito County,USA.5.35_1,California,San Benito
+6071,San Bernardino County,USA.5.36_1,California,San Bernardino
+6073,San Diego County,USA.5.37_1,California,San Diego
+6075,San Francisco County,USA.5.38_1,California,San Francisco
+6077,San Joaquin County,USA.5.39_1,California,San Joaquin
+6079,San Luis Obispo County,USA.5.40_1,California,San Luis Obispo
+6081,San Mateo County,USA.5.41_1,California,San Mateo
+6083,Santa Barbara County,USA.5.42_1,California,Santa Barbara
+6085,Santa Clara County,USA.5.43_1,California,Santa Clara
+6087,Santa Cruz County,USA.5.44_1,California,Santa Cruz
+6089,Shasta County,USA.5.45_1,California,Shasta
+6091,Sierra County,USA.5.46_1,California,Sierra
+6093,Siskiyou County,USA.5.47_1,California,Siskiyou
+6095,Solano County,USA.5.48_1,California,Solano
+6097,Sonoma County,USA.5.49_1,California,Sonoma
+6099,Stanislaus County,USA.5.50_1,California,Stanislaus
+6101,Sutter County,USA.5.51_1,California,Sutter
+6103,Tehama County,USA.5.52_1,California,Tehama
+6105,Trinity County,USA.5.53_1,California,Trinity
+6107,Tulare County,USA.5.54_1,California,Tulare
+6109,Tuolumne County,USA.5.55_1,California,Tuolumne
+6111,Ventura County,USA.5.56_1,California,Ventura
+6113,Yolo County,USA.5.57_1,California,Yolo
+6115,Yuba County,USA.5.58_1,California,Yuba
+8001,Adams County,USA.6.1_1,Colorado,Adams
+8003,Alamosa County,USA.6.2_1,Colorado,Alamosa
+8005,Arapahoe County,USA.6.3_1,Colorado,Arapahoe
+8007,Archuleta County,USA.6.4_1,Colorado,Archuleta
+8009,Baca County,USA.6.5_1,Colorado,Baca
+8011,Bent County,USA.6.6_1,Colorado,Bent
+8013,Boulder County,USA.6.7_1,Colorado,Boulder
+8014,Broomfield County,USA.6.8_1,Colorado,Broomfield
+8015,Chaffee County,USA.6.9_1,Colorado,Chaffee
+8017,Cheyenne County,USA.6.10_1,Colorado,Cheyenne
+8019,Clear Creek County,USA.6.11_1,Colorado,Clear Creek
+8021,Conejos County,USA.6.12_1,Colorado,Conejos
+8023,Costilla County,USA.6.13_1,Colorado,Costilla
+8025,Crowley County,USA.6.14_1,Colorado,Crowley
+8027,Custer County,USA.6.15_1,Colorado,Custer
+8029,Delta County,USA.6.16_1,Colorado,Delta
+8031,Denver County,USA.6.17_1,Colorado,Denver
+8033,Dolores County,USA.6.18_1,Colorado,Dolores
+8035,Douglas County,USA.6.19_1,Colorado,Douglas
+8037,Eagle County,USA.6.20_1,Colorado,Eagle
+8039,Elbert County,USA.6.22_1,Colorado,Elbert
+8041,El Paso County,USA.6.21_1,Colorado,El Paso
+8043,Fremont County,USA.6.23_1,Colorado,Fremont
+8045,Garfield County,USA.6.24_1,Colorado,Garfield
+8047,Gilpin County,USA.6.25_1,Colorado,Gilpin
+8049,Grand County,USA.6.26_1,Colorado,Grand
+8051,Gunnison County,USA.6.27_1,Colorado,Gunnison
+8053,Hinsdale County,USA.6.28_1,Colorado,Hinsdale
+8055,Huerfano County,USA.6.29_1,Colorado,Huerfano
+8057,Jackson County,USA.6.30_1,Colorado,Jackson
+8059,Jefferson County,USA.6.31_1,Colorado,Jefferson
+8061,Kiowa County,USA.6.32_1,Colorado,Kiowa
+8063,Kit Carson County,USA.6.33_1,Colorado,Kit Carson
+8065,Lake County,USA.6.35_1,Colorado,Lake
+8067,La Plata County,USA.6.34_1,Colorado,La Plata
+8069,Larimer County,USA.6.36_1,Colorado,Larimer
+8071,Las Animas County,USA.6.37_1,Colorado,Las Animas
+8073,Lincoln County,USA.6.38_1,Colorado,Lincoln
+8075,Logan County,USA.6.39_1,Colorado,Logan
+8077,Mesa County,USA.6.40_1,Colorado,Mesa
+8079,Mineral County,USA.6.41_1,Colorado,Mineral
+8081,Moffat County,USA.6.42_1,Colorado,Moffat
+8083,Montezuma County,USA.6.43_1,Colorado,Montezuma
+8085,Montrose County,USA.6.44_1,Colorado,Montrose
+8087,Morgan County,USA.6.45_1,Colorado,Morgan
+8089,Otero County,USA.6.46_1,Colorado,Otero
+8091,Ouray County,USA.6.47_1,Colorado,Ouray
+8093,Park County,USA.6.48_1,Colorado,Park
+8095,Phillips County,USA.6.49_1,Colorado,Phillips
+8097,Pitkin County,USA.6.50_1,Colorado,Pitkin
+8099,Prowers County,USA.6.51_1,Colorado,Prowers
+8101,Pueblo County,USA.6.52_1,Colorado,Pueblo
+8103,Rio Blanco County,USA.6.53_1,Colorado,Rio Blanco
+8105,Rio Grande County,USA.6.54_1,Colorado,Rio Grande
+8107,Routt County,USA.6.55_1,Colorado,Routt
+8109,Saguache County,USA.6.56_1,Colorado,Saguache
+8111,San Juan County,USA.6.57_1,Colorado,San Juan
+8113,San Miguel County,USA.6.58_1,Colorado,San Miguel
+8115,Sedgwick County,USA.6.59_1,Colorado,Sedgwick
+8117,Summit County,USA.6.60_1,Colorado,Summit
+8119,Teller County,USA.6.61_1,Colorado,Teller
+8121,Washington County,USA.6.62_1,Colorado,Washington
+8123,Weld County,USA.6.63_1,Colorado,Weld
+8125,Yuma County,USA.6.64_1,Colorado,Yuma
+9001,Fairfield County,USA.7.1_1,Connecticut,Fairfield
+9003,Hartford County,USA.7.2_1,Connecticut,Hartford
+9005,Litchfield County,USA.7.3_1,Connecticut,Litchfield
+9007,Middlesex County,USA.7.4_1,Connecticut,Middlesex
+9009,New Haven County,USA.7.5_1,Connecticut,New Haven
+9011,New London County,USA.7.6_1,Connecticut,New London
+9013,Tolland County,USA.7.7_1,Connecticut,Tolland
+9015,Windham County,USA.7.8_1,Connecticut,Windham
+10001,Kent County,USA.8.1_1,Delaware,Kent
+10003,New Castle County,USA.8.2_1,Delaware,New Castle
+10005,Sussex County,USA.8.3_1,Delaware,Sussex
+11001,District of Columbia,USA.9.1_1,District of Columbia,District of Columbia
+12001,Alachua County,USA.10.1_1,Florida,Alachua
+12003,Baker County,USA.10.2_1,Florida,Baker
+12005,Bay County,USA.10.3_1,Florida,Bay
+12007,Bradford County,USA.10.4_1,Florida,Bradford
+12009,Brevard County,USA.10.5_1,Florida,Brevard
+12011,Broward County,USA.10.6_1,Florida,Broward
+12013,Calhoun County,USA.10.7_1,Florida,Calhoun
+12015,Charlotte County,USA.10.8_1,Florida,Charlotte
+12017,Citrus County,USA.10.9_1,Florida,Citrus
+12019,Clay County,USA.10.10_1,Florida,Clay
+12021,Collier County,USA.10.11_1,Florida,Collier
+12023,Columbia County,USA.10.12_1,Florida,Columbia
+12025,Dade County,USA.10.43_1,Florida,Miami-Dade
+12027,DeSoto County,USA.10.13_1,Florida,Desoto
+12029,Dixie County,USA.10.14_1,Florida,Dixie
+12031,Duval County,USA.10.15_1,Florida,Duval
+12033,Escambia County,USA.10.16_1,Florida,Escambia
+12035,Flagler County,USA.10.17_1,Florida,Flagler
+12037,Franklin County,USA.10.18_1,Florida,Franklin
+12039,Gadsden County,USA.10.19_1,Florida,Gadsden
+12041,Gilchrist County,USA.10.20_1,Florida,Gilchrist
+12043,Glades County,USA.10.21_1,Florida,Glades
+12045,Gulf County,USA.10.22_1,Florida,Gulf
+12047,Hamilton County,USA.10.23_1,Florida,Hamilton
+12049,Hardee County,USA.10.24_1,Florida,Hardee
+12051,Hendry County,USA.10.25_1,Florida,Hendry
+12053,Hernando County,USA.10.26_1,Florida,Hernando
+12055,Highlands County,USA.10.27_1,Florida,Highlands
+12057,Hillsborough County,USA.10.28_1,Florida,Hillsborough
+12059,Holmes County,USA.10.29_1,Florida,Holmes
+12061,Indian River County,USA.10.30_1,Florida,Indian River
+12063,Jackson County,USA.10.31_1,Florida,Jackson
+12065,Jefferson County,USA.10.32_1,Florida,Jefferson
+12067,Lafayette County,USA.10.33_1,Florida,Lafayette
+12069,Lake County,USA.10.34_1,Florida,Lake
+12071,Lee County,USA.10.35_1,Florida,Lee
+12073,Leon County,USA.10.36_1,Florida,Leon
+12075,Levy County,USA.10.37_1,Florida,Levy
+12077,Liberty County,USA.10.38_1,Florida,Liberty
+12079,Madison County,USA.10.39_1,Florida,Madison
+12081,Manatee County,USA.10.40_1,Florida,Manatee
+12083,Marion County,USA.10.41_1,Florida,Marion
+12085,Martin County,USA.10.42_1,Florida,Martin
+12086,Miami-Dade County,USA.10.43_1,Florida,Miami-Dade
+12087,Monroe County,USA.10.44_1,Florida,Monroe
+12089,Nassau County,USA.10.45_1,Florida,Nassau
+12091,Okaloosa County,USA.10.46_1,Florida,Okaloosa
+12093,Okeechobee County,USA.10.47_1,Florida,Okeechobee
+12095,Orange County,USA.10.48_1,Florida,Orange
+12097,Osceola County,USA.10.49_1,Florida,Osceola
+12099,Palm Beach County,USA.10.50_1,Florida,Palm Beach
+12101,Pasco County,USA.10.51_1,Florida,Pasco
+12103,Pinellas County,USA.10.52_1,Florida,Pinellas
+12105,Polk County,USA.10.53_1,Florida,Polk
+12107,Putnam County,USA.10.54_1,Florida,Putnam
+12109,St. Johns County,USA.10.55_1,Florida,Saint Johns
+12111,St. Lucie County,USA.10.56_1,Florida,Saint Lucie
+12113,Santa Rosa County,USA.10.57_1,Florida,Santa Rosa
+12115,Sarasota County,USA.10.58_1,Florida,Sarasota
+12117,Seminole County,USA.10.59_1,Florida,Seminole
+12119,Sumter County,USA.10.60_1,Florida,Sumter
+12121,Suwannee County,USA.10.61_1,Florida,Suwannee
+12123,Taylor County,USA.10.62_1,Florida,Taylor
+12125,Union County,USA.10.63_1,Florida,Union
+12127,Volusia County,USA.10.64_1,Florida,Volusia
+12129,Wakulla County,USA.10.65_1,Florida,Wakulla
+12131,Walton County,USA.10.66_1,Florida,Walton
+12133,Washington County,USA.10.67_1,Florida,Washington
+13001,Appling County,USA.11.1_1,Georgia,Appling
+13003,Atkinson County,USA.11.2_1,Georgia,Atkinson
+13005,Bacon County,USA.11.3_1,Georgia,Bacon
+13007,Baker County,USA.11.4_1,Georgia,Baker
+13009,Baldwin County,USA.11.5_1,Georgia,Baldwin
+13011,Banks County,USA.11.6_1,Georgia,Banks
+13013,Barrow County,USA.11.7_1,Georgia,Barrow
+13015,Bartow County,USA.11.8_1,Georgia,Bartow
+13017,Ben Hill County,USA.11.9_1,Georgia,Ben Hill
+13019,Berrien County,USA.11.10_1,Georgia,Berrien
+13021,Bibb County,USA.11.11_1,Georgia,Bibb
+13023,Bleckley County,USA.11.12_1,Georgia,Bleckley
+13025,Brantley County,USA.11.13_1,Georgia,Brantley
+13027,Brooks County,USA.11.14_1,Georgia,Brooks
+13029,Bryan County,USA.11.15_1,Georgia,Bryan
+13031,Bulloch County,USA.11.16_1,Georgia,Bulloch
+13033,Burke County,USA.11.17_1,Georgia,Burke
+13035,Butts County,USA.11.18_1,Georgia,Butts
+13037,Calhoun County,USA.11.19_1,Georgia,Calhoun
+13039,Camden County,USA.11.20_1,Georgia,Camden
+13043,Candler County,USA.11.21_1,Georgia,Candler
+13045,Carroll County,USA.11.22_1,Georgia,Carroll
+13047,Catoosa County,USA.11.23_1,Georgia,Catoosa
+13049,Charlton County,USA.11.24_1,Georgia,Charlton
+13051,Chatham County,USA.11.25_1,Georgia,Chatham
+13053,Chattahoochee County,USA.11.26_1,Georgia,Chattahoochee
+13055,Chattooga County,USA.11.27_1,Georgia,Chattooga
+13057,Cherokee County,USA.11.28_1,Georgia,Cherokee
+13059,Clarke County,USA.11.29_1,Georgia,Clarke
+13061,Clay County,USA.11.30_1,Georgia,Clay
+13063,Clayton County,USA.11.31_1,Georgia,Clayton
+13065,Clinch County,USA.11.32_1,Georgia,Clinch
+13067,Cobb County,USA.11.33_1,Georgia,Cobb
+13069,Coffee County,USA.11.34_1,Georgia,Coffee
+13071,Colquitt County,USA.11.35_1,Georgia,Colquitt
+13073,Columbia County,USA.11.36_1,Georgia,Columbia
+13075,Cook County,USA.11.37_1,Georgia,Cook
+13077,Coweta County,USA.11.38_1,Georgia,Coweta
+13079,Crawford County,USA.11.39_1,Georgia,Crawford
+13081,Crisp County,USA.11.40_1,Georgia,Crisp
+13083,Dade County,USA.11.41_1,Georgia,Dade
+13085,Dawson County,USA.11.42_1,Georgia,Dawson
+13087,Decatur County,USA.11.43_1,Georgia,Decatur
+13089,DeKalb County,USA.11.44_1,Georgia,DeKalb
+13091,Dodge County,USA.11.45_1,Georgia,Dodge
+13093,Dooly County,USA.11.46_1,Georgia,Dooly
+13095,Dougherty County,USA.11.47_1,Georgia,Dougherty
+13097,Douglas County,USA.11.48_1,Georgia,Douglas
+13099,Early County,USA.11.49_1,Georgia,Early
+13101,Echols County,USA.11.50_1,Georgia,Echols
+13103,Effingham County,USA.11.51_1,Georgia,Effingham
+13105,Elbert County,USA.11.52_1,Georgia,Elbert
+13107,Emanuel County,USA.11.53_1,Georgia,Emanuel
+13109,Evans County,USA.11.54_1,Georgia,Evans
+13111,Fannin County,USA.11.55_1,Georgia,Fannin
+13113,Fayette County,USA.11.56_1,Georgia,Fayette
+13115,Floyd County,USA.11.57_1,Georgia,Floyd
+13117,Forsyth County,USA.11.58_1,Georgia,Forsyth
+13119,Franklin County,USA.11.59_1,Georgia,Franklin
+13121,Fulton County,USA.11.60_1,Georgia,Fulton
+13123,Gilmer County,USA.11.61_1,Georgia,Gilmer
+13125,Glascock County,USA.11.62_1,Georgia,Glascock
+13127,Glynn County,USA.11.63_1,Georgia,Glynn
+13129,Gordon County,USA.11.64_1,Georgia,Gordon
+13131,Grady County,USA.11.65_1,Georgia,Grady
+13133,Greene County,USA.11.66_1,Georgia,Greene
+13135,Gwinnett County,USA.11.67_1,Georgia,Gwinnett
+13137,Habersham County,USA.11.68_1,Georgia,Habersham
+13139,Hall County,USA.11.69_1,Georgia,Hall
+13141,Hancock County,USA.11.70_1,Georgia,Hancock
+13143,Haralson County,USA.11.71_1,Georgia,Haralson
+13145,Harris County,USA.11.72_1,Georgia,Harris
+13147,Hart County,USA.11.73_1,Georgia,Hart
+13149,Heard County,USA.11.74_1,Georgia,Heard
+13151,Henry County,USA.11.75_1,Georgia,Henry
+13153,Houston County,USA.11.76_1,Georgia,Houston
+13155,Irwin County,USA.11.77_1,Georgia,Irwin
+13157,Jackson County,USA.11.78_1,Georgia,Jackson
+13159,Jasper County,USA.11.79_1,Georgia,Jasper
+13161,Jeff Davis County,USA.11.80_1,Georgia,Jeff Davis
+13163,Jefferson County,USA.11.81_1,Georgia,Jefferson
+13165,Jenkins County,USA.11.82_1,Georgia,Jenkins
+13167,Johnson County,USA.11.83_1,Georgia,Johnson
+13169,Jones County,USA.11.84_1,Georgia,Jones
+13171,Lamar County,USA.11.85_1,Georgia,Lamar
+13173,Lanier County,USA.11.86_1,Georgia,Lanier
+13175,Laurens County,USA.11.87_1,Georgia,Laurens
+13177,Lee County,USA.11.88_1,Georgia,Lee
+13179,Liberty County,USA.11.89_1,Georgia,Liberty
+13181,Lincoln County,USA.11.90_1,Georgia,Lincoln
+13183,Long County,USA.11.91_1,Georgia,Long
+13185,Lowndes County,USA.11.92_1,Georgia,Lowndes
+13187,Lumpkin County,USA.11.93_1,Georgia,Lumpkin
+13189,McDuffie County,USA.11.97_1,Georgia,McDuffie
+13191,McIntosh County,USA.11.98_1,Georgia,McIntosh
+13193,Macon County,USA.11.94_1,Georgia,Macon
+13195,Madison County,USA.11.95_1,Georgia,Madison
+13197,Marion County,USA.11.96_1,Georgia,Marion
+13199,Meriwether County,USA.11.99_1,Georgia,Meriwether
+13201,Miller County,USA.11.100_1,Georgia,Miller
+13205,Mitchell County,USA.11.101_1,Georgia,Mitchell
+13207,Monroe County,USA.11.102_1,Georgia,Monroe
+13209,Montgomery County,USA.11.103_1,Georgia,Montgomery
+13211,Morgan County,USA.11.104_1,Georgia,Morgan
+13213,Murray County,USA.11.105_1,Georgia,Murray
+13215,Muscogee County,USA.11.106_1,Georgia,Muscogee
+13217,Newton County,USA.11.107_1,Georgia,Newton
+13219,Oconee County,USA.11.108_1,Georgia,Oconee
+13221,Oglethorpe County,USA.11.109_1,Georgia,Oglethorpe
+13223,Paulding County,USA.11.110_1,Georgia,Paulding
+13225,Peach County,USA.11.111_1,Georgia,Peach
+13227,Pickens County,USA.11.112_1,Georgia,Pickens
+13229,Pierce County,USA.11.113_1,Georgia,Pierce
+13231,Pike County,USA.11.114_1,Georgia,Pike
+13233,Polk County,USA.11.115_1,Georgia,Polk
+13235,Pulaski County,USA.11.116_1,Georgia,Pulaski
+13237,Putnam County,USA.11.117_1,Georgia,Putnam
+13239,Quitman County,USA.11.118_1,Georgia,Quitman
+13241,Rabun County,USA.11.119_1,Georgia,Rabun
+13243,Randolph County,USA.11.120_1,Georgia,Randolph
+13245,Richmond County,USA.11.121_1,Georgia,Richmond
+13247,Rockdale County,USA.11.122_1,Georgia,Rockdale
+13249,Schley County,USA.11.123_1,Georgia,Schley
+13251,Screven County,USA.11.124_1,Georgia,Screven
+13253,Seminole County,USA.11.125_1,Georgia,Seminole
+13255,Spalding County,USA.11.126_1,Georgia,Spalding
+13257,Stephens County,USA.11.127_1,Georgia,Stephens
+13259,Stewart County,USA.11.128_1,Georgia,Stewart
+13261,Sumter County,USA.11.129_1,Georgia,Sumter
+13263,Talbot County,USA.11.130_1,Georgia,Talbot
+13265,Taliaferro County,USA.11.131_1,Georgia,Taliaferro
+13267,Tattnall County,USA.11.132_1,Georgia,Tattnall
+13269,Taylor County,USA.11.133_1,Georgia,Taylor
+13271,Telfair County,USA.11.134_1,Georgia,Telfair
+13273,Terrell County,USA.11.135_1,Georgia,Terrell
+13275,Thomas County,USA.11.136_1,Georgia,Thomas
+13277,Tift County,USA.11.137_1,Georgia,Tift
+13279,Toombs County,USA.11.138_1,Georgia,Toombs
+13281,Towns County,USA.11.139_1,Georgia,Towns
+13283,Treutlen County,USA.11.140_1,Georgia,Treutlen
+13285,Troup County,USA.11.141_1,Georgia,Troup
+13287,Turner County,USA.11.142_1,Georgia,Turner
+13289,Twiggs County,USA.11.143_1,Georgia,Twiggs
+13291,Union County,USA.11.144_1,Georgia,Union
+13293,Upson County,USA.11.145_1,Georgia,Upson
+13295,Walker County,USA.11.146_1,Georgia,Walker
+13297,Walton County,USA.11.147_1,Georgia,Walton
+13299,Ware County,USA.11.148_1,Georgia,Ware
+13301,Warren County,USA.11.149_1,Georgia,Warren
+13303,Washington County,USA.11.150_1,Georgia,Washington
+13305,Wayne County,USA.11.151_1,Georgia,Wayne
+13307,Webster County,USA.11.152_1,Georgia,Webster
+13309,Wheeler County,USA.11.153_1,Georgia,Wheeler
+13311,White County,USA.11.154_1,Georgia,White
+13313,Whitfield County,USA.11.155_1,Georgia,Whitfield
+13315,Wilcox County,USA.11.156_1,Georgia,Wilcox
+13317,Wilkes County,USA.11.157_1,Georgia,Wilkes
+13319,Wilkinson County,USA.11.158_1,Georgia,Wilkinson
+13321,Worth County,USA.11.159_1,Georgia,Worth
+15001,Hawaii County,USA.12.1_1,Hawaii,Hawaii
+15003,Honolulu County,USA.12.2_1,Hawaii,Honolulu
+15005,Kalawao County,USA.12.3_1,Hawaii,Kalawao
+15007,Kauai County,USA.12.4_1,Hawaii,Kauai
+15009,Maui County,USA.12.5_1,Hawaii,Maui
+16001,Ada County,USA.13.1_1,Idaho,Ada
+16003,Adams County,USA.13.2_1,Idaho,Adams
+16005,Bannock County,USA.13.3_1,Idaho,Bannock
+16007,Bear Lake County,USA.13.4_1,Idaho,Bear Lake
+16009,Benewah County,USA.13.5_1,Idaho,Benewah
+16011,Bingham County,USA.13.6_1,Idaho,Bingham
+16013,Blaine County,USA.13.7_1,Idaho,Blaine
+16015,Boise County,USA.13.8_1,Idaho,Boise
+16017,Bonner County,USA.13.9_1,Idaho,Bonner
+16019,Bonneville County,USA.13.10_1,Idaho,Bonneville
+16021,Boundary County,USA.13.11_1,Idaho,Boundary
+16023,Butte County,USA.13.12_1,Idaho,Butte
+16025,Camas County,USA.13.13_1,Idaho,Camas
+16027,Canyon County,USA.13.14_1,Idaho,Canyon
+16029,Caribou County,USA.13.15_1,Idaho,Caribou
+16031,Cassia County,USA.13.16_1,Idaho,Cassia
+16033,Clark County,USA.13.17_1,Idaho,Clark
+16035,Clearwater County,USA.13.18_1,Idaho,Clearwater
+16037,Custer County,USA.13.19_1,Idaho,Custer
+16039,Elmore County,USA.13.20_1,Idaho,Elmore
+16041,Franklin County,USA.13.21_1,Idaho,Franklin
+16043,Fremont County,USA.13.22_1,Idaho,Fremont
+16045,Gem County,USA.13.23_1,Idaho,Gem
+16047,Gooding County,USA.13.24_1,Idaho,Gooding
+16049,Idaho County,USA.13.25_1,Idaho,Idaho
+16051,Jefferson County,USA.13.26_1,Idaho,Jefferson
+16053,Jerome County,USA.13.27_1,Idaho,Jerome
+16055,Kootenai County,USA.13.28_1,Idaho,Kootenai
+16057,Latah County,USA.13.29_1,Idaho,Latah
+16059,Lemhi County,USA.13.30_1,Idaho,Lemhi
+16061,Lewis County,USA.13.31_1,Idaho,Lewis
+16063,Lincoln County,USA.13.32_1,Idaho,Lincoln
+16065,Madison County,USA.13.33_1,Idaho,Madison
+16067,Minidoka County,USA.13.34_1,Idaho,Minidoka
+16069,Nez Perce County,USA.13.35_1,Idaho,Nez Perce
+16071,Oneida County,USA.13.36_1,Idaho,Oneida
+16073,Owyhee County,USA.13.37_1,Idaho,Owyhee
+16075,Payette County,USA.13.38_1,Idaho,Payette
+16077,Power County,USA.13.39_1,Idaho,Power
+16079,Shoshone County,USA.13.40_1,Idaho,Shoshone
+16081,Teton County,USA.13.41_1,Idaho,Teton
+16083,Twin Falls County,USA.13.42_1,Idaho,Twin Falls
+16085,Valley County,USA.13.43_1,Idaho,Valley
+16087,Washington County,USA.13.44_1,Idaho,Washington
+17001,Adams County,USA.14.1_1,Illinois,Adams
+17003,Alexander County,USA.14.2_1,Illinois,Alexander
+17005,Bond County,USA.14.3_1,Illinois,Bond
+17007,Boone County,USA.14.4_1,Illinois,Boone
+17009,Brown County,USA.14.5_1,Illinois,Brown
+17011,Bureau County,USA.14.6_1,Illinois,Bureau
+17013,Calhoun County,USA.14.7_1,Illinois,Calhoun
+17015,Carroll County,USA.14.8_1,Illinois,Carroll
+17017,Cass County,USA.14.9_1,Illinois,Cass
+17019,Champaign County,USA.14.10_1,Illinois,Champaign
+17021,Christian County,USA.14.11_1,Illinois,Christian
+17023,Clark County,USA.14.12_1,Illinois,Clark
+17025,Clay County,USA.14.13_1,Illinois,Clay
+17027,Clinton County,USA.14.14_1,Illinois,Clinton
+17029,Coles County,USA.14.15_1,Illinois,Coles
+17031,Cook County,USA.14.16_1,Illinois,Cook
+17033,Crawford County,USA.14.17_1,Illinois,Crawford
+17035,Cumberland County,USA.14.18_1,Illinois,Cumberland
+17037,DeKalb County,USA.14.19_1,Illinois,De Kalb
+17039,De Witt County,USA.14.20_1,Illinois,De Witt
+17041,Douglas County,USA.14.21_1,Illinois,Douglas
+17043,DuPage County,USA.14.22_1,Illinois,Dupage
+17045,Edgar County,USA.14.23_1,Illinois,Edgar
+17047,Edwards County,USA.14.24_1,Illinois,Edwards
+17049,Effingham County,USA.14.25_1,Illinois,Effingham
+17051,Fayette County,USA.14.26_1,Illinois,Fayette
+17053,Ford County,USA.14.27_1,Illinois,Ford
+17055,Franklin County,USA.14.28_1,Illinois,Franklin
+17057,Fulton County,USA.14.29_1,Illinois,Fulton
+17059,Gallatin County,USA.14.30_1,Illinois,Gallatin
+17061,Greene County,USA.14.31_1,Illinois,Greene
+17063,Grundy County,USA.14.32_1,Illinois,Grundy
+17065,Hamilton County,USA.14.33_1,Illinois,Hamilton
+17067,Hancock County,USA.14.34_1,Illinois,Hancock
+17069,Hardin County,USA.14.35_1,Illinois,Hardin
+17071,Henderson County,USA.14.36_1,Illinois,Henderson
+17073,Henry County,USA.14.37_1,Illinois,Henry
+17075,Iroquois County,USA.14.38_1,Illinois,Iroquois
+17077,Jackson County,USA.14.39_1,Illinois,Jackson
+17079,Jasper County,USA.14.40_1,Illinois,Jasper
+17081,Jefferson County,USA.14.41_1,Illinois,Jefferson
+17083,Jersey County,USA.14.42_1,Illinois,Jersey
+17085,Jo Daviess County,USA.14.43_1,Illinois,Jo Daviess
+17087,Johnson County,USA.14.44_1,Illinois,Johnson
+17089,Kane County,USA.14.45_1,Illinois,Kane
+17091,Kankakee County,USA.14.46_1,Illinois,Kankakee
+17093,Kendall County,USA.14.47_1,Illinois,Kendall
+17095,Knox County,USA.14.48_1,Illinois,Knox
+17097,Lake County,USA.14.50_1,Illinois,Lake
+17099,La Salle County,USA.14.49_1,Illinois,La Salle
+17101,Lawrence County,USA.14.52_1,Illinois,Lawrence
+17103,Lee County,USA.14.53_1,Illinois,Lee
+17105,Livingston County,USA.14.54_1,Illinois,Livingston
+17107,Logan County,USA.14.55_1,Illinois,Logan
+17109,McDonough County,USA.14.63_1,Illinois,McDonough
+17111,McHenry County,USA.14.64_1,Illinois,McHenry
+17113,McLean County,USA.14.65_1,Illinois,McLean
+17115,Macon County,USA.14.56_1,Illinois,Macon
+17117,Macoupin County,USA.14.57_1,Illinois,Macoupin
+17119,Madison County,USA.14.58_1,Illinois,Madison
+17121,Marion County,USA.14.59_1,Illinois,Marion
+17123,Marshall County,USA.14.60_1,Illinois,Marshall
+17125,Mason County,USA.14.61_1,Illinois,Mason
+17127,Massac County,USA.14.62_1,Illinois,Massac
+17129,Menard County,USA.14.66_1,Illinois,Menard
+17131,Mercer County,USA.14.67_1,Illinois,Mercer
+17133,Monroe County,USA.14.68_1,Illinois,Monroe
+17135,Montgomery County,USA.14.69_1,Illinois,Montgomery
+17137,Morgan County,USA.14.70_1,Illinois,Morgan
+17139,Moultrie County,USA.14.71_1,Illinois,Moultrie
+17141,Ogle County,USA.14.72_1,Illinois,Ogle
+17143,Peoria County,USA.14.73_1,Illinois,Peoria
+17145,Perry County,USA.14.74_1,Illinois,Perry
+17147,Piatt County,USA.14.75_1,Illinois,Piatt
+17149,Pike County,USA.14.76_1,Illinois,Pike
+17151,Pope County,USA.14.77_1,Illinois,Pope
+17153,Pulaski County,USA.14.78_1,Illinois,Pulaski
+17155,Putnam County,USA.14.79_1,Illinois,Putnam
+17157,Randolph County,USA.14.80_1,Illinois,Randolph
+17159,Richland County,USA.14.81_1,Illinois,Richland
+17161,Rock Island County,USA.14.82_1,Illinois,Rock Island
+17163,St. Clair County,USA.14.83_1,Illinois,Saint Clair
+17165,Saline County,USA.14.84_1,Illinois,Saline
+17167,Sangamon County,USA.14.85_1,Illinois,Sangamon
+17169,Schuyler County,USA.14.86_1,Illinois,Schuyler
+17171,Scott County,USA.14.87_1,Illinois,Scott
+17173,Shelby County,USA.14.88_1,Illinois,Shelby
+17175,Stark County,USA.14.89_1,Illinois,Stark
+17177,Stephenson County,USA.14.90_1,Illinois,Stephenson
+17179,Tazewell County,USA.14.91_1,Illinois,Tazewell
+17181,Union County,USA.14.92_1,Illinois,Union
+17183,Vermilion County,USA.14.93_1,Illinois,Vermilion
+17185,Wabash County,USA.14.94_1,Illinois,Wabash
+17187,Warren County,USA.14.95_1,Illinois,Warren
+17189,Washington County,USA.14.96_1,Illinois,Washington
+17191,Wayne County,USA.14.97_1,Illinois,Wayne
+17193,White County,USA.14.98_1,Illinois,White
+17195,Whiteside County,USA.14.99_1,Illinois,Whiteside
+17197,Will County,USA.14.100_1,Illinois,Will
+17199,Williamson County,USA.14.101_1,Illinois,Williamson
+17201,Winnebago County,USA.14.102_1,Illinois,Winnebago
+17203,Woodford County,USA.14.103_1,Illinois,Woodford
+18001,Adams County,USA.15.1_1,Indiana,Adams
+18003,Allen County,USA.15.2_1,Indiana,Allen
+18005,Bartholomew County,USA.15.3_1,Indiana,Bartholomew
+18007,Benton County,USA.15.4_1,Indiana,Benton
+18009,Blackford County,USA.15.5_1,Indiana,Blackford
+18011,Boone County,USA.15.6_1,Indiana,Boone
+18013,Brown County,USA.15.7_1,Indiana,Brown
+18015,Carroll County,USA.15.8_1,Indiana,Carroll
+18017,Cass County,USA.15.9_1,Indiana,Cass
+18019,Clark County,USA.15.10_1,Indiana,Clark
+18021,Clay County,USA.15.11_1,Indiana,Clay
+18023,Clinton County,USA.15.12_1,Indiana,Clinton
+18025,Crawford County,USA.15.13_1,Indiana,Crawford
+18027,Daviess County,USA.15.14_1,Indiana,Daviess
+18029,Dearborn County,USA.15.16_1,Indiana,Dearborn
+18031,Decatur County,USA.15.17_1,Indiana,Decatur
+18033,De Kalb County,USA.15.15_1,Indiana,De Kalb
+18035,Delaware County,USA.15.18_1,Indiana,Delaware
+18037,Dubois County,USA.15.19_1,Indiana,Dubois
+18039,Elkhart County,USA.15.20_1,Indiana,Elkhart
+18041,Fayette County,USA.15.21_1,Indiana,Fayette
+18043,Floyd County,USA.15.22_1,Indiana,Floyd
+18045,Fountain County,USA.15.23_1,Indiana,Fountain
+18047,Franklin County,USA.15.24_1,Indiana,Franklin
+18049,Fulton County,USA.15.25_1,Indiana,Fulton
+18051,Gibson County,USA.15.26_1,Indiana,Gibson
+18053,Grant County,USA.15.27_1,Indiana,Grant
+18055,Greene County,USA.15.28_1,Indiana,Greene
+18057,Hamilton County,USA.15.29_1,Indiana,Hamilton
+18059,Hancock County,USA.15.30_1,Indiana,Hancock
+18061,Harrison County,USA.15.31_1,Indiana,Harrison
+18063,Hendricks County,USA.15.32_1,Indiana,Hendricks
+18065,Henry County,USA.15.33_1,Indiana,Henry
+18067,Howard County,USA.15.34_1,Indiana,Howard
+18069,Huntington County,USA.15.35_1,Indiana,Huntington
+18071,Jackson County,USA.15.36_1,Indiana,Jackson
+18073,Jasper County,USA.15.37_1,Indiana,Jasper
+18075,Jay County,USA.15.38_1,Indiana,Jay
+18077,Jefferson County,USA.15.39_1,Indiana,Jefferson
+18079,Jennings County,USA.15.40_1,Indiana,Jennings
+18081,Johnson County,USA.15.41_1,Indiana,Johnson
+18083,Knox County,USA.15.42_1,Indiana,Knox
+18085,Kosciusko County,USA.15.43_1,Indiana,Kosciusko
+18087,Lagrange County,USA.15.44_1,Indiana,LaGrange
+18089,Lake County,USA.15.45_1,Indiana,Lake
+18091,La Porte County,USA.15.47_1,Indiana,LaPorte
+18093,Lawrence County,USA.15.48_1,Indiana,Lawrence
+18095,Madison County,USA.15.49_1,Indiana,Madison
+18097,Marion County,USA.15.50_1,Indiana,Marion
+18099,Marshall County,USA.15.51_1,Indiana,Marshall
+18101,Martin County,USA.15.52_1,Indiana,Martin
+18103,Miami County,USA.15.53_1,Indiana,Miami
+18105,Monroe County,USA.15.54_1,Indiana,Monroe
+18107,Montgomery County,USA.15.55_1,Indiana,Montgomery
+18109,Morgan County,USA.15.56_1,Indiana,Morgan
+18111,Newton County,USA.15.57_1,Indiana,Newton
+18113,Noble County,USA.15.58_1,Indiana,Noble
+18115,Ohio County,USA.15.59_1,Indiana,Ohio
+18117,Orange County,USA.15.60_1,Indiana,Orange
+18119,Owen County,USA.15.61_1,Indiana,Owen
+18121,Parke County,USA.15.62_1,Indiana,Parke
+18123,Perry County,USA.15.63_1,Indiana,Perry
+18125,Pike County,USA.15.64_1,Indiana,Pike
+18127,Porter County,USA.15.65_1,Indiana,Porter
+18129,Posey County,USA.15.66_1,Indiana,Posey
+18131,Pulaski County,USA.15.67_1,Indiana,Pulaski
+18133,Putnam County,USA.15.68_1,Indiana,Putnam
+18135,Randolph County,USA.15.69_1,Indiana,Randolph
+18137,Ripley County,USA.15.70_1,Indiana,Ripley
+18139,Rush County,USA.15.71_1,Indiana,Rush
+18141,St. Joseph County,USA.15.72_1,Indiana,Saint Joseph
+18143,Scott County,USA.15.73_1,Indiana,Scott
+18145,Shelby County,USA.15.74_1,Indiana,Shelby
+18147,Spencer County,USA.15.75_1,Indiana,Spencer
+18149,Starke County,USA.15.76_1,Indiana,Starke
+18151,Steuben County,USA.15.77_1,Indiana,Steuben
+18153,Sullivan County,USA.15.78_1,Indiana,Sullivan
+18155,Switzerland County,USA.15.79_1,Indiana,Switzerland
+18157,Tippecanoe County,USA.15.80_1,Indiana,Tippecanoe
+18159,Tipton County,USA.15.81_1,Indiana,Tipton
+18161,Union County,USA.15.82_1,Indiana,Union
+18163,Vanderburgh County,USA.15.83_1,Indiana,Vanderburgh
+18165,Vermillion County,USA.15.84_1,Indiana,Vermillion
+18167,Vigo County,USA.15.85_1,Indiana,Vigo
+18169,Wabash County,USA.15.86_1,Indiana,Wabash
+18171,Warren County,USA.15.87_1,Indiana,Warren
+18173,Warrick County,USA.15.88_1,Indiana,Warrick
+18175,Washington County,USA.15.89_1,Indiana,Washington
+18177,Wayne County,USA.15.90_1,Indiana,Wayne
+18179,Wells County,USA.15.91_1,Indiana,Wells
+18181,White County,USA.15.92_1,Indiana,White
+18183,Whitley County,USA.15.93_1,Indiana,Whitley
+19001,Adair County,USA.16.1_1,Iowa,Adair
+19003,Adams County,USA.16.2_1,Iowa,Adams
+19005,Allamakee County,USA.16.3_1,Iowa,Allamakee
+19007,Appanoose County,USA.16.4_1,Iowa,Appanoose
+19009,Audubon County,USA.16.5_1,Iowa,Audubon
+19011,Benton County,USA.16.6_1,Iowa,Benton
+19013,Black Hawk County,USA.16.7_1,Iowa,Black Hawk
+19015,Boone County,USA.16.8_1,Iowa,Boone
+19017,Bremer County,USA.16.9_1,Iowa,Bremer
+19019,Buchanan County,USA.16.10_1,Iowa,Buchanan
+19021,Buena Vista County,USA.16.11_1,Iowa,Buena Vista
+19023,Butler County,USA.16.12_1,Iowa,Butler
+19025,Calhoun County,USA.16.13_1,Iowa,Calhoun
+19027,Carroll County,USA.16.14_1,Iowa,Carroll
+19029,Cass County,USA.16.15_1,Iowa,Cass
+19031,Cedar County,USA.16.16_1,Iowa,Cedar
+19033,Cerro Gordo County,USA.16.17_1,Iowa,Cerro Gordo
+19035,Cherokee County,USA.16.18_1,Iowa,Cherokee
+19037,Chickasaw County,USA.16.19_1,Iowa,Chickasaw
+19039,Clarke County,USA.16.20_1,Iowa,Clarke
+19041,Clay County,USA.16.21_1,Iowa,Clay
+19043,Clayton County,USA.16.22_1,Iowa,Clayton
+19045,Clinton County,USA.16.23_1,Iowa,Clinton
+19047,Crawford County,USA.16.24_1,Iowa,Crawford
+19049,Dallas County,USA.16.25_1,Iowa,Dallas
+19051,Davis County,USA.16.26_1,Iowa,Davis
+19053,Decatur County,USA.16.27_1,Iowa,Decatur
+19055,Delaware County,USA.16.28_1,Iowa,Delaware
+19057,Des Moines County,USA.16.29_1,Iowa,Des Moines
+19059,Dickinson County,USA.16.30_1,Iowa,Dickinson
+19061,Dubuque County,USA.16.31_1,Iowa,Dubuque
+19063,Emmet County,USA.16.32_1,Iowa,Emmet
+19065,Fayette County,USA.16.33_1,Iowa,Fayette
+19067,Floyd County,USA.16.34_1,Iowa,Floyd
+19069,Franklin County,USA.16.35_1,Iowa,Franklin
+19071,Fremont County,USA.16.36_1,Iowa,Fremont
+19073,Greene County,USA.16.37_1,Iowa,Greene
+19075,Grundy County,USA.16.38_1,Iowa,Grundy
+19077,Guthrie County,USA.16.39_1,Iowa,Guthrie
+19079,Hamilton County,USA.16.40_1,Iowa,Hamilton
+19081,Hancock County,USA.16.41_1,Iowa,Hancock
+19083,Hardin County,USA.16.42_1,Iowa,Hardin
+19085,Harrison County,USA.16.43_1,Iowa,Harrison
+19087,Henry County,USA.16.44_1,Iowa,Henry
+19089,Howard County,USA.16.45_1,Iowa,Howard
+19091,Humboldt County,USA.16.46_1,Iowa,Humboldt
+19093,Ida County,USA.16.47_1,Iowa,Ida
+19095,Iowa County,USA.16.48_1,Iowa,Iowa
+19097,Jackson County,USA.16.49_1,Iowa,Jackson
+19099,Jasper County,USA.16.50_1,Iowa,Jasper
+19101,Jefferson County,USA.16.51_1,Iowa,Jefferson
+19103,Johnson County,USA.16.52_1,Iowa,Johnson
+19105,Jones County,USA.16.53_1,Iowa,Jones
+19107,Keokuk County,USA.16.54_1,Iowa,Keokuk
+19109,Kossuth County,USA.16.55_1,Iowa,Kossuth
+19111,Lee County,USA.16.56_1,Iowa,Lee
+19113,Linn County,USA.16.57_1,Iowa,Linn
+19115,Louisa County,USA.16.58_1,Iowa,Louisa
+19117,Lucas County,USA.16.59_1,Iowa,Lucas
+19119,Lyon County,USA.16.60_1,Iowa,Lyon
+19121,Madison County,USA.16.61_1,Iowa,Madison
+19123,Mahaska County,USA.16.62_1,Iowa,Mahaska
+19125,Marion County,USA.16.63_1,Iowa,Marion
+19127,Marshall County,USA.16.64_1,Iowa,Marshall
+19129,Mills County,USA.16.65_1,Iowa,Mills
+19131,Mitchell County,USA.16.66_1,Iowa,Mitchell
+19133,Monona County,USA.16.67_1,Iowa,Monona
+19135,Monroe County,USA.16.68_1,Iowa,Monroe
+19137,Montgomery County,USA.16.69_1,Iowa,Montgomery
+19139,Muscatine County,USA.16.70_1,Iowa,Muscatine
+19141,O'Brien County,USA.16.71_1,Iowa,O'Brien
+19143,Osceola County,USA.16.72_1,Iowa,Osceola
+19145,Page County,USA.16.73_1,Iowa,Page
+19147,Palo Alto County,USA.16.74_1,Iowa,Palo Alto
+19149,Plymouth County,USA.16.75_1,Iowa,Plymouth
+19151,Pocahontas County,USA.16.76_1,Iowa,Pocahontas
+19153,Polk County,USA.16.77_1,Iowa,Polk
+19155,Pottawattamie County,USA.16.78_1,Iowa,Pottawattamie
+19157,Poweshiek County,USA.16.79_1,Iowa,Poweshiek
+19159,Ringgold County,USA.16.80_1,Iowa,Ringgold
+19161,Sac County,USA.16.81_1,Iowa,Sac
+19163,Scott County,USA.16.82_1,Iowa,Scott
+19165,Shelby County,USA.16.83_1,Iowa,Shelby
+19167,Sioux County,USA.16.84_1,Iowa,Sioux
+19169,Story County,USA.16.85_1,Iowa,Story
+19171,Tama County,USA.16.86_1,Iowa,Tama
+19173,Taylor County,USA.16.87_1,Iowa,Taylor
+19175,Union County,USA.16.88_1,Iowa,Union
+19177,Van Buren County,USA.16.89_1,Iowa,Van Buren
+19179,Wapello County,USA.16.90_1,Iowa,Wapello
+19181,Warren County,USA.16.91_1,Iowa,Warren
+19183,Washington County,USA.16.92_1,Iowa,Washington
+19185,Wayne County,USA.16.93_1,Iowa,Wayne
+19187,Webster County,USA.16.94_1,Iowa,Webster
+19189,Winnebago County,USA.16.95_1,Iowa,Winnebago
+19191,Winneshiek County,USA.16.96_1,Iowa,Winneshiek
+19193,Woodbury County,USA.16.97_1,Iowa,Woodbury
+19195,Worth County,USA.16.98_1,Iowa,Worth
+19197,Wright County,USA.16.99_1,Iowa,Wright
+20001,Allen County,USA.17.1_1,Kansas,Allen
+20003,Anderson County,USA.17.2_1,Kansas,Anderson
+20005,Atchison County,USA.17.3_1,Kansas,Atchison
+20007,Barber County,USA.17.4_1,Kansas,Barber
+20009,Barton County,USA.17.5_1,Kansas,Barton
+20011,Bourbon County,USA.17.6_1,Kansas,Bourbon
+20013,Brown County,USA.17.7_1,Kansas,Brown
+20015,Butler County,USA.17.8_1,Kansas,Butler
+20017,Chase County,USA.17.9_1,Kansas,Chase
+20019,Chautauqua County,USA.17.10_1,Kansas,Chautauqua
+20021,Cherokee County,USA.17.11_1,Kansas,Cherokee
+20023,Cheyenne County,USA.17.12_1,Kansas,Cheyenne
+20025,Clark County,USA.17.13_1,Kansas,Clark
+20027,Clay County,USA.17.14_1,Kansas,Clay
+20029,Cloud County,USA.17.15_1,Kansas,Cloud
+20031,Coffey County,USA.17.16_1,Kansas,Coffey
+20033,Comanche County,USA.17.17_1,Kansas,Comanche
+20035,Cowley County,USA.17.18_1,Kansas,Cowley
+20037,Crawford County,USA.17.19_1,Kansas,Crawford
+20039,Decatur County,USA.17.20_1,Kansas,Decatur
+20041,Dickinson County,USA.17.21_1,Kansas,Dickinson
+20043,Doniphan County,USA.17.22_1,Kansas,Doniphan
+20045,Douglas County,USA.17.23_1,Kansas,Douglas
+20047,Edwards County,USA.17.24_1,Kansas,Edwards
+20049,Elk County,USA.17.25_1,Kansas,Elk
+20051,Ellis County,USA.17.26_1,Kansas,Ellis
+20053,Ellsworth County,USA.17.27_1,Kansas,Ellsworth
+20055,Finney County,USA.17.28_1,Kansas,Finney
+20057,Ford County,USA.17.29_1,Kansas,Ford
+20059,Franklin County,USA.17.30_1,Kansas,Franklin
+20061,Geary County,USA.17.31_1,Kansas,Geary
+20063,Gove County,USA.17.32_1,Kansas,Gove
+20065,Graham County,USA.17.33_1,Kansas,Graham
+20067,Grant County,USA.17.34_1,Kansas,Grant
+20069,Gray County,USA.17.35_1,Kansas,Gray
+20071,Greeley County,USA.17.36_1,Kansas,Greeley
+20073,Greenwood County,USA.17.37_1,Kansas,Greenwood
+20075,Hamilton County,USA.17.38_1,Kansas,Hamilton
+20077,Harper County,USA.17.39_1,Kansas,Harper
+20079,Harvey County,USA.17.40_1,Kansas,Harvey
+20081,Haskell County,USA.17.41_1,Kansas,Haskell
+20083,Hodgeman County,USA.17.42_1,Kansas,Hodgeman
+20085,Jackson County,USA.17.43_1,Kansas,Jackson
+20087,Jefferson County,USA.17.44_1,Kansas,Jefferson
+20089,Jewell County,USA.17.45_1,Kansas,Jewell
+20091,Johnson County,USA.17.46_1,Kansas,Johnson
+20093,Kearny County,USA.17.47_1,Kansas,Kearny
+20095,Kingman County,USA.17.48_1,Kansas,Kingman
+20097,Kiowa County,USA.17.49_1,Kansas,Kiowa
+20099,Labette County,USA.17.50_1,Kansas,Labette
+20101,Lane County,USA.17.51_1,Kansas,Lane
+20103,Leavenworth County,USA.17.52_1,Kansas,Leavenworth
+20105,Lincoln County,USA.17.53_1,Kansas,Lincoln
+20107,Linn County,USA.17.54_1,Kansas,Linn
+20109,Logan County,USA.17.55_1,Kansas,Logan
+20111,Lyon County,USA.17.56_1,Kansas,Lyon
+20113,McPherson County,USA.17.59_1,Kansas,McPherson
+20115,Marion County,USA.17.57_1,Kansas,Marion
+20117,Marshall County,USA.17.58_1,Kansas,Marshall
+20119,Meade County,USA.17.60_1,Kansas,Meade
+20121,Miami County,USA.17.61_1,Kansas,Miami
+20123,Mitchell County,USA.17.62_1,Kansas,Mitchell
+20125,Montgomery County,USA.17.63_1,Kansas,Montgomery
+20127,Morris County,USA.17.64_1,Kansas,Morris
+20129,Morton County,USA.17.65_1,Kansas,Morton
+20131,Nemaha County,USA.17.66_1,Kansas,Nemaha
+20133,Neosho County,USA.17.67_1,Kansas,Neosho
+20135,Ness County,USA.17.68_1,Kansas,Ness
+20137,Norton County,USA.17.69_1,Kansas,Norton
+20139,Osage County,USA.17.70_1,Kansas,Osage
+20141,Osborne County,USA.17.71_1,Kansas,Osborne
+20143,Ottawa County,USA.17.72_1,Kansas,Ottawa
+20145,Pawnee County,USA.17.73_1,Kansas,Pawnee
+20147,Phillips County,USA.17.74_1,Kansas,Phillips
+20149,Pottawatomie County,USA.17.75_1,Kansas,Pottawatomie
+20151,Pratt County,USA.17.76_1,Kansas,Pratt
+20153,Rawlins County,USA.17.77_1,Kansas,Rawlins
+20155,Reno County,USA.17.78_1,Kansas,Reno
+20157,Republic County,USA.17.79_1,Kansas,Republic
+20159,Rice County,USA.17.80_1,Kansas,Rice
+20161,Riley County,USA.17.81_1,Kansas,Riley
+20163,Rooks County,USA.17.82_1,Kansas,Rooks
+20165,Rush County,USA.17.83_1,Kansas,Rush
+20167,Russell County,USA.17.84_1,Kansas,Russell
+20169,Saline County,USA.17.85_1,Kansas,Saline
+20171,Scott County,USA.17.86_1,Kansas,Scott
+20173,Sedgwick County,USA.17.87_1,Kansas,Sedgwick
+20175,Seward County,USA.17.88_1,Kansas,Seward
+20177,Shawnee County,USA.17.89_1,Kansas,Shawnee
+20179,Sheridan County,USA.17.90_1,Kansas,Sheridan
+20181,Sherman County,USA.17.91_1,Kansas,Sherman
+20183,Smith County,USA.17.92_1,Kansas,Smith
+20185,Stafford County,USA.17.93_1,Kansas,Stafford
+20187,Stanton County,USA.17.94_1,Kansas,Stanton
+20189,Stevens County,USA.17.95_1,Kansas,Stevens
+20191,Sumner County,USA.17.96_1,Kansas,Sumner
+20193,Thomas County,USA.17.97_1,Kansas,Thomas
+20195,Trego County,USA.17.98_1,Kansas,Trego
+20197,Wabaunsee County,USA.17.99_1,Kansas,Wabaunsee
+20199,Wallace County,USA.17.100_1,Kansas,Wallace
+20201,Washington County,USA.17.101_1,Kansas,Washington
+20203,Wichita County,USA.17.102_1,Kansas,Wichita
+20205,Wilson County,USA.17.103_1,Kansas,Wilson
+20207,Woodson County,USA.17.104_1,Kansas,Woodson
+20209,Wyandotte County,USA.17.105_1,Kansas,Wyandotte
+21001,Adair County,USA.18.1_1,Kentucky,Adair
+21003,Allen County,USA.18.2_1,Kentucky,Allen
+21005,Anderson County,USA.18.3_1,Kentucky,Anderson
+21007,Ballard County,USA.18.4_1,Kentucky,Ballard
+21009,Barren County,USA.18.5_1,Kentucky,Barren
+21011,Bath County,USA.18.6_1,Kentucky,Bath
+21013,Bell County,USA.18.7_1,Kentucky,Bell
+21015,Boone County,USA.18.8_1,Kentucky,Boone
+21017,Bourbon County,USA.18.9_1,Kentucky,Bourbon
+21019,Boyd County,USA.18.10_1,Kentucky,Boyd
+21021,Boyle County,USA.18.11_1,Kentucky,Boyle
+21023,Bracken County,USA.18.12_1,Kentucky,Bracken
+21025,Breathitt County,USA.18.13_1,Kentucky,Breathitt
+21027,Breckinridge County,USA.18.14_1,Kentucky,Breckinridge
+21029,Bullitt County,USA.18.15_1,Kentucky,Bullitt
+21031,Butler County,USA.18.16_1,Kentucky,Butler
+21033,Caldwell County,USA.18.17_1,Kentucky,Caldwell
+21035,Calloway County,USA.18.18_1,Kentucky,Calloway
+21037,Campbell County,USA.18.19_1,Kentucky,Campbell
+21039,Carlisle County,USA.18.20_1,Kentucky,Carlisle
+21041,Carroll County,USA.18.21_1,Kentucky,Carroll
+21043,Carter County,USA.18.22_1,Kentucky,Carter
+21045,Casey County,USA.18.23_1,Kentucky,Casey
+21047,Christian County,USA.18.24_1,Kentucky,Christian
+21049,Clark County,USA.18.25_1,Kentucky,Clark
+21051,Clay County,USA.18.26_1,Kentucky,Clay
+21053,Clinton County,USA.18.27_1,Kentucky,Clinton
+21055,Crittenden County,USA.18.28_1,Kentucky,Crittenden
+21057,Cumberland County,USA.18.29_1,Kentucky,Cumberland
+21059,Daviess County,USA.18.30_1,Kentucky,Daviess
+21061,Edmonson County,USA.18.31_1,Kentucky,Edmonson
+21063,Elliott County,USA.18.32_1,Kentucky,Elliott
+21065,Estill County,USA.18.33_1,Kentucky,Estill
+21067,Fayette County,USA.18.34_1,Kentucky,Fayette
+21069,Fleming County,USA.18.35_1,Kentucky,Fleming
+21071,Floyd County,USA.18.36_1,Kentucky,Floyd
+21073,Franklin County,USA.18.37_1,Kentucky,Franklin
+21075,Fulton County,USA.18.38_1,Kentucky,Fulton
+21077,Gallatin County,USA.18.39_1,Kentucky,Gallatin
+21079,Garrard County,USA.18.40_1,Kentucky,Garrard
+21081,Grant County,USA.18.41_1,Kentucky,Grant
+21083,Graves County,USA.18.42_1,Kentucky,Graves
+21085,Grayson County,USA.18.43_1,Kentucky,Grayson
+21087,Green County,USA.18.44_1,Kentucky,Green
+21089,Greenup County,USA.18.45_1,Kentucky,Greenup
+21091,Hancock County,USA.18.46_1,Kentucky,Hancock
+21093,Hardin County,USA.18.47_1,Kentucky,Hardin
+21095,Harlan County,USA.18.48_1,Kentucky,Harlan
+21097,Harrison County,USA.18.49_1,Kentucky,Harrison
+21099,Hart County,USA.18.50_1,Kentucky,Hart
+21101,Henderson County,USA.18.51_1,Kentucky,Henderson
+21103,Henry County,USA.18.52_1,Kentucky,Henry
+21105,Hickman County,USA.18.53_1,Kentucky,Hickman
+21107,Hopkins County,USA.18.54_1,Kentucky,Hopkins
+21109,Jackson County,USA.18.55_1,Kentucky,Jackson
+21111,Jefferson County,USA.18.56_1,Kentucky,Jefferson
+21113,Jessamine County,USA.18.57_1,Kentucky,Jessamine
+21115,Johnson County,USA.18.58_1,Kentucky,Johnson
+21117,Kenton County,USA.18.59_1,Kentucky,Kenton
+21119,Knott County,USA.18.60_1,Kentucky,Knott
+21121,Knox County,USA.18.61_1,Kentucky,Knox
+21123,Larue County,USA.18.62_1,Kentucky,Larue
+21125,Laurel County,USA.18.63_1,Kentucky,Laurel
+21127,Lawrence County,USA.18.64_1,Kentucky,Lawrence
+21129,Lee County,USA.18.65_1,Kentucky,Lee
+21131,Leslie County,USA.18.66_1,Kentucky,Leslie
+21133,Letcher County,USA.18.67_1,Kentucky,Letcher
+21135,Lewis County,USA.18.68_1,Kentucky,Lewis
+21137,Lincoln County,USA.18.69_1,Kentucky,Lincoln
+21139,Livingston County,USA.18.70_1,Kentucky,Livingston
+21141,Logan County,USA.18.71_1,Kentucky,Logan
+21143,Lyon County,USA.18.72_1,Kentucky,Lyon
+21145,McCracken County,USA.18.79_1,Kentucky,McCracken
+21147,McCreary County,USA.18.80_1,Kentucky,McCreary
+21149,McLean County,USA.18.81_1,Kentucky,McLean
+21151,Madison County,USA.18.73_1,Kentucky,Madison
+21153,Magoffin County,USA.18.74_1,Kentucky,Magoffin
+21155,Marion County,USA.18.75_1,Kentucky,Marion
+21157,Marshall County,USA.18.76_1,Kentucky,Marshall
+21159,Martin County,USA.18.77_1,Kentucky,Martin
+21161,Mason County,USA.18.78_1,Kentucky,Mason
+21163,Meade County,USA.18.82_1,Kentucky,Meade
+21165,Menifee County,USA.18.83_1,Kentucky,Menifee
+21167,Mercer County,USA.18.84_1,Kentucky,Mercer
+21169,Metcalfe County,USA.18.85_1,Kentucky,Metcalfe
+21171,Monroe County,USA.18.86_1,Kentucky,Monroe
+21173,Montgomery County,USA.18.87_1,Kentucky,Montgomery
+21175,Morgan County,USA.18.88_1,Kentucky,Morgan
+21177,Muhlenberg County,USA.18.89_1,Kentucky,Muhlenberg
+21179,Nelson County,USA.18.90_1,Kentucky,Nelson
+21181,Nicholas County,USA.18.91_1,Kentucky,Nicholas
+21183,Ohio County,USA.18.92_1,Kentucky,Ohio
+21185,Oldham County,USA.18.93_1,Kentucky,Oldham
+21187,Owen County,USA.18.94_1,Kentucky,Owen
+21189,Owsley County,USA.18.95_1,Kentucky,Owsley
+21191,Pendleton County,USA.18.96_1,Kentucky,Pendleton
+21193,Perry County,USA.18.97_1,Kentucky,Perry
+21195,Pike County,USA.18.98_1,Kentucky,Pike
+21197,Powell County,USA.18.99_1,Kentucky,Powell
+21199,Pulaski County,USA.18.100_1,Kentucky,Pulaski
+21201,Robertson County,USA.18.101_1,Kentucky,Robertson
+21203,Rockcastle County,USA.18.102_1,Kentucky,Rockcastle
+21205,Rowan County,USA.18.103_1,Kentucky,Rowan
+21207,Russell County,USA.18.104_1,Kentucky,Russell
+21209,Scott County,USA.18.105_1,Kentucky,Scott
+21211,Shelby County,USA.18.106_1,Kentucky,Shelby
+21213,Simpson County,USA.18.107_1,Kentucky,Simpson
+21215,Spencer County,USA.18.108_1,Kentucky,Spencer
+21217,Taylor County,USA.18.109_1,Kentucky,Taylor
+21219,Todd County,USA.18.110_1,Kentucky,Todd
+21221,Trigg County,USA.18.111_1,Kentucky,Trigg
+21223,Trimble County,USA.18.112_1,Kentucky,Trimble
+21225,Union County,USA.18.113_1,Kentucky,Union
+21227,Warren County,USA.18.114_1,Kentucky,Warren
+21229,Washington County,USA.18.115_1,Kentucky,Washington
+21231,Wayne County,USA.18.116_1,Kentucky,Wayne
+21233,Webster County,USA.18.117_1,Kentucky,Webster
+21235,Whitley County,USA.18.118_1,Kentucky,Whitley
+21237,Wolfe County,USA.18.119_1,Kentucky,Wolfe
+21239,Woodford County,USA.18.120_1,Kentucky,Woodford
+22001,Acadia Parish,USA.19.1_1,Louisiana,Acadia
+22003,Allen Parish,USA.19.2_1,Louisiana,Allen
+22005,Ascension Parish,USA.19.3_1,Louisiana,Ascension
+22007,Assumption Parish,USA.19.4_1,Louisiana,Assumption
+22009,Avoyelles Parish,USA.19.5_1,Louisiana,Avoyelles
+22011,Beauregard Parish,USA.19.6_1,Louisiana,Beauregard
+22013,Bienville Parish,USA.19.7_1,Louisiana,Bienville
+22015,Bossier Parish,USA.19.8_1,Louisiana,Bossier
+22017,Caddo Parish,USA.19.9_1,Louisiana,Caddo
+22019,Calcasieu Parish,USA.19.10_1,Louisiana,Calcasieu
+22021,Caldwell Parish,USA.19.11_1,Louisiana,Caldwell
+22023,Cameron Parish,USA.19.12_1,Louisiana,Cameron
+22025,Catahoula Parish,USA.19.13_1,Louisiana,Catahoula
+22027,Claiborne Parish,USA.19.14_1,Louisiana,Claiborne
+22029,Concordia Parish,USA.19.15_1,Louisiana,Concordia
+22031,De Soto Parish,USA.19.16_1,Louisiana,De Soto
+22033,East Baton Rouge Parish,USA.19.17_1,Louisiana,East Baton Rouge
+22035,East Carroll Parish,USA.19.18_1,Louisiana,East Carroll
+22037,East Feliciana Parish,USA.19.19_1,Louisiana,East Feliciana
+22039,Evangeline Parish,USA.19.20_1,Louisiana,Evangeline
+22041,Franklin Parish,USA.19.21_1,Louisiana,Franklin
+22043,Grant Parish,USA.19.22_1,Louisiana,Grant
+22045,Iberia Parish,USA.19.23_1,Louisiana,Iberia
+22047,Iberville Parish,USA.19.24_1,Louisiana,Iberville
+22049,Jackson Parish,USA.19.25_1,Louisiana,Jackson
+22051,Jefferson Parish,USA.19.26_1,Louisiana,Jefferson
+22053,Jefferson Davis Parish,USA.19.27_1,Louisiana,Jefferson Davis
+22055,Lafayette Parish,USA.19.29_1,Louisiana,Lafayette
+22057,Lafourche Parish,USA.19.30_1,Louisiana,Lafourche
+22059,La Salle Parish,USA.19.28_1,Louisiana,La Salle
+22061,Lincoln Parish,USA.19.31_1,Louisiana,Lincoln
+22063,Livingston Parish,USA.19.32_1,Louisiana,Livingston
+22065,Madison Parish,USA.19.33_1,Louisiana,Madison
+22067,Morehouse Parish,USA.19.34_1,Louisiana,Morehouse
+22069,Natchitoches Parish,USA.19.35_1,Louisiana,Natchitoches
+22071,Orleans Parish,USA.19.36_1,Louisiana,Orleans
+22073,Ouachita Parish,USA.19.37_1,Louisiana,Ouachita
+22075,Plaquemines Parish,USA.19.38_1,Louisiana,Plaquemines
+22077,Pointe Coupee Parish,USA.19.39_1,Louisiana,Pointe Coupee
+22079,Rapides Parish,USA.19.40_1,Louisiana,Rapides
+22081,Red River Parish,USA.19.41_1,Louisiana,Red River
+22083,Richland Parish,USA.19.42_1,Louisiana,Richland
+22085,Sabine Parish,USA.19.43_1,Louisiana,Sabine
+22087,St. Bernard Parish,USA.19.44_1,Louisiana,Saint Bernard
+22089,St. Charles Parish,USA.19.45_1,Louisiana,Saint Charles
+22091,St. Helena Parish,USA.19.46_1,Louisiana,Saint Helena
+22093,St. James Parish,USA.19.47_1,Louisiana,Saint James
+22095,St. John the Baptist Parish,USA.19.48_1,Louisiana,Saint John the Baptist
+22097,St. Landry Parish,USA.19.49_1,Louisiana,Saint Landry
+22099,St. Martin Parish,USA.19.50_1,Louisiana,Saint Martin
+22101,St. Mary Parish,USA.19.51_1,Louisiana,Saint Mary
+22103,St. Tammany Parish,USA.19.52_1,Louisiana,Saint Tammany
+22105,Tangipahoa Parish,USA.19.53_1,Louisiana,Tangipahoa
+22107,Tensas Parish,USA.19.54_1,Louisiana,Tensas
+22109,Terrebonne Parish,USA.19.55_1,Louisiana,Terrebonne
+22111,Union Parish,USA.19.56_1,Louisiana,Union
+22113,Vermilion Parish,USA.19.57_1,Louisiana,Vermilion
+22115,Vernon Parish,USA.19.58_1,Louisiana,Vernon
+22117,Washington Parish,USA.19.59_1,Louisiana,Washington
+22119,Webster Parish,USA.19.60_1,Louisiana,Webster
+22121,West Baton Rouge Parish,USA.19.61_1,Louisiana,West Baton Rouge
+22123,West Carroll Parish,USA.19.62_1,Louisiana,West Carroll
+22125,West Feliciana Parish,USA.19.63_1,Louisiana,West Feliciana
+22127,Winn Parish,USA.19.64_1,Louisiana,Winn
+23001,Androscoggin County,USA.20.1_1,Maine,Androscoggin
+23003,Aroostook County,USA.20.2_1,Maine,Aroostook
+23005,Cumberland County,USA.20.3_1,Maine,Cumberland
+23007,Franklin County,USA.20.4_1,Maine,Franklin
+23009,Hancock County,USA.20.5_1,Maine,Hancock
+23011,Kennebec County,USA.20.6_1,Maine,Kennebec
+23013,Knox County,USA.20.7_1,Maine,Knox
+23015,Lincoln County,USA.20.8_1,Maine,Lincoln
+23017,Oxford County,USA.20.9_1,Maine,Oxford
+23019,Penobscot County,USA.20.10_1,Maine,Penobscot
+23021,Piscataquis County,USA.20.11_1,Maine,Piscataquis
+23023,Sagadahoc County,USA.20.12_1,Maine,Sagadahoc
+23025,Somerset County,USA.20.13_1,Maine,Somerset
+23027,Waldo County,USA.20.14_1,Maine,Waldo
+23029,Washington County,USA.20.15_1,Maine,Washington
+23031,York County,USA.20.16_1,Maine,York
+24001,Allegany County,USA.21.1_1,Maryland,Allegany
+24003,Anne Arundel County,USA.21.2_1,Maryland,Anne Arundel
+24005,Baltimore County,USA.21.3_1,Maryland,Baltimore
+24009,Calvert County,USA.21.4_1,Maryland,Calvert
+24011,Caroline County,USA.21.5_1,Maryland,Caroline
+24013,Carroll County,USA.21.6_1,Maryland,Carroll
+24015,Cecil County,USA.21.7_1,Maryland,Cecil
+24017,Charles County,USA.21.8_1,Maryland,Charles
+24019,Dorchester County,USA.21.9_1,Maryland,Dorchester
+24021,Frederick County,USA.21.10_1,Maryland,Frederick
+24023,Garrett County,USA.21.11_1,Maryland,Garrett
+24025,Harford County,USA.21.12_1,Maryland,Harford
+24027,Howard County,USA.21.13_1,Maryland,Howard
+24029,Kent County,USA.21.14_1,Maryland,Kent
+24031,Montgomery County,USA.21.15_1,Maryland,Montgomery
+24033,Prince George,USA.21.16_1,Maryland,Prince George's
+24035,Queen Anne,USA.21.17_1,Maryland,Queen Anne's
+24037,St. Mary,USA.21.18_1,Maryland,Saint Mary's
+24039,Somerset County,USA.21.19_1,Maryland,Somerset
+24041,Talbot County,USA.21.20_1,Maryland,Talbot
+24043,Washington County,USA.21.21_1,Maryland,Washington
+24045,Wicomico County,USA.21.22_1,Maryland,Wicomico
+24047,Worcester County,USA.21.23_1,Maryland,Worcester
+24510,Baltimore city,USA.21.3_1,Maryland,Baltimore
+25001,Barnstable County,USA.22.1_1,Massachusetts,Barnstable
+25003,Berkshire County,USA.22.2_1,Massachusetts,Berkshire
+25005,Bristol County,USA.22.3_1,Massachusetts,Bristol
+25007,Dukes County,USA.22.4_1,Massachusetts,Dukes
+25009,Essex County,USA.22.5_1,Massachusetts,Essex
+25011,Franklin County,USA.22.6_1,Massachusetts,Franklin
+25013,Hampden County,USA.22.7_1,Massachusetts,Hampden
+25015,Hampshire County,USA.22.8_1,Massachusetts,Hampshire
+25017,Middlesex County,USA.22.9_1,Massachusetts,Middlesex
+25019,Nantucket County,USA.22.10_1,Massachusetts,Nantucket
+25021,Norfolk County,USA.22.11_1,Massachusetts,Norfolk
+25023,Plymouth County,USA.22.12_1,Massachusetts,Plymouth
+25025,Suffolk County,USA.22.13_1,Massachusetts,Suffolk
+25027,Worcester County,USA.22.14_1,Massachusetts,Worcester
+26001,Alcona County,USA.23.1_1,Michigan,Alcona
+26003,Alger County,USA.23.2_1,Michigan,Alger
+26005,Allegan County,USA.23.3_1,Michigan,Allegan
+26007,Alpena County,USA.23.4_1,Michigan,Alpena
+26009,Antrim County,USA.23.5_1,Michigan,Antrim
+26011,Arenac County,USA.23.6_1,Michigan,Arenac
+26013,Baraga County,USA.23.7_1,Michigan,Baraga
+26015,Barry County,USA.23.8_1,Michigan,Barry
+26017,Bay County,USA.23.9_1,Michigan,Bay
+26019,Benzie County,USA.23.10_1,Michigan,Benzie
+26021,Berrien County,USA.23.11_1,Michigan,Berrien
+26023,Branch County,USA.23.12_1,Michigan,Branch
+26025,Calhoun County,USA.23.13_1,Michigan,Calhoun
+26027,Cass County,USA.23.14_1,Michigan,Cass
+26029,Charlevoix County,USA.23.15_1,Michigan,Charlevoix
+26031,Cheboygan County,USA.23.16_1,Michigan,Cheboygan
+26033,Chippewa County,USA.23.17_1,Michigan,Chippewa
+26035,Clare County,USA.23.18_1,Michigan,Clare
+26037,Clinton County,USA.23.19_1,Michigan,Clinton
+26039,Crawford County,USA.23.20_1,Michigan,Crawford
+26041,Delta County,USA.23.21_1,Michigan,Delta
+26043,Dickinson County,USA.23.22_1,Michigan,Dickinson
+26045,Eaton County,USA.23.23_1,Michigan,Eaton
+26047,Emmet County,USA.23.24_1,Michigan,Emmet
+26049,Genesee County,USA.23.25_1,Michigan,Genesee
+26051,Gladwin County,USA.23.26_1,Michigan,Gladwin
+26053,Gogebic County,USA.23.27_1,Michigan,Gogebic
+26055,Grand Traverse County,USA.23.28_1,Michigan,Grand Traverse
+26057,Gratiot County,USA.23.29_1,Michigan,Gratiot
+26059,Hillsdale County,USA.23.30_1,Michigan,Hillsdale
+26061,Houghton County,USA.23.31_1,Michigan,Houghton
+26063,Huron County,USA.23.32_1,Michigan,Huron
+26065,Ingham County,USA.23.33_1,Michigan,Ingham
+26067,Ionia County,USA.23.34_1,Michigan,Ionia
+26069,Iosco County,USA.23.35_1,Michigan,Iosco
+26071,Iron County,USA.23.36_1,Michigan,Iron
+26073,Isabella County,USA.23.37_1,Michigan,Isabella
+26075,Jackson County,USA.23.38_1,Michigan,Jackson
+26077,Kalamazoo County,USA.23.39_1,Michigan,Kalamazoo
+26079,Kalkaska County,USA.23.40_1,Michigan,Kalkaska
+26081,Kent County,USA.23.41_1,Michigan,Kent
+26083,Keweenaw County,USA.23.42_1,Michigan,Keweenaw
+26085,Lake County,USA.23.43_1,Michigan,Lake
+26087,Lapeer County,USA.23.48_1,Michigan,Lapeer
+26089,Leelanau County,USA.23.49_1,Michigan,Leelanau
+26091,Lenawee County,USA.23.50_1,Michigan,Lenawee
+26093,Livingston County,USA.23.51_1,Michigan,Livingston
+26095,Luce County,USA.23.52_1,Michigan,Luce
+26097,Mackinac County,USA.23.53_1,Michigan,Mackinac
+26099,Macomb County,USA.23.54_1,Michigan,Macomb
+26101,Manistee County,USA.23.55_1,Michigan,Manistee
+26103,Marquette County,USA.23.56_1,Michigan,Marquette
+26105,Mason County,USA.23.57_1,Michigan,Mason
+26107,Mecosta County,USA.23.58_1,Michigan,Mecosta
+26109,Menominee County,USA.23.59_1,Michigan,Menominee
+26111,Midland County,USA.23.60_1,Michigan,Midland
+26113,Missaukee County,USA.23.61_1,Michigan,Missaukee
+26115,Monroe County,USA.23.62_1,Michigan,Monroe
+26117,Montcalm County,USA.23.63_1,Michigan,Montcalm
+26119,Montmorency County,USA.23.64_1,Michigan,Montmorency
+26121,Muskegon County,USA.23.65_1,Michigan,Muskegon
+26123,Newaygo County,USA.23.66_1,Michigan,Newaygo
+26125,Oakland County,USA.23.67_1,Michigan,Oakland
+26127,Oceana County,USA.23.68_1,Michigan,Oceana
+26129,Ogemaw County,USA.23.69_1,Michigan,Ogemaw
+26131,Ontonagon County,USA.23.70_1,Michigan,Ontonagon
+26133,Osceola County,USA.23.71_1,Michigan,Osceola
+26135,Oscoda County,USA.23.72_1,Michigan,Oscoda
+26137,Otsego County,USA.23.73_1,Michigan,Otsego
+26139,Ottawa County,USA.23.74_1,Michigan,Ottawa
+26141,Presque Isle County,USA.23.75_1,Michigan,Presque Isle
+26143,Roscommon County,USA.23.76_1,Michigan,Roscommon
+26145,Saginaw County,USA.23.77_1,Michigan,Saginaw
+26147,St. Clair County,USA.23.78_1,Michigan,Saint Clair
+26149,St. Joseph County,USA.23.79_1,Michigan,Saint Joseph
+26151,Sanilac County,USA.23.80_1,Michigan,Sanilac
+26153,Schoolcraft County,USA.23.81_1,Michigan,Schoolcraft
+26155,Shiawassee County,USA.23.82_1,Michigan,Shiawassee
+26157,Tuscola County,USA.23.83_1,Michigan,Tuscola
+26159,Van Buren County,USA.23.84_1,Michigan,Van Buren
+26161,Washtenaw County,USA.23.85_1,Michigan,Washtenaw
+26163,Wayne County,USA.23.86_1,Michigan,Wayne
+26165,Wexford County,USA.23.87_1,Michigan,Wexford
+27001,Aitkin County,USA.24.1_1,Minnesota,Aitkin
+27003,Anoka County,USA.24.2_1,Minnesota,Anoka
+27005,Becker County,USA.24.3_1,Minnesota,Becker
+27007,Beltrami County,USA.24.4_1,Minnesota,Beltrami
+27009,Benton County,USA.24.5_1,Minnesota,Benton
+27011,Big Stone County,USA.24.6_1,Minnesota,Big Stone
+27013,Blue Earth County,USA.24.7_1,Minnesota,Blue Earth
+27015,Brown County,USA.24.8_1,Minnesota,Brown
+27017,Carlton County,USA.24.9_1,Minnesota,Carlton
+27019,Carver County,USA.24.10_1,Minnesota,Carver
+27021,Cass County,USA.24.11_1,Minnesota,Cass
+27023,Chippewa County,USA.24.12_1,Minnesota,Chippewa
+27025,Chisago County,USA.24.13_1,Minnesota,Chisago
+27027,Clay County,USA.24.14_1,Minnesota,Clay
+27029,Clearwater County,USA.24.15_1,Minnesota,Clearwater
+27031,Cook County,USA.24.16_1,Minnesota,Cook
+27033,Cottonwood County,USA.24.17_1,Minnesota,Cottonwood
+27035,Crow Wing County,USA.24.18_1,Minnesota,Crow Wing
+27037,Dakota County,USA.24.19_1,Minnesota,Dakota
+27039,Dodge County,USA.24.20_1,Minnesota,Dodge
+27041,Douglas County,USA.24.21_1,Minnesota,Douglas
+27043,Faribault County,USA.24.22_1,Minnesota,Faribault
+27045,Fillmore County,USA.24.23_1,Minnesota,Fillmore
+27047,Freeborn County,USA.24.24_1,Minnesota,Freeborn
+27049,Goodhue County,USA.24.25_1,Minnesota,Goodhue
+27051,Grant County,USA.24.26_1,Minnesota,Grant
+27053,Hennepin County,USA.24.27_1,Minnesota,Hennepin
+27055,Houston County,USA.24.28_1,Minnesota,Houston
+27057,Hubbard County,USA.24.29_1,Minnesota,Hubbard
+27059,Isanti County,USA.24.30_1,Minnesota,Isanti
+27061,Itasca County,USA.24.31_1,Minnesota,Itasca
+27063,Jackson County,USA.24.32_1,Minnesota,Jackson
+27065,Kanabec County,USA.24.33_1,Minnesota,Kanabec
+27067,Kandiyohi County,USA.24.34_1,Minnesota,Kandiyohi
+27069,Kittson County,USA.24.35_1,Minnesota,Kittson
+27071,Koochiching County,USA.24.36_1,Minnesota,Koochiching
+27073,Lac qui Parle County,USA.24.37_1,Minnesota,Lac qui Parle
+27075,Lake County,USA.24.38_1,Minnesota,Lake
+27077,Lake of the Woods County,USA.24.39_1,Minnesota,Lake of the Woods
+27079,Le Sueur County,USA.24.41_1,Minnesota,Le Sueur
+27081,Lincoln County,USA.24.42_1,Minnesota,Lincoln
+27083,Lyon County,USA.24.43_1,Minnesota,Lyon
+27085,McLeod County,USA.24.47_1,Minnesota,McLeod
+27087,Mahnomen County,USA.24.44_1,Minnesota,Mahnomen
+27089,Marshall County,USA.24.45_1,Minnesota,Marshall
+27091,Martin County,USA.24.46_1,Minnesota,Martin
+27093,Meeker County,USA.24.48_1,Minnesota,Meeker
+27095,Mille Lacs County,USA.24.49_1,Minnesota,Mille Lacs
+27097,Morrison County,USA.24.50_1,Minnesota,Morrison
+27099,Mower County,USA.24.51_1,Minnesota,Mower
+27101,Murray County,USA.24.52_1,Minnesota,Murray
+27103,Nicollet County,USA.24.53_1,Minnesota,Nicollet
+27105,Nobles County,USA.24.54_1,Minnesota,Nobles
+27107,Norman County,USA.24.55_1,Minnesota,Norman
+27109,Olmsted County,USA.24.56_1,Minnesota,Olmsted
+27111,Otter Tail County,USA.24.57_1,Minnesota,Otter Tail
+27113,Pennington County,USA.24.58_1,Minnesota,Pennington
+27115,Pine County,USA.24.59_1,Minnesota,Pine
+27117,Pipestone County,USA.24.60_1,Minnesota,Pipestone
+27119,Polk County,USA.24.61_1,Minnesota,Polk
+27121,Pope County,USA.24.62_1,Minnesota,Pope
+27123,Ramsey County,USA.24.63_1,Minnesota,Ramsey
+27125,Red Lake County,USA.24.64_1,Minnesota,Red Lake
+27127,Redwood County,USA.24.65_1,Minnesota,Redwood
+27129,Renville County,USA.24.66_1,Minnesota,Renville
+27131,Rice County,USA.24.67_1,Minnesota,Rice
+27133,Rock County,USA.24.68_1,Minnesota,Rock
+27135,Roseau County,USA.24.69_1,Minnesota,Roseau
+27137,St. Louis County,USA.24.70_1,Minnesota,Saint Louis
+27139,Scott County,USA.24.71_1,Minnesota,Scott
+27141,Sherburne County,USA.24.72_1,Minnesota,Sherburne
+27143,Sibley County,USA.24.73_1,Minnesota,Sibley
+27145,Stearns County,USA.24.74_1,Minnesota,Stearns
+27147,Steele County,USA.24.75_1,Minnesota,Steele
+27149,Stevens County,USA.24.76_1,Minnesota,Stevens
+27151,Swift County,USA.24.77_1,Minnesota,Swift
+27153,Todd County,USA.24.78_1,Minnesota,Todd
+27155,Traverse County,USA.24.79_1,Minnesota,Traverse
+27157,Wabasha County,USA.24.80_1,Minnesota,Wabasha
+27159,Wadena County,USA.24.81_1,Minnesota,Wadena
+27161,Waseca County,USA.24.82_1,Minnesota,Waseca
+27163,Washington County,USA.24.83_1,Minnesota,Washington
+27165,Watonwan County,USA.24.84_1,Minnesota,Watonwan
+27167,Wilkin County,USA.24.85_1,Minnesota,Wilkin
+27169,Winona County,USA.24.86_1,Minnesota,Winona
+27171,Wright County,USA.24.87_1,Minnesota,Wright
+27173,Yellow Medicine County,USA.24.88_1,Minnesota,Yellow Medicine
+28001,Adams County,USA.25.1_1,Mississippi,Adams
+28003,Alcorn County,USA.25.2_1,Mississippi,Alcorn
+28005,Amite County,USA.25.3_1,Mississippi,Amite
+28007,Attala County,USA.25.4_1,Mississippi,Attala
+28009,Benton County,USA.25.5_1,Mississippi,Benton
+28011,Bolivar County,USA.25.6_1,Mississippi,Bolivar
+28013,Calhoun County,USA.25.7_1,Mississippi,Calhoun
+28015,Carroll County,USA.25.8_1,Mississippi,Carroll
+28017,Chickasaw County,USA.25.9_1,Mississippi,Chickasaw
+28019,Choctaw County,USA.25.10_1,Mississippi,Choctaw
+28021,Claiborne County,USA.25.11_1,Mississippi,Claiborne
+28023,Clarke County,USA.25.12_1,Mississippi,Clarke
+28025,Clay County,USA.25.13_1,Mississippi,Clay
+28027,Coahoma County,USA.25.14_1,Mississippi,Coahoma
+28029,Copiah County,USA.25.15_1,Mississippi,Copiah
+28031,Covington County,USA.25.16_1,Mississippi,Covington
+28033,DeSoto County,USA.25.17_1,Mississippi,Desoto
+28035,Forrest County,USA.25.18_1,Mississippi,Forrest
+28037,Franklin County,USA.25.19_1,Mississippi,Franklin
+28039,George County,USA.25.20_1,Mississippi,George
+28041,Greene County,USA.25.21_1,Mississippi,Greene
+28043,Grenada County,USA.25.22_1,Mississippi,Grenada
+28045,Hancock County,USA.25.23_1,Mississippi,Hancock
+28047,Harrison County,USA.25.24_1,Mississippi,Harrison
+28049,Hinds County,USA.25.25_1,Mississippi,Hinds
+28051,Holmes County,USA.25.26_1,Mississippi,Holmes
+28053,Humphreys County,USA.25.27_1,Mississippi,Humphreys
+28055,Issaquena County,USA.25.28_1,Mississippi,Issaquena
+28057,Itawamba County,USA.25.29_1,Mississippi,Itawamba
+28059,Jackson County,USA.25.30_1,Mississippi,Jackson
+28061,Jasper County,USA.25.31_1,Mississippi,Jasper
+28063,Jefferson County,USA.25.32_1,Mississippi,Jefferson
+28065,Jefferson Davis County,USA.25.33_1,Mississippi,Jefferson Davis
+28067,Jones County,USA.25.34_1,Mississippi,Jones
+28069,Kemper County,USA.25.35_1,Mississippi,Kemper
+28071,Lafayette County,USA.25.36_1,Mississippi,Lafayette
+28073,Lamar County,USA.25.37_1,Mississippi,Lamar
+28075,Lauderdale County,USA.25.38_1,Mississippi,Lauderdale
+28077,Lawrence County,USA.25.39_1,Mississippi,Lawrence
+28079,Leake County,USA.25.40_1,Mississippi,Leake
+28081,Lee County,USA.25.41_1,Mississippi,Lee
+28083,Leflore County,USA.25.42_1,Mississippi,Leflore
+28085,Lincoln County,USA.25.43_1,Mississippi,Lincoln
+28087,Lowndes County,USA.25.44_1,Mississippi,Lowndes
+28089,Madison County,USA.25.45_1,Mississippi,Madison
+28091,Marion County,USA.25.46_1,Mississippi,Marion
+28093,Marshall County,USA.25.47_1,Mississippi,Marshall
+28095,Monroe County,USA.25.48_1,Mississippi,Monroe
+28097,Montgomery County,USA.25.49_1,Mississippi,Montgomery
+28099,Neshoba County,USA.25.50_1,Mississippi,Neshoba
+28101,Newton County,USA.25.51_1,Mississippi,Newton
+28103,Noxubee County,USA.25.52_1,Mississippi,Noxubee
+28105,Oktibbeha County,USA.25.53_1,Mississippi,Oktibbeha
+28107,Panola County,USA.25.54_1,Mississippi,Panola
+28109,Pearl River County,USA.25.55_1,Mississippi,Pearl River
+28111,Perry County,USA.25.56_1,Mississippi,Perry
+28113,Pike County,USA.25.57_1,Mississippi,Pike
+28115,Pontotoc County,USA.25.58_1,Mississippi,Pontotoc
+28117,Prentiss County,USA.25.59_1,Mississippi,Prentiss
+28119,Quitman County,USA.25.60_1,Mississippi,Quitman
+28121,Rankin County,USA.25.61_1,Mississippi,Rankin
+28123,Scott County,USA.25.62_1,Mississippi,Scott
+28125,Sharkey County,USA.25.63_1,Mississippi,Sharkey
+28127,Simpson County,USA.25.64_1,Mississippi,Simpson
+28129,Smith County,USA.25.65_1,Mississippi,Smith
+28131,Stone County,USA.25.66_1,Mississippi,Stone
+28133,Sunflower County,USA.25.67_1,Mississippi,Sunflower
+28135,Tallahatchie County,USA.25.68_1,Mississippi,Tallahatchie
+28137,Tate County,USA.25.69_1,Mississippi,Tate
+28139,Tippah County,USA.25.70_1,Mississippi,Tippah
+28141,Tishomingo County,USA.25.71_1,Mississippi,Tishomingo
+28143,Tunica County,USA.25.72_1,Mississippi,Tunica
+28145,Union County,USA.25.73_1,Mississippi,Union
+28147,Walthall County,USA.25.74_1,Mississippi,Walthall
+28149,Warren County,USA.25.75_1,Mississippi,Warren
+28151,Washington County,USA.25.76_1,Mississippi,Washington
+28153,Wayne County,USA.25.77_1,Mississippi,Wayne
+28155,Webster County,USA.25.78_1,Mississippi,Webster
+28157,Wilkinson County,USA.25.79_1,Mississippi,Wilkinson
+28159,Winston County,USA.25.80_1,Mississippi,Winston
+28161,Yalobusha County,USA.25.81_1,Mississippi,Yalobusha
+28163,Yazoo County,USA.25.82_1,Mississippi,Yazoo
+29001,Adair County,USA.26.1_1,Missouri,Adair
+29003,Andrew County,USA.26.2_1,Missouri,Andrew
+29005,Atchison County,USA.26.3_1,Missouri,Atchison
+29007,Audrain County,USA.26.4_1,Missouri,Audrain
+29009,Barry County,USA.26.5_1,Missouri,Barry
+29011,Barton County,USA.26.6_1,Missouri,Barton
+29013,Bates County,USA.26.7_1,Missouri,Bates
+29015,Benton County,USA.26.8_1,Missouri,Benton
+29017,Bollinger County,USA.26.9_1,Missouri,Bollinger
+29019,Boone County,USA.26.10_1,Missouri,Boone
+29021,Buchanan County,USA.26.11_1,Missouri,Buchanan
+29023,Butler County,USA.26.12_1,Missouri,Butler
+29025,Caldwell County,USA.26.13_1,Missouri,Caldwell
+29027,Callaway County,USA.26.14_1,Missouri,Callaway
+29029,Camden County,USA.26.15_1,Missouri,Camden
+29031,Cape Girardeau County,USA.26.16_1,Missouri,Cape Girardeau
+29033,Carroll County,USA.26.17_1,Missouri,Carroll
+29035,Carter County,USA.26.18_1,Missouri,Carter
+29037,Cass County,USA.26.19_1,Missouri,Cass
+29039,Cedar County,USA.26.20_1,Missouri,Cedar
+29041,Chariton County,USA.26.21_1,Missouri,Chariton
+29043,Christian County,USA.26.22_1,Missouri,Christian
+29045,Clark County,USA.26.23_1,Missouri,Clark
+29047,Clay County,USA.26.24_1,Missouri,Clay
+29049,Clinton County,USA.26.25_1,Missouri,Clinton
+29051,Cole County,USA.26.26_1,Missouri,Cole
+29053,Cooper County,USA.26.27_1,Missouri,Cooper
+29055,Crawford County,USA.26.28_1,Missouri,Crawford
+29057,Dade County,USA.26.29_1,Missouri,Dade
+29059,Dallas County,USA.26.30_1,Missouri,Dallas
+29061,Daviess County,USA.26.31_1,Missouri,Daviess
+29063,DeKalb County,USA.26.32_1,Missouri,De Kalb
+29065,Dent County,USA.26.33_1,Missouri,Dent
+29067,Douglas County,USA.26.34_1,Missouri,Douglas
+29069,Dunklin County,USA.26.35_1,Missouri,Dunklin
+29071,Franklin County,USA.26.36_1,Missouri,Franklin
+29073,Gasconade County,USA.26.37_1,Missouri,Gasconade
+29075,Gentry County,USA.26.38_1,Missouri,Gentry
+29077,Greene County,USA.26.39_1,Missouri,Greene
+29079,Grundy County,USA.26.40_1,Missouri,Grundy
+29081,Harrison County,USA.26.41_1,Missouri,Harrison
+29083,Henry County,USA.26.42_1,Missouri,Henry
+29085,Hickory County,USA.26.43_1,Missouri,Hickory
+29087,Holt County,USA.26.44_1,Missouri,Holt
+29089,Howard County,USA.26.45_1,Missouri,Howard
+29091,Howell County,USA.26.46_1,Missouri,Howell
+29093,Iron County,USA.26.47_1,Missouri,Iron
+29095,Jackson County,USA.26.48_1,Missouri,Jackson
+29097,Jasper County,USA.26.49_1,Missouri,Jasper
+29099,Jefferson County,USA.26.50_1,Missouri,Jefferson
+29101,Johnson County,USA.26.51_1,Missouri,Johnson
+29103,Knox County,USA.26.52_1,Missouri,Knox
+29105,Laclede County,USA.26.53_1,Missouri,Laclede
+29107,Lafayette County,USA.26.54_1,Missouri,Lafayette
+29109,Lawrence County,USA.26.55_1,Missouri,Lawrence
+29111,Lewis County,USA.26.56_1,Missouri,Lewis
+29113,Lincoln County,USA.26.57_1,Missouri,Lincoln
+29115,Linn County,USA.26.58_1,Missouri,Linn
+29117,Livingston County,USA.26.59_1,Missouri,Livingston
+29119,McDonald County,USA.26.64_1,Missouri,McDonald
+29121,Macon County,USA.26.60_1,Missouri,Macon
+29123,Madison County,USA.26.61_1,Missouri,Madison
+29125,Maries County,USA.26.62_1,Missouri,Maries
+29127,Marion County,USA.26.63_1,Missouri,Marion
+29129,Mercer County,USA.26.65_1,Missouri,Mercer
+29131,Miller County,USA.26.66_1,Missouri,Miller
+29133,Mississippi County,USA.26.67_1,Missouri,Mississippi
+29135,Moniteau County,USA.26.68_1,Missouri,Moniteau
+29137,Monroe County,USA.26.69_1,Missouri,Monroe
+29139,Montgomery County,USA.26.70_1,Missouri,Montgomery
+29141,Morgan County,USA.26.71_1,Missouri,Morgan
+29143,New Madrid County,USA.26.72_1,Missouri,New Madrid
+29145,Newton County,USA.26.73_1,Missouri,Newton
+29147,Nodaway County,USA.26.74_1,Missouri,Nodaway
+29149,Oregon County,USA.26.75_1,Missouri,Oregon
+29151,Osage County,USA.26.76_1,Missouri,Osage
+29153,Ozark County,USA.26.77_1,Missouri,Ozark
+29155,Pemiscot County,USA.26.78_1,Missouri,Pemiscot
+29157,Perry County,USA.26.79_1,Missouri,Perry
+29159,Pettis County,USA.26.80_1,Missouri,Pettis
+29161,Phelps County,USA.26.81_1,Missouri,Phelps
+29163,Pike County,USA.26.82_1,Missouri,Pike
+29165,Platte County,USA.26.83_1,Missouri,Platte
+29167,Polk County,USA.26.84_1,Missouri,Polk
+29169,Pulaski County,USA.26.85_1,Missouri,Pulaski
+29171,Putnam County,USA.26.86_1,Missouri,Putnam
+29173,Ralls County,USA.26.87_1,Missouri,Ralls
+29175,Randolph County,USA.26.88_1,Missouri,Randolph
+29177,Ray County,USA.26.89_1,Missouri,Ray
+29179,Reynolds County,USA.26.90_1,Missouri,Reynolds
+29181,Ripley County,USA.26.91_1,Missouri,Ripley
+29183,St. Charles County,USA.26.92_1,Missouri,Saint Charles
+29185,St. Clair County,USA.26.93_1,Missouri,Saint Clair
+29186,Ste. Genevieve County,USA.26.96_1,Missouri,Sainte Genevieve
+29187,St. Francois County,USA.26.94_1,Missouri,Saint Francois
+29189,St. Louis County,USA.26.95_1,Missouri,Saint Louis
+29195,Saline County,USA.26.97_1,Missouri,Saline
+29197,Schuyler County,USA.26.98_1,Missouri,Schuyler
+29199,Scotland County,USA.26.99_1,Missouri,Scotland
+29201,Scott County,USA.26.100_1,Missouri,Scott
+29203,Shannon County,USA.26.101_1,Missouri,Shannon
+29205,Shelby County,USA.26.102_1,Missouri,Shelby
+29207,Stoddard County,USA.26.103_1,Missouri,Stoddard
+29209,Stone County,USA.26.104_1,Missouri,Stone
+29211,Sullivan County,USA.26.105_1,Missouri,Sullivan
+29213,Taney County,USA.26.106_1,Missouri,Taney
+29215,Texas County,USA.26.107_1,Missouri,Texas
+29217,Vernon County,USA.26.108_1,Missouri,Vernon
+29219,Warren County,USA.26.109_1,Missouri,Warren
+29221,Washington County,USA.26.110_1,Missouri,Washington
+29223,Wayne County,USA.26.111_1,Missouri,Wayne
+29225,Webster County,USA.26.112_1,Missouri,Webster
+29227,Worth County,USA.26.113_1,Missouri,Worth
+29229,Wright County,USA.26.114_1,Missouri,Wright
+29510,St. Louis city,USA.26.95_1,Missouri,Saint Louis
+30001,Beaverhead County,USA.27.1_1,Montana,Beaverhead
+30003,Big Horn County,USA.27.2_1,Montana,Big Horn
+30005,Blaine County,USA.27.3_1,Montana,Blaine
+30007,Broadwater County,USA.27.4_1,Montana,Broadwater
+30009,Carbon County,USA.27.5_1,Montana,Carbon
+30011,Carter County,USA.27.6_1,Montana,Carter
+30013,Cascade County,USA.27.7_1,Montana,Cascade
+30015,Chouteau County,USA.27.8_1,Montana,Chouteau
+30017,Custer County,USA.27.9_1,Montana,Custer
+30019,Daniels County,USA.27.10_1,Montana,Daniels
+30021,Dawson County,USA.27.11_1,Montana,Dawson
+30023,Deer Lodge County,USA.27.12_1,Montana,Deer Lodge
+30025,Fallon County,USA.27.13_1,Montana,Fallon
+30027,Fergus County,USA.27.14_1,Montana,Fergus
+30029,Flathead County,USA.27.15_1,Montana,Flathead
+30031,Gallatin County,USA.27.16_1,Montana,Gallatin
+30033,Garfield County,USA.27.17_1,Montana,Garfield
+30035,Glacier County,USA.27.18_1,Montana,Glacier
+30037,Golden Valley County,USA.27.19_1,Montana,Golden Valley
+30039,Granite County,USA.27.20_1,Montana,Granite
+30041,Hill County,USA.27.21_1,Montana,Hill
+30043,Jefferson County,USA.27.22_1,Montana,Jefferson
+30045,Judith Basin County,USA.27.23_1,Montana,Judith Basin
+30047,Lake County,USA.27.24_1,Montana,Lake
+30049,Lewis and Clark County,USA.27.25_1,Montana,Lewis and Clark
+30051,Liberty County,USA.27.26_1,Montana,Liberty
+30053,Lincoln County,USA.27.27_1,Montana,Lincoln
+30055,McCone County,USA.27.29_1,Montana,McCone
+30057,Madison County,USA.27.28_1,Montana,Madison
+30059,Meagher County,USA.27.30_1,Montana,Meagher
+30061,Mineral County,USA.27.31_1,Montana,Mineral
+30063,Missoula County,USA.27.32_1,Montana,Missoula
+30065,Musselshell County,USA.27.33_1,Montana,Musselshell
+30067,Park County,USA.27.34_1,Montana,Park
+30069,Petroleum County,USA.27.35_1,Montana,Petroleum
+30071,Phillips County,USA.27.36_1,Montana,Phillips
+30073,Pondera County,USA.27.37_1,Montana,Pondera
+30075,Powder River County,USA.27.38_1,Montana,Powder River
+30077,Powell County,USA.27.39_1,Montana,Powell
+30079,Prairie County,USA.27.40_1,Montana,Prairie
+30081,Ravalli County,USA.27.41_1,Montana,Ravalli
+30083,Richland County,USA.27.42_1,Montana,Richland
+30085,Roosevelt County,USA.27.43_1,Montana,Roosevelt
+30087,Rosebud County,USA.27.44_1,Montana,Rosebud
+30089,Sanders County,USA.27.45_1,Montana,Sanders
+30091,Sheridan County,USA.27.46_1,Montana,Sheridan
+30093,Silver Bow County,USA.27.47_1,Montana,Silver Bow
+30095,Stillwater County,USA.27.48_1,Montana,Stillwater
+30097,Sweet Grass County,USA.27.49_1,Montana,Sweet Grass
+30099,Teton County,USA.27.50_1,Montana,Teton
+30101,Toole County,USA.27.51_1,Montana,Toole
+30103,Treasure County,USA.27.52_1,Montana,Treasure
+30105,Valley County,USA.27.53_1,Montana,Valley
+30107,Wheatland County,USA.27.54_1,Montana,Wheatland
+30109,Wibaux County,USA.27.55_1,Montana,Wibaux
+30111,Yellowstone County,USA.27.56_1,Montana,Yellowstone
+30113,Yellowstone National Park,USA.27.56_1,Montana,Yellowstone
+31001,Adams County,USA.28.1_1,Nebraska,Adams
+31003,Antelope County,USA.28.2_1,Nebraska,Antelope
+31005,Arthur County,USA.28.3_1,Nebraska,Arthur
+31007,Banner County,USA.28.4_1,Nebraska,Banner
+31009,Blaine County,USA.28.5_1,Nebraska,Blaine
+31011,Boone County,USA.28.6_1,Nebraska,Boone
+31013,Box Butte County,USA.28.7_1,Nebraska,Box Butte
+31015,Boyd County,USA.28.8_1,Nebraska,Boyd
+31017,Brown County,USA.28.9_1,Nebraska,Brown
+31019,Buffalo County,USA.28.10_1,Nebraska,Buffalo
+31021,Burt County,USA.28.11_1,Nebraska,Burt
+31023,Butler County,USA.28.12_1,Nebraska,Butler
+31025,Cass County,USA.28.13_1,Nebraska,Cass
+31027,Cedar County,USA.28.14_1,Nebraska,Cedar
+31029,Chase County,USA.28.15_1,Nebraska,Chase
+31031,Cherry County,USA.28.16_1,Nebraska,Cherry
+31033,Cheyenne County,USA.28.17_1,Nebraska,Cheyenne
+31035,Clay County,USA.28.18_1,Nebraska,Clay
+31037,Colfax County,USA.28.19_1,Nebraska,Colfax
+31039,Cuming County,USA.28.20_1,Nebraska,Cuming
+31041,Custer County,USA.28.21_1,Nebraska,Custer
+31043,Dakota County,USA.28.22_1,Nebraska,Dakota
+31045,Dawes County,USA.28.23_1,Nebraska,Dawes
+31047,Dawson County,USA.28.24_1,Nebraska,Dawson
+31049,Deuel County,USA.28.25_1,Nebraska,Deuel
+31051,Dixon County,USA.28.26_1,Nebraska,Dixon
+31053,Dodge County,USA.28.27_1,Nebraska,Dodge
+31055,Douglas County,USA.28.28_1,Nebraska,Douglas
+31057,Dundy County,USA.28.29_1,Nebraska,Dundy
+31059,Fillmore County,USA.28.30_1,Nebraska,Fillmore
+31061,Franklin County,USA.28.31_1,Nebraska,Franklin
+31063,Frontier County,USA.28.32_1,Nebraska,Frontier
+31065,Furnas County,USA.28.33_1,Nebraska,Furnas
+31067,Gage County,USA.28.34_1,Nebraska,Gage
+31069,Garden County,USA.28.35_1,Nebraska,Garden
+31071,Garfield County,USA.28.36_1,Nebraska,Garfield
+31073,Gosper County,USA.28.37_1,Nebraska,Gosper
+31075,Grant County,USA.28.38_1,Nebraska,Grant
+31077,Greeley County,USA.28.39_1,Nebraska,Greeley
+31079,Hall County,USA.28.40_1,Nebraska,Hall
+31081,Hamilton County,USA.28.41_1,Nebraska,Hamilton
+31083,Harlan County,USA.28.42_1,Nebraska,Harlan
+31085,Hayes County,USA.28.43_1,Nebraska,Hayes
+31087,Hitchcock County,USA.28.44_1,Nebraska,Hitchcock
+31089,Holt County,USA.28.45_1,Nebraska,Holt
+31091,Hooker County,USA.28.46_1,Nebraska,Hooker
+31093,Howard County,USA.28.47_1,Nebraska,Howard
+31095,Jefferson County,USA.28.48_1,Nebraska,Jefferson
+31097,Johnson County,USA.28.49_1,Nebraska,Johnson
+31099,Kearney County,USA.28.50_1,Nebraska,Kearney
+31101,Keith County,USA.28.51_1,Nebraska,Keith
+31103,Keya Paha County,USA.28.52_1,Nebraska,Keya Paha
+31105,Kimball County,USA.28.53_1,Nebraska,Kimball
+31107,Knox County,USA.28.54_1,Nebraska,Knox
+31109,Lancaster County,USA.28.55_1,Nebraska,Lancaster
+31111,Lincoln County,USA.28.56_1,Nebraska,Lincoln
+31113,Logan County,USA.28.57_1,Nebraska,Logan
+31115,Loup County,USA.28.58_1,Nebraska,Loup
+31117,McPherson County,USA.28.60_1,Nebraska,McPherson
+31119,Madison County,USA.28.59_1,Nebraska,Madison
+31121,Merrick County,USA.28.61_1,Nebraska,Merrick
+31123,Morrill County,USA.28.62_1,Nebraska,Morrill
+31125,Nance County,USA.28.63_1,Nebraska,Nance
+31127,Nemaha County,USA.28.64_1,Nebraska,Nemaha
+31129,Nuckolls County,USA.28.65_1,Nebraska,Nuckolls
+31131,Otoe County,USA.28.66_1,Nebraska,Otoe
+31133,Pawnee County,USA.28.67_1,Nebraska,Pawnee
+31135,Perkins County,USA.28.68_1,Nebraska,Perkins
+31137,Phelps County,USA.28.69_1,Nebraska,Phelps
+31139,Pierce County,USA.28.70_1,Nebraska,Pierce
+31141,Platte County,USA.28.71_1,Nebraska,Platte
+31143,Polk County,USA.28.72_1,Nebraska,Polk
+31145,Red Willow County,USA.28.73_1,Nebraska,Red Willow
+31147,Richardson County,USA.28.74_1,Nebraska,Richardson
+31149,Rock County,USA.28.75_1,Nebraska,Rock
+31151,Saline County,USA.28.76_1,Nebraska,Saline
+31153,Sarpy County,USA.28.77_1,Nebraska,Sarpy
+31155,Saunders County,USA.28.78_1,Nebraska,Saunders
+31157,Scotts Bluff County,USA.28.79_1,Nebraska,Scotts Bluff
+31159,Seward County,USA.28.80_1,Nebraska,Seward
+31161,Sheridan County,USA.28.81_1,Nebraska,Sheridan
+31163,Sherman County,USA.28.82_1,Nebraska,Sherman
+31165,Sioux County,USA.28.83_1,Nebraska,Sioux
+31167,Stanton County,USA.28.84_1,Nebraska,Stanton
+31169,Thayer County,USA.28.85_1,Nebraska,Thayer
+31171,Thomas County,USA.28.86_1,Nebraska,Thomas
+31173,Thurston County,USA.28.87_1,Nebraska,Thurston
+31175,Valley County,USA.28.88_1,Nebraska,Valley
+31177,Washington County,USA.28.89_1,Nebraska,Washington
+31179,Wayne County,USA.28.90_1,Nebraska,Wayne
+31181,Webster County,USA.28.91_1,Nebraska,Webster
+31183,Wheeler County,USA.28.92_1,Nebraska,Wheeler
+31185,York County,USA.28.93_1,Nebraska,York
+32001,Churchill County,USA.29.2_1,Nevada,Churchill
+32003,Clark County,USA.29.3_1,Nevada,Clark
+32005,Douglas County,USA.29.4_1,Nevada,Douglas
+32007,Elko County,USA.29.5_1,Nevada,Elko
+32009,Esmeralda County,USA.29.6_1,Nevada,Esmeralda
+32011,Eureka County,USA.29.7_1,Nevada,Eureka
+32013,Humboldt County,USA.29.8_1,Nevada,Humboldt
+32015,Lander County,USA.29.9_1,Nevada,Lander
+32017,Lincoln County,USA.29.10_1,Nevada,Lincoln
+32019,Lyon County,USA.29.11_1,Nevada,Lyon
+32021,Mineral County,USA.29.12_1,Nevada,Mineral
+32023,Nye County,USA.29.13_1,Nevada,Nye
+32027,Pershing County,USA.29.14_1,Nevada,Pershing
+32029,Storey County,USA.29.15_1,Nevada,Storey
+32031,Washoe County,USA.29.16_1,Nevada,Washoe
+32033,White Pine County,USA.29.17_1,Nevada,White Pine
+32510,Carson City,USA.29.1_1,Nevada,Carson City
+33001,Belknap County,USA.30.1_1,New Hampshire,Belknap
+33003,Carroll County,USA.30.2_1,New Hampshire,Carroll
+33005,Cheshire County,USA.30.3_1,New Hampshire,Cheshire
+33007,Coos County,USA.30.4_1,New Hampshire,Coos
+33009,Grafton County,USA.30.5_1,New Hampshire,Grafton
+33011,Hillsborough County,USA.30.6_1,New Hampshire,Hillsborough
+33013,Merrimack County,USA.30.7_1,New Hampshire,Merrimack
+33015,Rockingham County,USA.30.8_1,New Hampshire,Rockingham
+33017,Strafford County,USA.30.9_1,New Hampshire,Strafford
+33019,Sullivan County,USA.30.10_1,New Hampshire,Sullivan
+34001,Atlantic County,USA.31.1_1,New Jersey,Atlantic
+34003,Bergen County,USA.31.2_1,New Jersey,Bergen
+34005,Burlington County,USA.31.3_1,New Jersey,Burlington
+34007,Camden County,USA.31.4_1,New Jersey,Camden
+34009,Cape May County,USA.31.5_1,New Jersey,Cape May
+34011,Cumberland County,USA.31.6_1,New Jersey,Cumberland
+34013,Essex County,USA.31.7_1,New Jersey,Essex
+34015,Gloucester County,USA.31.8_1,New Jersey,Gloucester
+34017,Hudson County,USA.31.9_1,New Jersey,Hudson
+34019,Hunterdon County,USA.31.10_1,New Jersey,Hunterdon
+34021,Mercer County,USA.31.11_1,New Jersey,Mercer
+34023,Middlesex County,USA.31.12_1,New Jersey,Middlesex
+34025,Monmouth County,USA.31.13_1,New Jersey,Monmouth
+34027,Morris County,USA.31.14_1,New Jersey,Morris
+34029,Ocean County,USA.31.15_1,New Jersey,Ocean
+34031,Passaic County,USA.31.16_1,New Jersey,Passaic
+34033,Salem County,USA.31.17_1,New Jersey,Salem
+34035,Somerset County,USA.31.18_1,New Jersey,Somerset
+34037,Sussex County,USA.31.19_1,New Jersey,Sussex
+34039,Union County,USA.31.20_1,New Jersey,Union
+34041,Warren County,USA.31.21_1,New Jersey,Warren
+35001,Bernalillo County,USA.32.1_1,New Mexico,Bernalillo
+35003,Catron County,USA.32.2_1,New Mexico,Catron
+35005,Chaves County,USA.32.3_1,New Mexico,Chaves
+35006,Cibola County,USA.32.4_1,New Mexico,Cibola
+35007,Colfax County,USA.32.5_1,New Mexico,Colfax
+35009,Curry County,USA.32.6_1,New Mexico,Curry
+35011,DeBaca County,USA.32.7_1,New Mexico,Debaca
+35013,Dona Ana County,USA.32.8_1,New Mexico,Dona Ana
+35015,Eddy County,USA.32.9_1,New Mexico,Eddy
+35017,Grant County,USA.32.10_1,New Mexico,Grant
+35019,Guadalupe County,USA.32.11_1,New Mexico,Guadalupe
+35021,Harding County,USA.32.12_1,New Mexico,Harding
+35023,Hidalgo County,USA.32.13_1,New Mexico,Hidalgo
+35025,Lea County,USA.32.14_1,New Mexico,Lea
+35027,Lincoln County,USA.32.15_1,New Mexico,Lincoln
+35028,Los Alamos County,USA.32.16_1,New Mexico,Los Alamos
+35029,Luna County,USA.32.17_1,New Mexico,Luna
+35031,McKinley County,USA.32.18_1,New Mexico,McKinley
+35033,Mora County,USA.32.19_1,New Mexico,Mora
+35035,Otero County,USA.32.20_1,New Mexico,Otero
+35037,Quay County,USA.32.21_1,New Mexico,Quay
+35039,Rio Arriba County,USA.32.22_1,New Mexico,Rio Arriba
+35041,Roosevelt County,USA.32.23_1,New Mexico,Roosevelt
+35043,Sandoval County,USA.32.26_1,New Mexico,Sandoval
+35045,San Juan County,USA.32.24_1,New Mexico,San Juan
+35047,San Miguel County,USA.32.25_1,New Mexico,San Miguel
+35049,Santa Fe County,USA.32.27_1,New Mexico,Santa Fe
+35051,Sierra County,USA.32.28_1,New Mexico,Sierra
+35053,Socorro County,USA.32.29_1,New Mexico,Socorro
+35055,Taos County,USA.32.30_1,New Mexico,Taos
+35057,Torrance County,USA.32.31_1,New Mexico,Torrance
+35059,Union County,USA.32.32_1,New Mexico,Union
+35061,Valencia County,USA.32.33_1,New Mexico,Valencia
+36001,Albany County,USA.33.1_1,New York,Albany
+36003,Allegany County,USA.33.2_1,New York,Allegany
+36005,Bronx County,USA.33.3_1,New York,Bronx
+36007,Broome County,USA.33.4_1,New York,Broome
+36009,Cattaraugus County,USA.33.5_1,New York,Cattaraugus
+36011,Cayuga County,USA.33.6_1,New York,Cayuga
+36013,Chautauqua County,USA.33.7_1,New York,Chautauqua
+36015,Chemung County,USA.33.8_1,New York,Chemung
+36017,Chenango County,USA.33.9_1,New York,Chenango
+36019,Clinton County,USA.33.10_1,New York,Clinton
+36021,Columbia County,USA.33.11_1,New York,Columbia
+36023,Cortland County,USA.33.12_1,New York,Cortland
+36025,Delaware County,USA.33.13_1,New York,Delaware
+36027,Dutchess County,USA.33.14_1,New York,Dutchess
+36029,Erie County,USA.33.15_1,New York,Erie
+36031,Essex County,USA.33.16_1,New York,Essex
+36033,Franklin County,USA.33.17_1,New York,Franklin
+36035,Fulton County,USA.33.18_1,New York,Fulton
+36037,Genesee County,USA.33.19_1,New York,Genesee
+36039,Greene County,USA.33.20_1,New York,Greene
+36041,Hamilton County,USA.33.21_1,New York,Hamilton
+36043,Herkimer County,USA.33.22_1,New York,Herkimer
+36045,Jefferson County,USA.33.23_1,New York,Jefferson
+36047,Kings County,USA.33.24_1,New York,Kings
+36049,Lewis County,USA.33.26_1,New York,Lewis
+36051,Livingston County,USA.33.27_1,New York,Livingston
+36053,Madison County,USA.33.28_1,New York,Madison
+36055,Monroe County,USA.33.29_1,New York,Monroe
+36057,Montgomery County,USA.33.30_1,New York,Montgomery
+36059,Nassau County,USA.33.31_1,New York,Nassau
+36061,New York County,USA.33.32_1,New York,New York
+36063,Niagara County,USA.33.33_1,New York,Niagara
+36065,Oneida County,USA.33.34_1,New York,Oneida
+36067,Onondaga County,USA.33.35_1,New York,Onondaga
+36069,Ontario County,USA.33.36_1,New York,Ontario
+36071,Orange County,USA.33.37_1,New York,Orange
+36073,Orleans County,USA.33.38_1,New York,Orleans
+36075,Oswego County,USA.33.39_1,New York,Oswego
+36077,Otsego County,USA.33.40_1,New York,Otsego
+36079,Putnam County,USA.33.41_1,New York,Putnam
+36081,Queens County,USA.33.42_1,New York,Queens
+36083,Rensselaer County,USA.33.43_1,New York,Rensselaer
+36085,Richmond County,USA.33.44_1,New York,Richmond
+36087,Rockland County,USA.33.45_1,New York,Rockland
+36089,St. Lawrence County,USA.33.46_1,New York,Saint Lawrence
+36091,Saratoga County,USA.33.47_1,New York,Saratoga
+36093,Schenectady County,USA.33.48_1,New York,Schenectady
+36095,Schoharie County,USA.33.49_1,New York,Schoharie
+36097,Schuyler County,USA.33.50_1,New York,Schuyler
+36099,Seneca County,USA.33.51_1,New York,Seneca
+36101,Steuben County,USA.33.52_1,New York,Steuben
+36103,Suffolk County,USA.33.53_1,New York,Suffolk
+36105,Sullivan County,USA.33.54_1,New York,Sullivan
+36107,Tioga County,USA.33.55_1,New York,Tioga
+36109,Tompkins County,USA.33.56_1,New York,Tompkins
+36111,Ulster County,USA.33.57_1,New York,Ulster
+36113,Warren County,USA.33.58_1,New York,Warren
+36115,Washington County,USA.33.59_1,New York,Washington
+36117,Wayne County,USA.33.60_1,New York,Wayne
+36119,Westchester County,USA.33.61_1,New York,Westchester
+36121,Wyoming County,USA.33.62_1,New York,Wyoming
+36123,Yates County,USA.33.63_1,New York,Yates
+37001,Alamance County,USA.34.1_1,North Carolina,Alamance
+37003,Alexander County,USA.34.2_1,North Carolina,Alexander
+37005,Alleghany County,USA.34.3_1,North Carolina,Alleghany
+37007,Anson County,USA.34.4_1,North Carolina,Anson
+37009,Ashe County,USA.34.5_1,North Carolina,Ashe
+37011,Avery County,USA.34.6_1,North Carolina,Avery
+37013,Beaufort County,USA.34.7_1,North Carolina,Beaufort
+37015,Bertie County,USA.34.8_1,North Carolina,Bertie
+37017,Bladen County,USA.34.9_1,North Carolina,Bladen
+37019,Brunswick County,USA.34.10_1,North Carolina,Brunswick
+37021,Buncombe County,USA.34.11_1,North Carolina,Buncombe
+37023,Burke County,USA.34.12_1,North Carolina,Burke
+37025,Cabarrus County,USA.34.13_1,North Carolina,Cabarrus
+37027,Caldwell County,USA.34.14_1,North Carolina,Caldwell
+37029,Camden County,USA.34.15_1,North Carolina,Camden
+37031,Carteret County,USA.34.16_1,North Carolina,Carteret
+37033,Caswell County,USA.34.17_1,North Carolina,Caswell
+37035,Catawba County,USA.34.18_1,North Carolina,Catawba
+37037,Chatham County,USA.34.19_1,North Carolina,Chatham
+37039,Cherokee County,USA.34.20_1,North Carolina,Cherokee
+37041,Chowan County,USA.34.21_1,North Carolina,Chowan
+37043,Clay County,USA.34.22_1,North Carolina,Clay
+37045,Cleveland County,USA.34.23_1,North Carolina,Cleveland
+37047,Columbus County,USA.34.24_1,North Carolina,Columbus
+37049,Craven County,USA.34.25_1,North Carolina,Craven
+37051,Cumberland County,USA.34.26_1,North Carolina,Cumberland
+37053,Currituck County,USA.34.27_1,North Carolina,Currituck
+37055,Dare County,USA.34.28_1,North Carolina,Dare
+37057,Davidson County,USA.34.29_1,North Carolina,Davidson
+37059,Davie County,USA.34.30_1,North Carolina,Davie
+37061,Duplin County,USA.34.31_1,North Carolina,Duplin
+37063,Durham County,USA.34.32_1,North Carolina,Durham
+37065,Edgecombe County,USA.34.33_1,North Carolina,Edgecombe
+37067,Forsyth County,USA.34.34_1,North Carolina,Forsyth
+37069,Franklin County,USA.34.35_1,North Carolina,Franklin
+37071,Gaston County,USA.34.36_1,North Carolina,Gaston
+37073,Gates County,USA.34.37_1,North Carolina,Gates
+37075,Graham County,USA.34.38_1,North Carolina,Graham
+37077,Granville County,USA.34.39_1,North Carolina,Granville
+37079,Greene County,USA.34.40_1,North Carolina,Greene
+37081,Guilford County,USA.34.41_1,North Carolina,Guilford
+37083,Halifax County,USA.34.42_1,North Carolina,Halifax
+37085,Harnett County,USA.34.43_1,North Carolina,Harnett
+37087,Haywood County,USA.34.44_1,North Carolina,Haywood
+37089,Henderson County,USA.34.45_1,North Carolina,Henderson
+37091,Hertford County,USA.34.46_1,North Carolina,Hertford
+37093,Hoke County,USA.34.47_1,North Carolina,Hoke
+37095,Hyde County,USA.34.48_1,North Carolina,Hyde
+37097,Iredell County,USA.34.49_1,North Carolina,Iredell
+37099,Jackson County,USA.34.50_1,North Carolina,Jackson
+37101,Johnston County,USA.34.51_1,North Carolina,Johnston
+37103,Jones County,USA.34.52_1,North Carolina,Jones
+37105,Lee County,USA.34.53_1,North Carolina,Lee
+37107,Lenoir County,USA.34.54_1,North Carolina,Lenoir
+37109,Lincoln County,USA.34.55_1,North Carolina,Lincoln
+37111,McDowell County,USA.34.59_1,North Carolina,McDowell
+37113,Macon County,USA.34.56_1,North Carolina,Macon
+37115,Madison County,USA.34.57_1,North Carolina,Madison
+37117,Martin County,USA.34.58_1,North Carolina,Martin
+37119,Mecklenburg County,USA.34.60_1,North Carolina,Mecklenburg
+37121,Mitchell County,USA.34.61_1,North Carolina,Mitchell
+37123,Montgomery County,USA.34.62_1,North Carolina,Montgomery
+37125,Moore County,USA.34.63_1,North Carolina,Moore
+37127,Nash County,USA.34.64_1,North Carolina,Nash
+37129,New Hanover County,USA.34.65_1,North Carolina,New Hanover
+37131,Northampton County,USA.34.66_1,North Carolina,Northampton
+37133,Onslow County,USA.34.67_1,North Carolina,Onslow
+37135,Orange County,USA.34.68_1,North Carolina,Orange
+37137,Pamlico County,USA.34.69_1,North Carolina,Pamlico
+37139,Pasquotank County,USA.34.70_1,North Carolina,Pasquotank
+37141,Pender County,USA.34.71_1,North Carolina,Pender
+37143,Perquimans County,USA.34.72_1,North Carolina,Perquimans
+37145,Person County,USA.34.73_1,North Carolina,Person
+37147,Pitt County,USA.34.74_1,North Carolina,Pitt
+37149,Polk County,USA.34.75_1,North Carolina,Polk
+37151,Randolph County,USA.34.76_1,North Carolina,Randolph
+37153,Richmond County,USA.34.77_1,North Carolina,Richmond
+37155,Robeson County,USA.34.78_1,North Carolina,Robeson
+37157,Rockingham County,USA.34.79_1,North Carolina,Rockingham
+37159,Rowan County,USA.34.80_1,North Carolina,Rowan
+37161,Rutherford County,USA.34.81_1,North Carolina,Rutherford
+37163,Sampson County,USA.34.82_1,North Carolina,Sampson
+37165,Scotland County,USA.34.83_1,North Carolina,Scotland
+37167,Stanly County,USA.34.84_1,North Carolina,Stanly
+37169,Stokes County,USA.34.85_1,North Carolina,Stokes
+37171,Surry County,USA.34.86_1,North Carolina,Surry
+37173,Swain County,USA.34.87_1,North Carolina,Swain
+37175,Transylvania County,USA.34.88_1,North Carolina,Transylvania
+37177,Tyrrell County,USA.34.89_1,North Carolina,Tyrrell
+37179,Union County,USA.34.90_1,North Carolina,Union
+37181,Vance County,USA.34.91_1,North Carolina,Vance
+37183,Wake County,USA.34.92_1,North Carolina,Wake
+37185,Warren County,USA.34.93_1,North Carolina,Warren
+37187,Washington County,USA.34.94_1,North Carolina,Washington
+37189,Watauga County,USA.34.95_1,North Carolina,Watauga
+37191,Wayne County,USA.34.96_1,North Carolina,Wayne
+37193,Wilkes County,USA.34.97_1,North Carolina,Wilkes
+37195,Wilson County,USA.34.98_1,North Carolina,Wilson
+37197,Yadkin County,USA.34.99_1,North Carolina,Yadkin
+37199,Yancey County,USA.34.100_1,North Carolina,Yancey
+38001,Adams County,USA.35.1_1,North Dakota,Adams
+38003,Barnes County,USA.35.2_1,North Dakota,Barnes
+38005,Benson County,USA.35.3_1,North Dakota,Benson
+38007,Billings County,USA.35.4_1,North Dakota,Billings
+38009,Bottineau County,USA.35.5_1,North Dakota,Bottineau
+38011,Bowman County,USA.35.6_1,North Dakota,Bowman
+38013,Burke County,USA.35.7_1,North Dakota,Burke
+38015,Burleigh County,USA.35.8_1,North Dakota,Burleigh
+38017,Cass County,USA.35.9_1,North Dakota,Cass
+38019,Cavalier County,USA.35.10_1,North Dakota,Cavalier
+38021,Dickey County,USA.35.11_1,North Dakota,Dickey
+38023,Divide County,USA.35.12_1,North Dakota,Divide
+38025,Dunn County,USA.35.13_1,North Dakota,Dunn
+38027,Eddy County,USA.35.14_1,North Dakota,Eddy
+38029,Emmons County,USA.35.15_1,North Dakota,Emmons
+38031,Foster County,USA.35.16_1,North Dakota,Foster
+38033,Golden Valley County,USA.35.17_1,North Dakota,Golden Valley
+38035,Grand Forks County,USA.35.18_1,North Dakota,Grand Forks
+38037,Grant County,USA.35.19_1,North Dakota,Grant
+38039,Griggs County,USA.35.20_1,North Dakota,Griggs
+38041,Hettinger County,USA.35.21_1,North Dakota,Hettinger
+38043,Kidder County,USA.35.22_1,North Dakota,Kidder
+38045,LaMoure County,USA.35.23_1,North Dakota,Lamoure
+38047,Logan County,USA.35.24_1,North Dakota,Logan
+38049,McHenry County,USA.35.25_1,North Dakota,McHenry
+38051,McIntosh County,USA.35.26_1,North Dakota,McIntosh
+38053,McKenzie County,USA.35.27_1,North Dakota,McKenzie
+38055,McLean County,USA.35.28_1,North Dakota,McLean
+38057,Mercer County,USA.35.29_1,North Dakota,Mercer
+38059,Morton County,USA.35.30_1,North Dakota,Morton
+38061,Mountrail County,USA.35.31_1,North Dakota,Mountrail
+38063,Nelson County,USA.35.32_1,North Dakota,Nelson
+38065,Oliver County,USA.35.33_1,North Dakota,Oliver
+38067,Pembina County,USA.35.34_1,North Dakota,Pembina
+38069,Pierce County,USA.35.35_1,North Dakota,Pierce
+38071,Ramsey County,USA.35.36_1,North Dakota,Ramsey
+38073,Ransom County,USA.35.37_1,North Dakota,Ransom
+38075,Renville County,USA.35.38_1,North Dakota,Renville
+38077,Richland County,USA.35.39_1,North Dakota,Richland
+38079,Rolette County,USA.35.40_1,North Dakota,Rolette
+38081,Sargent County,USA.35.41_1,North Dakota,Sargent
+38083,Sheridan County,USA.35.42_1,North Dakota,Sheridan
+38085,Sioux County,USA.35.43_1,North Dakota,Sioux
+38087,Slope County,USA.35.44_1,North Dakota,Slope
+38089,Stark County,USA.35.45_1,North Dakota,Stark
+38091,Steele County,USA.35.46_1,North Dakota,Steele
+38093,Stutsman County,USA.35.47_1,North Dakota,Stutsman
+38095,Towner County,USA.35.48_1,North Dakota,Towner
+38097,Traill County,USA.35.49_1,North Dakota,Traill
+38099,Walsh County,USA.35.50_1,North Dakota,Walsh
+38101,Ward County,USA.35.51_1,North Dakota,Ward
+38103,Wells County,USA.35.52_1,North Dakota,Wells
+38105,Williams County,USA.35.53_1,North Dakota,Williams
+39001,Adams County,USA.36.1_1,Ohio,Adams
+39003,Allen County,USA.36.2_1,Ohio,Allen
+39005,Ashland County,USA.36.3_1,Ohio,Ashland
+39007,Ashtabula County,USA.36.4_1,Ohio,Ashtabula
+39009,Athens County,USA.36.5_1,Ohio,Athens
+39011,Auglaize County,USA.36.6_1,Ohio,Auglaize
+39013,Belmont County,USA.36.7_1,Ohio,Belmont
+39015,Brown County,USA.36.8_1,Ohio,Brown
+39017,Butler County,USA.36.9_1,Ohio,Butler
+39019,Carroll County,USA.36.10_1,Ohio,Carroll
+39021,Champaign County,USA.36.11_1,Ohio,Champaign
+39023,Clark County,USA.36.12_1,Ohio,Clark
+39025,Clermont County,USA.36.13_1,Ohio,Clermont
+39027,Clinton County,USA.36.14_1,Ohio,Clinton
+39029,Columbiana County,USA.36.15_1,Ohio,Columbiana
+39031,Coshocton County,USA.36.16_1,Ohio,Coshocton
+39033,Crawford County,USA.36.17_1,Ohio,Crawford
+39035,Cuyahoga County,USA.36.18_1,Ohio,Cuyahoga
+39037,Darke County,USA.36.19_1,Ohio,Darke
+39039,Defiance County,USA.36.20_1,Ohio,Defiance
+39041,Delaware County,USA.36.21_1,Ohio,Delaware
+39043,Erie County,USA.36.22_1,Ohio,Erie
+39045,Fairfield County,USA.36.23_1,Ohio,Fairfield
+39047,Fayette County,USA.36.24_1,Ohio,Fayette
+39049,Franklin County,USA.36.25_1,Ohio,Franklin
+39051,Fulton County,USA.36.26_1,Ohio,Fulton
+39053,Gallia County,USA.36.27_1,Ohio,Gallia
+39055,Geauga County,USA.36.28_1,Ohio,Geauga
+39057,Greene County,USA.36.29_1,Ohio,Greene
+39059,Guernsey County,USA.36.30_1,Ohio,Guernsey
+39061,Hamilton County,USA.36.31_1,Ohio,Hamilton
+39063,Hancock County,USA.36.32_1,Ohio,Hancock
+39065,Hardin County,USA.36.33_1,Ohio,Hardin
+39067,Harrison County,USA.36.34_1,Ohio,Harrison
+39069,Henry County,USA.36.35_1,Ohio,Henry
+39071,Highland County,USA.36.36_1,Ohio,Highland
+39073,Hocking County,USA.36.37_1,Ohio,Hocking
+39075,Holmes County,USA.36.38_1,Ohio,Holmes
+39077,Huron County,USA.36.39_1,Ohio,Huron
+39079,Jackson County,USA.36.40_1,Ohio,Jackson
+39081,Jefferson County,USA.36.41_1,Ohio,Jefferson
+39083,Knox County,USA.36.42_1,Ohio,Knox
+39085,Lake County,USA.36.43_1,Ohio,Lake
+39087,Lawrence County,USA.36.45_1,Ohio,Lawrence
+39089,Licking County,USA.36.46_1,Ohio,Licking
+39091,Logan County,USA.36.47_1,Ohio,Logan
+39093,Lorain County,USA.36.48_1,Ohio,Lorain
+39095,Lucas County,USA.36.49_1,Ohio,Lucas
+39097,Madison County,USA.36.50_1,Ohio,Madison
+39099,Mahoning County,USA.36.51_1,Ohio,Mahoning
+39101,Marion County,USA.36.52_1,Ohio,Marion
+39103,Medina County,USA.36.53_1,Ohio,Medina
+39105,Meigs County,USA.36.54_1,Ohio,Meigs
+39107,Mercer County,USA.36.55_1,Ohio,Mercer
+39109,Miami County,USA.36.56_1,Ohio,Miami
+39111,Monroe County,USA.36.57_1,Ohio,Monroe
+39113,Montgomery County,USA.36.58_1,Ohio,Montgomery
+39115,Morgan County,USA.36.59_1,Ohio,Morgan
+39117,Morrow County,USA.36.60_1,Ohio,Morrow
+39119,Muskingum County,USA.36.61_1,Ohio,Muskingum
+39121,Noble County,USA.36.62_1,Ohio,Noble
+39123,Ottawa County,USA.36.63_1,Ohio,Ottawa
+39125,Paulding County,USA.36.64_1,Ohio,Paulding
+39127,Perry County,USA.36.65_1,Ohio,Perry
+39129,Pickaway County,USA.36.66_1,Ohio,Pickaway
+39131,Pike County,USA.36.67_1,Ohio,Pike
+39133,Portage County,USA.36.68_1,Ohio,Portage
+39135,Preble County,USA.36.69_1,Ohio,Preble
+39137,Putnam County,USA.36.70_1,Ohio,Putnam
+39139,Richland County,USA.36.71_1,Ohio,Richland
+39141,Ross County,USA.36.72_1,Ohio,Ross
+39143,Sandusky County,USA.36.73_1,Ohio,Sandusky
+39145,Scioto County,USA.36.74_1,Ohio,Scioto
+39147,Seneca County,USA.36.75_1,Ohio,Seneca
+39149,Shelby County,USA.36.76_1,Ohio,Shelby
+39151,Stark County,USA.36.77_1,Ohio,Stark
+39153,Summit County,USA.36.78_1,Ohio,Summit
+39155,Trumbull County,USA.36.79_1,Ohio,Trumbull
+39157,Tuscarawas County,USA.36.80_1,Ohio,Tuscarawas
+39159,Union County,USA.36.81_1,Ohio,Union
+39161,Van Wert County,USA.36.82_1,Ohio,Van Wert
+39163,Vinton County,USA.36.83_1,Ohio,Vinton
+39165,Warren County,USA.36.84_1,Ohio,Warren
+39167,Washington County,USA.36.85_1,Ohio,Washington
+39169,Wayne County,USA.36.86_1,Ohio,Wayne
+39171,Williams County,USA.36.87_1,Ohio,Williams
+39173,Wood County,USA.36.88_1,Ohio,Wood
+39175,Wyandot County,USA.36.89_1,Ohio,Wyandot
+40001,Adair County,USA.37.1_1,Oklahoma,Adair
+40003,Alfalfa County,USA.37.2_1,Oklahoma,Alfalfa
+40005,Atoka County,USA.37.3_1,Oklahoma,Atoka
+40007,Beaver County,USA.37.4_1,Oklahoma,Beaver
+40009,Beckham County,USA.37.5_1,Oklahoma,Beckham
+40011,Blaine County,USA.37.6_1,Oklahoma,Blaine
+40013,Bryan County,USA.37.7_1,Oklahoma,Bryan
+40015,Caddo County,USA.37.8_1,Oklahoma,Caddo
+40017,Canadian County,USA.37.9_1,Oklahoma,Canadian
+40019,Carter County,USA.37.10_1,Oklahoma,Carter
+40021,Cherokee County,USA.37.11_1,Oklahoma,Cherokee
+40023,Choctaw County,USA.37.12_1,Oklahoma,Choctaw
+40025,Cimarron County,USA.37.13_1,Oklahoma,Cimarron
+40027,Cleveland County,USA.37.14_1,Oklahoma,Cleveland
+40029,Coal County,USA.37.15_1,Oklahoma,Coal
+40031,Comanche County,USA.37.16_1,Oklahoma,Comanche
+40033,Cotton County,USA.37.17_1,Oklahoma,Cotton
+40035,Craig County,USA.37.18_1,Oklahoma,Craig
+40037,Creek County,USA.37.19_1,Oklahoma,Creek
+40039,Custer County,USA.37.20_1,Oklahoma,Custer
+40041,Delaware County,USA.37.21_1,Oklahoma,Delaware
+40043,Dewey County,USA.37.22_1,Oklahoma,Dewey
+40045,Ellis County,USA.37.23_1,Oklahoma,Ellis
+40047,Garfield County,USA.37.24_1,Oklahoma,Garfield
+40049,Garvin County,USA.37.25_1,Oklahoma,Garvin
+40051,Grady County,USA.37.26_1,Oklahoma,Grady
+40053,Grant County,USA.37.27_1,Oklahoma,Grant
+40055,Greer County,USA.37.28_1,Oklahoma,Greer
+40057,Harmon County,USA.37.29_1,Oklahoma,Harmon
+40059,Harper County,USA.37.30_1,Oklahoma,Harper
+40061,Haskell County,USA.37.31_1,Oklahoma,Haskell
+40063,Hughes County,USA.37.32_1,Oklahoma,Hughes
+40065,Jackson County,USA.37.33_1,Oklahoma,Jackson
+40067,Jefferson County,USA.37.34_1,Oklahoma,Jefferson
+40069,Johnston County,USA.37.35_1,Oklahoma,Johnston
+40071,Kay County,USA.37.36_1,Oklahoma,Kay
+40073,Kingfisher County,USA.37.37_1,Oklahoma,Kingfisher
+40075,Kiowa County,USA.37.38_1,Oklahoma,Kiowa
+40077,Latimer County,USA.37.39_1,Oklahoma,Latimer
+40079,Le Flore County,USA.37.40_1,Oklahoma,Le Flore
+40081,Lincoln County,USA.37.41_1,Oklahoma,Lincoln
+40083,Logan County,USA.37.42_1,Oklahoma,Logan
+40085,Love County,USA.37.43_1,Oklahoma,Love
+40087,McClain County,USA.37.47_1,Oklahoma,McClain
+40089,McCurtain County,USA.37.48_1,Oklahoma,McCurtain
+40091,McIntosh County,USA.37.49_1,Oklahoma,McIntosh
+40093,Major County,USA.37.44_1,Oklahoma,Major
+40095,Marshall County,USA.37.45_1,Oklahoma,Marshall
+40097,Mayes County,USA.37.46_1,Oklahoma,Mayes
+40099,Murray County,USA.37.50_1,Oklahoma,Murray
+40101,Muskogee County,USA.37.51_1,Oklahoma,Muskogee
+40103,Noble County,USA.37.52_1,Oklahoma,Noble
+40105,Nowata County,USA.37.53_1,Oklahoma,Nowata
+40107,Okfuskee County,USA.37.54_1,Oklahoma,Okfuskee
+40109,Oklahoma County,USA.37.55_1,Oklahoma,Oklahoma
+40111,Okmulgee County,USA.37.56_1,Oklahoma,Okmulgee
+40113,Osage County,USA.37.57_1,Oklahoma,Osage
+40115,Ottawa County,USA.37.58_1,Oklahoma,Ottawa
+40117,Pawnee County,USA.37.59_1,Oklahoma,Pawnee
+40119,Payne County,USA.37.60_1,Oklahoma,Payne
+40121,Pittsburg County,USA.37.61_1,Oklahoma,Pittsburg
+40123,Pontotoc County,USA.37.62_1,Oklahoma,Pontotoc
+40125,Pottawatomie County,USA.37.63_1,Oklahoma,Pottawatomie
+40127,Pushmataha County,USA.37.64_1,Oklahoma,Pushmataha
+40129,Roger Mills County,USA.37.65_1,Oklahoma,Roger Mills
+40131,Rogers County,USA.37.66_1,Oklahoma,Rogers
+40133,Seminole County,USA.37.67_1,Oklahoma,Seminole
+40135,Sequoyah County,USA.37.68_1,Oklahoma,Sequoyah
+40137,Stephens County,USA.37.69_1,Oklahoma,Stephens
+40139,Texas County,USA.37.70_1,Oklahoma,Texas
+40141,Tillman County,USA.37.71_1,Oklahoma,Tillman
+40143,Tulsa County,USA.37.72_1,Oklahoma,Tulsa
+40145,Wagoner County,USA.37.73_1,Oklahoma,Wagoner
+40147,Washington County,USA.37.74_1,Oklahoma,Washington
+40149,Washita County,USA.37.75_1,Oklahoma,Washita
+40151,Woods County,USA.37.76_1,Oklahoma,Woods
+40153,Woodward County,USA.37.77_1,Oklahoma,Woodward
+41001,Baker County,USA.38.1_1,Oregon,Baker
+41003,Benton County,USA.38.2_1,Oregon,Benton
+41005,Clackamas County,USA.38.3_1,Oregon,Clackamas
+41007,Clatsop County,USA.38.4_1,Oregon,Clatsop
+41009,Columbia County,USA.38.5_1,Oregon,Columbia
+41011,Coos County,USA.38.6_1,Oregon,Coos
+41013,Crook County,USA.38.7_1,Oregon,Crook
+41015,Curry County,USA.38.8_1,Oregon,Curry
+41017,Deschutes County,USA.38.9_1,Oregon,Deschutes
+41019,Douglas County,USA.38.10_1,Oregon,Douglas
+41021,Gilliam County,USA.38.11_1,Oregon,Gilliam
+41023,Grant County,USA.38.12_1,Oregon,Grant
+41025,Harney County,USA.38.13_1,Oregon,Harney
+41027,Hood River County,USA.38.14_1,Oregon,Hood River
+41029,Jackson County,USA.38.15_1,Oregon,Jackson
+41031,Jefferson County,USA.38.16_1,Oregon,Jefferson
+41033,Josephine County,USA.38.17_1,Oregon,Josephine
+41035,Klamath County,USA.38.18_1,Oregon,Klamath
+41037,Lake County,USA.38.19_1,Oregon,Lake
+41039,Lane County,USA.38.20_1,Oregon,Lane
+41041,Lincoln County,USA.38.21_1,Oregon,Lincoln
+41043,Linn County,USA.38.22_1,Oregon,Linn
+41045,Malheur County,USA.38.23_1,Oregon,Malheur
+41047,Marion County,USA.38.24_1,Oregon,Marion
+41049,Morrow County,USA.38.25_1,Oregon,Morrow
+41051,Multnomah County,USA.38.26_1,Oregon,Multnomah
+41053,Polk County,USA.38.27_1,Oregon,Polk
+41055,Sherman County,USA.38.28_1,Oregon,Sherman
+41057,Tillamook County,USA.38.29_1,Oregon,Tillamook
+41059,Umatilla County,USA.38.30_1,Oregon,Umatilla
+41061,Union County,USA.38.31_1,Oregon,Union
+41063,Wallowa County,USA.38.32_1,Oregon,Wallowa
+41065,Wasco County,USA.38.33_1,Oregon,Wasco
+41067,Washington County,USA.38.34_1,Oregon,Washington
+41069,Wheeler County,USA.38.35_1,Oregon,Wheeler
+41071,Yamhill County,USA.38.36_1,Oregon,Yamhill
+42001,Adams County,USA.39.1_1,Pennsylvania,Adams
+42003,Allegheny County,USA.39.2_1,Pennsylvania,Allegheny
+42005,Armstrong County,USA.39.3_1,Pennsylvania,Armstrong
+42007,Beaver County,USA.39.4_1,Pennsylvania,Beaver
+42009,Bedford County,USA.39.5_1,Pennsylvania,Bedford
+42011,Berks County,USA.39.6_1,Pennsylvania,Berks
+42013,Blair County,USA.39.7_1,Pennsylvania,Blair
+42015,Bradford County,USA.39.8_1,Pennsylvania,Bradford
+42017,Bucks County,USA.39.9_1,Pennsylvania,Bucks
+42019,Butler County,USA.39.10_1,Pennsylvania,Butler
+42021,Cambria County,USA.39.11_1,Pennsylvania,Cambria
+42023,Cameron County,USA.39.12_1,Pennsylvania,Cameron
+42025,Carbon County,USA.39.13_1,Pennsylvania,Carbon
+42027,Centre County,USA.39.14_1,Pennsylvania,Centre
+42029,Chester County,USA.39.15_1,Pennsylvania,Chester
+42031,Clarion County,USA.39.16_1,Pennsylvania,Clarion
+42033,Clearfield County,USA.39.17_1,Pennsylvania,Clearfield
+42035,Clinton County,USA.39.18_1,Pennsylvania,Clinton
+42037,Columbia County,USA.39.19_1,Pennsylvania,Columbia
+42039,Crawford County,USA.39.20_1,Pennsylvania,Crawford
+42041,Cumberland County,USA.39.21_1,Pennsylvania,Cumberland
+42043,Dauphin County,USA.39.22_1,Pennsylvania,Dauphin
+42045,Delaware County,USA.39.23_1,Pennsylvania,Delaware
+42047,Elk County,USA.39.24_1,Pennsylvania,Elk
+42049,Erie County,USA.39.25_1,Pennsylvania,Erie
+42051,Fayette County,USA.39.26_1,Pennsylvania,Fayette
+42053,Forest County,USA.39.27_1,Pennsylvania,Forest
+42055,Franklin County,USA.39.28_1,Pennsylvania,Franklin
+42057,Fulton County,USA.39.29_1,Pennsylvania,Fulton
+42059,Greene County,USA.39.30_1,Pennsylvania,Greene
+42061,Huntingdon County,USA.39.31_1,Pennsylvania,Huntingdon
+42063,Indiana County,USA.39.32_1,Pennsylvania,Indiana
+42065,Jefferson County,USA.39.33_1,Pennsylvania,Jefferson
+42067,Juniata County,USA.39.34_1,Pennsylvania,Juniata
+42069,Lackawanna County,USA.39.35_1,Pennsylvania,Lackawanna
+42071,Lancaster County,USA.39.36_1,Pennsylvania,Lancaster
+42073,Lawrence County,USA.39.37_1,Pennsylvania,Lawrence
+42075,Lebanon County,USA.39.38_1,Pennsylvania,Lebanon
+42077,Lehigh County,USA.39.39_1,Pennsylvania,Lehigh
+42079,Luzerne County,USA.39.40_1,Pennsylvania,Luzerne
+42081,Lycoming County,USA.39.41_1,Pennsylvania,Lycoming
+42083,Mc Kean County,USA.39.42_1,Pennsylvania,Mc Kean
+42085,Mercer County,USA.39.43_1,Pennsylvania,Mercer
+42087,Mifflin County,USA.39.44_1,Pennsylvania,Mifflin
+42089,Monroe County,USA.39.45_1,Pennsylvania,Monroe
+42091,Montgomery County,USA.39.46_1,Pennsylvania,Montgomery
+42093,Montour County,USA.39.47_1,Pennsylvania,Montour
+42095,Northampton County,USA.39.48_1,Pennsylvania,Northampton
+42097,Northumberland County,USA.39.49_1,Pennsylvania,Northumberland
+42099,Perry County,USA.39.50_1,Pennsylvania,Perry
+42101,Philadelphia County,USA.39.51_1,Pennsylvania,Philadelphia
+42103,Pike County,USA.39.52_1,Pennsylvania,Pike
+42105,Potter County,USA.39.53_1,Pennsylvania,Potter
+42107,Schuylkill County,USA.39.54_1,Pennsylvania,Schuylkill
+42109,Snyder County,USA.39.55_1,Pennsylvania,Snyder
+42111,Somerset County,USA.39.56_1,Pennsylvania,Somerset
+42113,Sullivan County,USA.39.57_1,Pennsylvania,Sullivan
+42115,Susquehanna County,USA.39.58_1,Pennsylvania,Susquehanna
+42117,Tioga County,USA.39.59_1,Pennsylvania,Tioga
+42119,Union County,USA.39.60_1,Pennsylvania,Union
+42121,Venango County,USA.39.61_1,Pennsylvania,Venango
+42123,Warren County,USA.39.62_1,Pennsylvania,Warren
+42125,Washington County,USA.39.63_1,Pennsylvania,Washington
+42127,Wayne County,USA.39.64_1,Pennsylvania,Wayne
+42129,Westmoreland County,USA.39.65_1,Pennsylvania,Westmoreland
+42131,Wyoming County,USA.39.66_1,Pennsylvania,Wyoming
+42133,York County,USA.39.67_1,Pennsylvania,York
+44001,Bristol County,USA.40.1_1,Rhode Island,Bristol
+44003,Kent County,USA.40.2_1,Rhode Island,Kent
+44005,Newport County,USA.40.3_1,Rhode Island,Newport
+44007,Providence County,USA.40.4_1,Rhode Island,Providence
+44009,Washington County,USA.40.5_1,Rhode Island,Washington
+45001,Abbeville County,USA.41.1_1,South Carolina,Abbeville
+45003,Aiken County,USA.41.2_1,South Carolina,Aiken
+45005,Allendale County,USA.41.3_1,South Carolina,Allendale
+45007,Anderson County,USA.41.4_1,South Carolina,Anderson
+45009,Bamberg County,USA.41.5_1,South Carolina,Bamberg
+45011,Barnwell County,USA.41.6_1,South Carolina,Barnwell
+45013,Beaufort County,USA.41.7_1,South Carolina,Beaufort
+45015,Berkeley County,USA.41.8_1,South Carolina,Berkeley
+45017,Calhoun County,USA.41.9_1,South Carolina,Calhoun
+45019,Charleston County,USA.41.10_1,South Carolina,Charleston
+45021,Cherokee County,USA.41.11_1,South Carolina,Cherokee
+45023,Chester County,USA.41.12_1,South Carolina,Chester
+45025,Chesterfield County,USA.41.13_1,South Carolina,Chesterfield
+45027,Clarendon County,USA.41.14_1,South Carolina,Clarendon
+45029,Colleton County,USA.41.15_1,South Carolina,Colleton
+45031,Darlington County,USA.41.16_1,South Carolina,Darlington
+45033,Dillon County,USA.41.17_1,South Carolina,Dillon
+45035,Dorchester County,USA.41.18_1,South Carolina,Dorchester
+45037,Edgefield County,USA.41.19_1,South Carolina,Edgefield
+45039,Fairfield County,USA.41.20_1,South Carolina,Fairfield
+45041,Florence County,USA.41.21_1,South Carolina,Florence
+45043,Georgetown County,USA.41.22_1,South Carolina,Georgetown
+45045,Greenville County,USA.41.23_1,South Carolina,Greenville
+45047,Greenwood County,USA.41.24_1,South Carolina,Greenwood
+45049,Hampton County,USA.41.25_1,South Carolina,Hampton
+45051,Horry County,USA.41.26_1,South Carolina,Horry
+45053,Jasper County,USA.41.27_1,South Carolina,Jasper
+45055,Kershaw County,USA.41.28_1,South Carolina,Kershaw
+45057,Lancaster County,USA.41.29_1,South Carolina,Lancaster
+45059,Laurens County,USA.41.30_1,South Carolina,Laurens
+45061,Lee County,USA.41.31_1,South Carolina,Lee
+45063,Lexington County,USA.41.32_1,South Carolina,Lexington
+45065,McCormick County,USA.41.35_1,South Carolina,McCormick
+45067,Marion County,USA.41.33_1,South Carolina,Marion
+45069,Marlboro County,USA.41.34_1,South Carolina,Marlboro
+45071,Newberry County,USA.41.36_1,South Carolina,Newberry
+45073,Oconee County,USA.41.37_1,South Carolina,Oconee
+45075,Orangeburg County,USA.41.38_1,South Carolina,Orangeburg
+45077,Pickens County,USA.41.39_1,South Carolina,Pickens
+45079,Richland County,USA.41.40_1,South Carolina,Richland
+45081,Saluda County,USA.41.41_1,South Carolina,Saluda
+45083,Spartanburg County,USA.41.42_1,South Carolina,Spartanburg
+45085,Sumter County,USA.41.43_1,South Carolina,Sumter
+45087,Union County,USA.41.44_1,South Carolina,Union
+45089,Williamsburg County,USA.41.45_1,South Carolina,Williamsburg
+45091,York County,USA.41.46_1,South Carolina,York
+46003,Aurora County,USA.42.1_1,South Dakota,Aurora
+46005,Beadle County,USA.42.2_1,South Dakota,Beadle
+46007,Bennett County,USA.42.3_1,South Dakota,Bennett
+46009,Bon Homme County,USA.42.4_1,South Dakota,Bon Homme
+46011,Brookings County,USA.42.5_1,South Dakota,Brookings
+46013,Brown County,USA.42.6_1,South Dakota,Brown
+46015,Brule County,USA.42.7_1,South Dakota,Brule
+46017,Buffalo County,USA.42.8_1,South Dakota,Buffalo
+46019,Butte County,USA.42.9_1,South Dakota,Butte
+46021,Campbell County,USA.42.10_1,South Dakota,Campbell
+46023,Charles Mix County,USA.42.11_1,South Dakota,Charles Mix
+46025,Clark County,USA.42.12_1,South Dakota,Clark
+46027,Clay County,USA.42.13_1,South Dakota,Clay
+46029,Codington County,USA.42.14_1,South Dakota,Codington
+46031,Corson County,USA.42.15_1,South Dakota,Corson
+46033,Custer County,USA.42.16_1,South Dakota,Custer
+46035,Davison County,USA.42.17_1,South Dakota,Davison
+46037,Day County,USA.42.18_1,South Dakota,Day
+46039,Deuel County,USA.42.19_1,South Dakota,Deuel
+46041,Dewey County,USA.42.20_1,South Dakota,Dewey
+46043,Douglas County,USA.42.21_1,South Dakota,Douglas
+46045,Edmunds County,USA.42.22_1,South Dakota,Edmunds
+46047,Fall River County,USA.42.23_1,South Dakota,Fall River
+46049,Faulk County,USA.42.24_1,South Dakota,Faulk
+46051,Grant County,USA.42.25_1,South Dakota,Grant
+46053,Gregory County,USA.42.26_1,South Dakota,Gregory
+46055,Haakon County,USA.42.27_1,South Dakota,Haakon
+46057,Hamlin County,USA.42.28_1,South Dakota,Hamlin
+46059,Hand County,USA.42.29_1,South Dakota,Hand
+46061,Hanson County,USA.42.30_1,South Dakota,Hanson
+46063,Harding County,USA.42.31_1,South Dakota,Harding
+46065,Hughes County,USA.42.32_1,South Dakota,Hughes
+46067,Hutchinson County,USA.42.33_1,South Dakota,Hutchinson
+46069,Hyde County,USA.42.34_1,South Dakota,Hyde
+46071,Jackson County,USA.42.35_1,South Dakota,Jackson
+46073,Jerauld County,USA.42.36_1,South Dakota,Jerauld
+46075,Jones County,USA.42.37_1,South Dakota,Jones
+46077,Kingsbury County,USA.42.38_1,South Dakota,Kingsbury
+46079,Lake County,USA.42.39_1,South Dakota,Lake
+46081,Lawrence County,USA.42.40_1,South Dakota,Lawrence
+46083,Lincoln County,USA.42.41_1,South Dakota,Lincoln
+46085,Lyman County,USA.42.42_1,South Dakota,Lyman
+46087,McCook County,USA.42.44_1,South Dakota,McCook
+46089,McPherson County,USA.42.45_1,South Dakota,McPherson
+46091,Marshall County,USA.42.43_1,South Dakota,Marshall
+46093,Meade County,USA.42.46_1,South Dakota,Meade
+46095,Mellette County,USA.42.47_1,South Dakota,Mellette
+46097,Miner County,USA.42.48_1,South Dakota,Miner
+46099,Minnehaha County,USA.42.49_1,South Dakota,Minnehaha
+46101,Moody County,USA.42.50_1,South Dakota,Moody
+46103,Pennington County,USA.42.51_1,South Dakota,Pennington
+46105,Perkins County,USA.42.52_1,South Dakota,Perkins
+46107,Potter County,USA.42.53_1,South Dakota,Potter
+46109,Roberts County,USA.42.54_1,South Dakota,Roberts
+46111,Sanborn County,USA.42.55_1,South Dakota,Sanborn
+46113,Shannon County,USA.42.56_1,South Dakota,Shannon
+46115,Spink County,USA.42.57_1,South Dakota,Spink
+46117,Stanley County,USA.42.58_1,South Dakota,Stanley
+46119,Sully County,USA.42.59_1,South Dakota,Sully
+46121,Todd County,USA.42.60_1,South Dakota,Todd
+46123,Tripp County,USA.42.61_1,South Dakota,Tripp
+46125,Turner County,USA.42.62_1,South Dakota,Turner
+46127,Union County,USA.42.63_1,South Dakota,Union
+46129,Walworth County,USA.42.64_1,South Dakota,Walworth
+46135,Yankton County,USA.42.65_1,South Dakota,Yankton
+46137,Ziebach County,USA.42.66_1,South Dakota,Ziebach
+47001,Anderson County,USA.43.1_1,Tennessee,Anderson
+47003,Bedford County,USA.43.2_1,Tennessee,Bedford
+47005,Benton County,USA.43.3_1,Tennessee,Benton
+47007,Bledsoe County,USA.43.4_1,Tennessee,Bledsoe
+47009,Blount County,USA.43.5_1,Tennessee,Blount
+47011,Bradley County,USA.43.6_1,Tennessee,Bradley
+47013,Campbell County,USA.43.7_1,Tennessee,Campbell
+47015,Cannon County,USA.43.8_1,Tennessee,Cannon
+47017,Carroll County,USA.43.9_1,Tennessee,Carroll
+47019,Carter County,USA.43.10_1,Tennessee,Carter
+47021,Cheatham County,USA.43.11_1,Tennessee,Cheatham
+47023,Chester County,USA.43.12_1,Tennessee,Chester
+47025,Claiborne County,USA.43.13_1,Tennessee,Claiborne
+47027,Clay County,USA.43.14_1,Tennessee,Clay
+47029,Cocke County,USA.43.15_1,Tennessee,Cocke
+47031,Coffee County,USA.43.16_1,Tennessee,Coffee
+47033,Crockett County,USA.43.17_1,Tennessee,Crockett
+47035,Cumberland County,USA.43.18_1,Tennessee,Cumberland
+47037,Davidson County,USA.43.19_1,Tennessee,Davidson
+47039,Decatur County,USA.43.20_1,Tennessee,Decatur
+47041,DeKalb County,USA.43.21_1,Tennessee,DeKalb
+47043,Dickson County,USA.43.22_1,Tennessee,Dickson
+47045,Dyer County,USA.43.23_1,Tennessee,Dyer
+47047,Fayette County,USA.43.24_1,Tennessee,Fayette
+47049,Fentress County,USA.43.25_1,Tennessee,Fentress
+47051,Franklin County,USA.43.26_1,Tennessee,Franklin
+47053,Gibson County,USA.43.27_1,Tennessee,Gibson
+47055,Giles County,USA.43.28_1,Tennessee,Giles
+47057,Grainger County,USA.43.29_1,Tennessee,Grainger
+47059,Greene County,USA.43.30_1,Tennessee,Greene
+47061,Grundy County,USA.43.31_1,Tennessee,Grundy
+47063,Hamblen County,USA.43.32_1,Tennessee,Hamblen
+47065,Hamilton County,USA.43.33_1,Tennessee,Hamilton
+47067,Hancock County,USA.43.34_1,Tennessee,Hancock
+47069,Hardeman County,USA.43.35_1,Tennessee,Hardeman
+47071,Hardin County,USA.43.36_1,Tennessee,Hardin
+47073,Hawkins County,USA.43.37_1,Tennessee,Hawkins
+47075,Haywood County,USA.43.38_1,Tennessee,Haywood
+47077,Henderson County,USA.43.39_1,Tennessee,Henderson
+47079,Henry County,USA.43.40_1,Tennessee,Henry
+47081,Hickman County,USA.43.41_1,Tennessee,Hickman
+47083,Houston County,USA.43.42_1,Tennessee,Houston
+47085,Humphreys County,USA.43.43_1,Tennessee,Humphreys
+47087,Jackson County,USA.43.44_1,Tennessee,Jackson
+47089,Jefferson County,USA.43.45_1,Tennessee,Jefferson
+47091,Johnson County,USA.43.46_1,Tennessee,Johnson
+47093,Knox County,USA.43.47_1,Tennessee,Knox
+47095,Lake County,USA.43.48_1,Tennessee,Lake
+47097,Lauderdale County,USA.43.49_1,Tennessee,Lauderdale
+47099,Lawrence County,USA.43.50_1,Tennessee,Lawrence
+47101,Lewis County,USA.43.51_1,Tennessee,Lewis
+47103,Lincoln County,USA.43.52_1,Tennessee,Lincoln
+47105,Loudon County,USA.43.53_1,Tennessee,Loudon
+47107,McMinn County,USA.43.59_1,Tennessee,McMinn
+47109,McNairy County,USA.43.60_1,Tennessee,McNairy
+47111,Macon County,USA.43.54_1,Tennessee,Macon
+47113,Madison County,USA.43.55_1,Tennessee,Madison
+47115,Marion County,USA.43.56_1,Tennessee,Marion
+47117,Marshall County,USA.43.57_1,Tennessee,Marshall
+47119,Maury County,USA.43.58_1,Tennessee,Maury
+47121,Meigs County,USA.43.61_1,Tennessee,Meigs
+47123,Monroe County,USA.43.62_1,Tennessee,Monroe
+47125,Montgomery County,USA.43.63_1,Tennessee,Montgomery
+47127,Moore County,USA.43.64_1,Tennessee,Moore
+47129,Morgan County,USA.43.65_1,Tennessee,Morgan
+47131,Obion County,USA.43.66_1,Tennessee,Obion
+47133,Overton County,USA.43.67_1,Tennessee,Overton
+47135,Perry County,USA.43.68_1,Tennessee,Perry
+47137,Pickett County,USA.43.69_1,Tennessee,Pickett
+47139,Polk County,USA.43.70_1,Tennessee,Polk
+47141,Putnam County,USA.43.71_1,Tennessee,Putnam
+47143,Rhea County,USA.43.72_1,Tennessee,Rhea
+47145,Roane County,USA.43.73_1,Tennessee,Roane
+47147,Robertson County,USA.43.74_1,Tennessee,Robertson
+47149,Rutherford County,USA.43.75_1,Tennessee,Rutherford
+47151,Scott County,USA.43.76_1,Tennessee,Scott
+47153,Sequatchie County,USA.43.77_1,Tennessee,Sequatchie
+47155,Sevier County,USA.43.78_1,Tennessee,Sevier
+47157,Shelby County,USA.43.79_1,Tennessee,Shelby
+47159,Smith County,USA.43.80_1,Tennessee,Smith
+47161,Stewart County,USA.43.81_1,Tennessee,Stewart
+47163,Sullivan County,USA.43.82_1,Tennessee,Sullivan
+47165,Sumner County,USA.43.83_1,Tennessee,Sumner
+47167,Tipton County,USA.43.84_1,Tennessee,Tipton
+47169,Trousdale County,USA.43.85_1,Tennessee,Trousdale
+47171,Unicoi County,USA.43.86_1,Tennessee,Unicoi
+47173,Union County,USA.43.87_1,Tennessee,Union
+47175,Van Buren County,USA.43.88_1,Tennessee,Van Buren
+47177,Warren County,USA.43.89_1,Tennessee,Warren
+47179,Washington County,USA.43.90_1,Tennessee,Washington
+47181,Wayne County,USA.43.91_1,Tennessee,Wayne
+47183,Weakley County,USA.43.92_1,Tennessee,Weakley
+47185,White County,USA.43.93_1,Tennessee,White
+47187,Williamson County,USA.43.94_1,Tennessee,Williamson
+47189,Wilson County,USA.43.95_1,Tennessee,Wilson
+48001,Anderson County,USA.44.1_1,Texas,Anderson
+48003,Andrews County,USA.44.2_1,Texas,Andrews
+48005,Angelina County,USA.44.3_1,Texas,Angelina
+48007,Aransas County,USA.44.4_1,Texas,Aransas
+48009,Archer County,USA.44.5_1,Texas,Archer
+48011,Armstrong County,USA.44.6_1,Texas,Armstrong
+48013,Atascosa County,USA.44.7_1,Texas,Atascosa
+48015,Austin County,USA.44.8_1,Texas,Austin
+48017,Bailey County,USA.44.9_1,Texas,Bailey
+48019,Bandera County,USA.44.10_1,Texas,Bandera
+48021,Bastrop County,USA.44.11_1,Texas,Bastrop
+48023,Baylor County,USA.44.12_1,Texas,Baylor
+48025,Bee County,USA.44.13_1,Texas,Bee
+48027,Bell County,USA.44.14_1,Texas,Bell
+48029,Bexar County,USA.44.15_1,Texas,Bexar
+48031,Blanco County,USA.44.16_1,Texas,Blanco
+48033,Borden County,USA.44.17_1,Texas,Borden
+48035,Bosque County,USA.44.18_1,Texas,Bosque
+48037,Bowie County,USA.44.19_1,Texas,Bowie
+48039,Brazoria County,USA.44.20_1,Texas,Brazoria
+48041,Brazos County,USA.44.21_1,Texas,Brazos
+48043,Brewster County,USA.44.22_1,Texas,Brewster
+48045,Briscoe County,USA.44.23_1,Texas,Briscoe
+48047,Brooks County,USA.44.24_1,Texas,Brooks
+48049,Brown County,USA.44.25_1,Texas,Brown
+48051,Burleson County,USA.44.26_1,Texas,Burleson
+48053,Burnet County,USA.44.27_1,Texas,Burnet
+48055,Caldwell County,USA.44.28_1,Texas,Caldwell
+48057,Calhoun County,USA.44.29_1,Texas,Calhoun
+48059,Callahan County,USA.44.30_1,Texas,Callahan
+48061,Cameron County,USA.44.31_1,Texas,Cameron
+48063,Camp County,USA.44.32_1,Texas,Camp
+48065,Carson County,USA.44.33_1,Texas,Carson
+48067,Cass County,USA.44.34_1,Texas,Cass
+48069,Castro County,USA.44.35_1,Texas,Castro
+48071,Chambers County,USA.44.36_1,Texas,Chambers
+48073,Cherokee County,USA.44.37_1,Texas,Cherokee
+48075,Childress County,USA.44.38_1,Texas,Childress
+48077,Clay County,USA.44.39_1,Texas,Clay
+48079,Cochran County,USA.44.40_1,Texas,Cochran
+48081,Coke County,USA.44.41_1,Texas,Coke
+48083,Coleman County,USA.44.42_1,Texas,Coleman
+48085,Collin County,USA.44.43_1,Texas,Collin
+48087,Collingsworth County,USA.44.44_1,Texas,Collingsworth
+48089,Colorado County,USA.44.45_1,Texas,Colorado
+48091,Comal County,USA.44.46_1,Texas,Comal
+48093,Comanche County,USA.44.47_1,Texas,Comanche
+48095,Concho County,USA.44.48_1,Texas,Concho
+48097,Cooke County,USA.44.49_1,Texas,Cooke
+48099,Coryell County,USA.44.50_1,Texas,Coryell
+48101,Cottle County,USA.44.51_1,Texas,Cottle
+48103,Crane County,USA.44.52_1,Texas,Crane
+48105,Crockett County,USA.44.53_1,Texas,Crockett
+48107,Crosby County,USA.44.54_1,Texas,Crosby
+48109,Culberson County,USA.44.55_1,Texas,Culberson
+48111,Dallam County,USA.44.56_1,Texas,Dallam
+48113,Dallas County,USA.44.57_1,Texas,Dallas
+48115,Dawson County,USA.44.58_1,Texas,Dawson
+48117,Deaf Smith County,USA.44.59_1,Texas,Deaf Smith
+48119,Delta County,USA.44.60_1,Texas,Delta
+48121,Denton County,USA.44.61_1,Texas,Denton
+48123,DeWitt County,USA.44.62_1,Texas,Dewitt
+48125,Dickens County,USA.44.63_1,Texas,Dickens
+48127,Dimmit County,USA.44.64_1,Texas,Dimmit
+48129,Donley County,USA.44.65_1,Texas,Donley
+48131,Duval County,USA.44.66_1,Texas,Duval
+48133,Eastland County,USA.44.67_1,Texas,Eastland
+48135,Ector County,USA.44.68_1,Texas,Ector
+48137,Edwards County,USA.44.69_1,Texas,Edwards
+48139,Ellis County,USA.44.71_1,Texas,Ellis
+48141,El Paso County,USA.44.70_1,Texas,El Paso
+48143,Erath County,USA.44.72_1,Texas,Erath
+48145,Falls County,USA.44.73_1,Texas,Falls
+48147,Fannin County,USA.44.74_1,Texas,Fannin
+48149,Fayette County,USA.44.75_1,Texas,Fayette
+48151,Fisher County,USA.44.76_1,Texas,Fisher
+48153,Floyd County,USA.44.77_1,Texas,Floyd
+48155,Foard County,USA.44.78_1,Texas,Foard
+48157,Fort Bend County,USA.44.79_1,Texas,Fort Bend
+48159,Franklin County,USA.44.80_1,Texas,Franklin
+48161,Freestone County,USA.44.81_1,Texas,Freestone
+48163,Frio County,USA.44.82_1,Texas,Frio
+48165,Gaines County,USA.44.83_1,Texas,Gaines
+48167,Galveston County,USA.44.84_1,Texas,Galveston
+48169,Garza County,USA.44.85_1,Texas,Garza
+48171,Gillespie County,USA.44.86_1,Texas,Gillespie
+48173,Glasscock County,USA.44.87_1,Texas,Glasscock
+48175,Goliad County,USA.44.88_1,Texas,Goliad
+48177,Gonzales County,USA.44.89_1,Texas,Gonzales
+48179,Gray County,USA.44.90_1,Texas,Gray
+48181,Grayson County,USA.44.91_1,Texas,Grayson
+48183,Gregg County,USA.44.92_1,Texas,Gregg
+48185,Grimes County,USA.44.93_1,Texas,Grimes
+48187,Guadalupe County,USA.44.94_1,Texas,Guadalupe
+48189,Hale County,USA.44.95_1,Texas,Hale
+48191,Hall County,USA.44.96_1,Texas,Hall
+48193,Hamilton County,USA.44.97_1,Texas,Hamilton
+48195,Hansford County,USA.44.98_1,Texas,Hansford
+48197,Hardeman County,USA.44.99_1,Texas,Hardeman
+48199,Hardin County,USA.44.100_1,Texas,Hardin
+48201,Harris County,USA.44.101_1,Texas,Harris
+48203,Harrison County,USA.44.102_1,Texas,Harrison
+48205,Hartley County,USA.44.103_1,Texas,Hartley
+48207,Haskell County,USA.44.104_1,Texas,Haskell
+48209,Hays County,USA.44.105_1,Texas,Hays
+48211,Hemphill County,USA.44.106_1,Texas,Hemphill
+48213,Henderson County,USA.44.107_1,Texas,Henderson
+48215,Hidalgo County,USA.44.108_1,Texas,Hidalgo
+48217,Hill County,USA.44.109_1,Texas,Hill
+48219,Hockley County,USA.44.110_1,Texas,Hockley
+48221,Hood County,USA.44.111_1,Texas,Hood
+48223,Hopkins County,USA.44.112_1,Texas,Hopkins
+48225,Houston County,USA.44.113_1,Texas,Houston
+48227,Howard County,USA.44.114_1,Texas,Howard
+48229,Hudspeth County,USA.44.115_1,Texas,Hudspeth
+48231,Hunt County,USA.44.116_1,Texas,Hunt
+48233,Hutchinson County,USA.44.117_1,Texas,Hutchinson
+48235,Irion County,USA.44.118_1,Texas,Irion
+48237,Jack County,USA.44.119_1,Texas,Jack
+48239,Jackson County,USA.44.120_1,Texas,Jackson
+48241,Jasper County,USA.44.121_1,Texas,Jasper
+48243,Jeff Davis County,USA.44.122_1,Texas,Jeff Davis
+48245,Jefferson County,USA.44.123_1,Texas,Jefferson
+48247,Jim Hogg County,USA.44.124_1,Texas,Jim Hogg
+48249,Jim Wells County,USA.44.125_1,Texas,Jim Wells
+48251,Johnson County,USA.44.126_1,Texas,Johnson
+48253,Jones County,USA.44.127_1,Texas,Jones
+48255,Karnes County,USA.44.128_1,Texas,Karnes
+48257,Kaufman County,USA.44.129_1,Texas,Kaufman
+48259,Kendall County,USA.44.130_1,Texas,Kendall
+48261,Kenedy County,USA.44.131_1,Texas,Kenedy
+48263,Kent County,USA.44.132_1,Texas,Kent
+48265,Kerr County,USA.44.133_1,Texas,Kerr
+48267,Kimble County,USA.44.134_1,Texas,Kimble
+48269,King County,USA.44.135_1,Texas,King
+48271,Kinney County,USA.44.136_1,Texas,Kinney
+48273,Kleberg County,USA.44.137_1,Texas,Kleberg
+48275,Knox County,USA.44.138_1,Texas,Knox
+48277,Lamar County,USA.44.140_1,Texas,Lamar
+48279,Lamb County,USA.44.141_1,Texas,Lamb
+48281,Lampasas County,USA.44.142_1,Texas,Lampasas
+48283,La Salle County,USA.44.139_1,Texas,La Salle
+48285,Lavaca County,USA.44.143_1,Texas,Lavaca
+48287,Lee County,USA.44.144_1,Texas,Lee
+48289,Leon County,USA.44.145_1,Texas,Leon
+48291,Liberty County,USA.44.146_1,Texas,Liberty
+48293,Limestone County,USA.44.147_1,Texas,Limestone
+48295,Lipscomb County,USA.44.148_1,Texas,Lipscomb
+48297,Live Oak County,USA.44.149_1,Texas,Live Oak
+48299,Llano County,USA.44.150_1,Texas,Llano
+48301,Loving County,USA.44.151_1,Texas,Loving
+48303,Lubbock County,USA.44.152_1,Texas,Lubbock
+48305,Lynn County,USA.44.153_1,Texas,Lynn
+48307,McCulloch County,USA.44.160_1,Texas,McCulloch
+48309,McLennan County,USA.44.161_1,Texas,McLennan
+48311,McMullen County,USA.44.162_1,Texas,McMullen
+48313,Madison County,USA.44.154_1,Texas,Madison
+48315,Marion County,USA.44.155_1,Texas,Marion
+48317,Martin County,USA.44.156_1,Texas,Martin
+48319,Mason County,USA.44.157_1,Texas,Mason
+48321,Matagorda County,USA.44.158_1,Texas,Matagorda
+48323,Maverick County,USA.44.159_1,Texas,Maverick
+48325,Medina County,USA.44.163_1,Texas,Medina
+48327,Menard County,USA.44.164_1,Texas,Menard
+48329,Midland County,USA.44.165_1,Texas,Midland
+48331,Milam County,USA.44.166_1,Texas,Milam
+48333,Mills County,USA.44.167_1,Texas,Mills
+48335,Mitchell County,USA.44.168_1,Texas,Mitchell
+48337,Montague County,USA.44.169_1,Texas,Montague
+48339,Montgomery County,USA.44.170_1,Texas,Montgomery
+48341,Moore County,USA.44.171_1,Texas,Moore
+48343,Morris County,USA.44.172_1,Texas,Morris
+48345,Motley County,USA.44.173_1,Texas,Motley
+48347,Nacogdoches County,USA.44.174_1,Texas,Nacogdoches
+48349,Navarro County,USA.44.175_1,Texas,Navarro
+48351,Newton County,USA.44.176_1,Texas,Newton
+48353,Nolan County,USA.44.177_1,Texas,Nolan
+48355,Nueces County,USA.44.178_1,Texas,Nueces
+48357,Ochiltree County,USA.44.179_1,Texas,Ochiltree
+48359,Oldham County,USA.44.180_1,Texas,Oldham
+48361,Orange County,USA.44.181_1,Texas,Orange
+48363,Palo Pinto County,USA.44.182_1,Texas,Palo Pinto
+48365,Panola County,USA.44.183_1,Texas,Panola
+48367,Parker County,USA.44.184_1,Texas,Parker
+48369,Parmer County,USA.44.185_1,Texas,Parmer
+48371,Pecos County,USA.44.186_1,Texas,Pecos
+48373,Polk County,USA.44.187_1,Texas,Polk
+48375,Potter County,USA.44.188_1,Texas,Potter
+48377,Presidio County,USA.44.189_1,Texas,Presidio
+48379,Rains County,USA.44.190_1,Texas,Rains
+48381,Randall County,USA.44.191_1,Texas,Randall
+48383,Reagan County,USA.44.192_1,Texas,Reagan
+48385,Real County,USA.44.193_1,Texas,Real
+48387,Red River County,USA.44.194_1,Texas,Red River
+48389,Reeves County,USA.44.195_1,Texas,Reeves
+48391,Refugio County,USA.44.196_1,Texas,Refugio
+48393,Roberts County,USA.44.197_1,Texas,Roberts
+48395,Robertson County,USA.44.198_1,Texas,Robertson
+48397,Rockwall County,USA.44.199_1,Texas,Rockwall
+48399,Runnels County,USA.44.200_1,Texas,Runnels
+48401,Rusk County,USA.44.201_1,Texas,Rusk
+48403,Sabine County,USA.44.202_1,Texas,Sabine
+48405,San Augustine County,USA.44.203_1,Texas,San Augustine
+48407,San Jacinto County,USA.44.204_1,Texas,San Jacinto
+48409,San Patricio County,USA.44.205_1,Texas,San Patricio
+48411,San Saba County,USA.44.206_1,Texas,San Saba
+48413,Schleicher County,USA.44.207_1,Texas,Schleicher
+48415,Scurry County,USA.44.208_1,Texas,Scurry
+48417,Shackelford County,USA.44.209_1,Texas,Shackelford
+48419,Shelby County,USA.44.210_1,Texas,Shelby
+48421,Sherman County,USA.44.211_1,Texas,Sherman
+48423,Smith County,USA.44.212_1,Texas,Smith
+48425,Somervell County,USA.44.213_1,Texas,Somervell
+48427,Starr County,USA.44.214_1,Texas,Starr
+48429,Stephens County,USA.44.215_1,Texas,Stephens
+48431,Sterling County,USA.44.216_1,Texas,Sterling
+48433,Stonewall County,USA.44.217_1,Texas,Stonewall
+48435,Sutton County,USA.44.218_1,Texas,Sutton
+48437,Swisher County,USA.44.219_1,Texas,Swisher
+48439,Tarrant County,USA.44.220_1,Texas,Tarrant
+48441,Taylor County,USA.44.221_1,Texas,Taylor
+48443,Terrell County,USA.44.222_1,Texas,Terrell
+48445,Terry County,USA.44.223_1,Texas,Terry
+48447,Throckmorton County,USA.44.224_1,Texas,Throckmorton
+48449,Titus County,USA.44.225_1,Texas,Titus
+48451,Tom Green County,USA.44.226_1,Texas,Tom Green
+48453,Travis County,USA.44.227_1,Texas,Travis
+48455,Trinity County,USA.44.228_1,Texas,Trinity
+48457,Tyler County,USA.44.229_1,Texas,Tyler
+48459,Upshur County,USA.44.230_1,Texas,Upshur
+48461,Upton County,USA.44.231_1,Texas,Upton
+48463,Uvalde County,USA.44.232_1,Texas,Uvalde
+48465,Val Verde County,USA.44.233_1,Texas,Val Verde
+48467,Van Zandt County,USA.44.234_1,Texas,Van Zandt
+48469,Victoria County,USA.44.235_1,Texas,Victoria
+48471,Walker County,USA.44.236_1,Texas,Walker
+48473,Waller County,USA.44.237_1,Texas,Waller
+48475,Ward County,USA.44.238_1,Texas,Ward
+48477,Washington County,USA.44.239_1,Texas,Washington
+48479,Webb County,USA.44.240_1,Texas,Webb
+48481,Wharton County,USA.44.241_1,Texas,Wharton
+48483,Wheeler County,USA.44.242_1,Texas,Wheeler
+48485,Wichita County,USA.44.243_1,Texas,Wichita
+48487,Wilbarger County,USA.44.244_1,Texas,Wilbarger
+48489,Willacy County,USA.44.245_1,Texas,Willacy
+48491,Williamson County,USA.44.246_1,Texas,Williamson
+48493,Wilson County,USA.44.247_1,Texas,Wilson
+48495,Winkler County,USA.44.248_1,Texas,Winkler
+48497,Wise County,USA.44.249_1,Texas,Wise
+48499,Wood County,USA.44.250_1,Texas,Wood
+48501,Yoakum County,USA.44.251_1,Texas,Yoakum
+48503,Young County,USA.44.252_1,Texas,Young
+48505,Zapata County,USA.44.253_1,Texas,Zapata
+48507,Zavala County,USA.44.254_1,Texas,Zavala
+49001,Beaver County,USA.45.1_1,Utah,Beaver
+49003,Box Elder County,USA.45.2_1,Utah,Box Elder
+49005,Cache County,USA.45.3_1,Utah,Cache
+49007,Carbon County,USA.45.4_1,Utah,Carbon
+49009,Daggett County,USA.45.5_1,Utah,Daggett
+49011,Davis County,USA.45.6_1,Utah,Davis
+49013,Duchesne County,USA.45.7_1,Utah,Duchesne
+49015,Emery County,USA.45.8_1,Utah,Emery
+49017,Garfield County,USA.45.9_1,Utah,Garfield
+49019,Grand County,USA.45.10_1,Utah,Grand
+49021,Iron County,USA.45.11_1,Utah,Iron
+49023,Juab County,USA.45.12_1,Utah,Juab
+49025,Kane County,USA.45.13_1,Utah,Kane
+49027,Millard County,USA.45.14_1,Utah,Millard
+49029,Morgan County,USA.45.15_1,Utah,Morgan
+49031,Piute County,USA.45.16_1,Utah,Piute
+49033,Rich County,USA.45.17_1,Utah,Rich
+49035,Salt Lake County,USA.45.18_1,Utah,Salt Lake
+49037,San Juan County,USA.45.19_1,Utah,San Juan
+49039,Sanpete County,USA.45.20_1,Utah,Sanpete
+49041,Sevier County,USA.45.21_1,Utah,Sevier
+49043,Summit County,USA.45.22_1,Utah,Summit
+49045,Tooele County,USA.45.23_1,Utah,Tooele
+49047,Uintah County,USA.45.24_1,Utah,Uintah
+49049,Utah County,USA.45.25_1,Utah,Utah
+49051,Wasatch County,USA.45.26_1,Utah,Wasatch
+49053,Washington County,USA.45.27_1,Utah,Washington
+49055,Wayne County,USA.45.28_1,Utah,Wayne
+49057,Weber County,USA.45.29_1,Utah,Weber
+50001,Addison County,USA.46.1_1,Vermont,Addison
+50003,Bennington County,USA.46.2_1,Vermont,Bennington
+50005,Caledonia County,USA.46.3_1,Vermont,Caledonia
+50007,Chittenden County,USA.46.4_1,Vermont,Chittenden
+50009,Essex County,USA.46.5_1,Vermont,Essex
+50011,Franklin County,USA.46.6_1,Vermont,Franklin
+50013,Grand Isle County,USA.46.7_1,Vermont,Grand Isle
+50015,Lamoille County,USA.46.8_1,Vermont,Lamoille
+50017,Orange County,USA.46.9_1,Vermont,Orange
+50019,Orleans County,USA.46.10_1,Vermont,Orleans
+50021,Rutland County,USA.46.11_1,Vermont,Rutland
+50023,Washington County,USA.46.12_1,Vermont,Washington
+50025,Windham County,USA.46.13_1,Vermont,Windham
+50027,Windsor County,USA.46.14_1,Vermont,Windsor
+51001,Accomack County,USA.47.1_1,Virginia,Accomack
+51003,Albemarle County,USA.47.2_1,Virginia,Albemarle
+51005,Alleghany County,USA.47.4_1,Virginia,Alleghany
+51007,Amelia County,USA.47.5_1,Virginia,Amelia
+51009,Amherst County,USA.47.6_1,Virginia,Amherst
+51011,Appomattox County,USA.47.7_1,Virginia,Appomattox
+51013,Arlington County,USA.47.8_1,Virginia,Arlington
+51015,Augusta County,USA.47.9_1,Virginia,Augusta
+51017,Bath County,USA.47.10_1,Virginia,Bath
+51019,Bedford County,USA.47.11_1,Virginia,Bedford
+51021,Bland County,USA.47.13_1,Virginia,Bland
+51023,Botetourt County,USA.47.14_1,Virginia,Botetourt
+51025,Brunswick County,USA.47.16_1,Virginia,Brunswick
+51027,Buchanan County,USA.47.17_1,Virginia,Buchanan
+51029,Buckingham County,USA.47.18_1,Virginia,Buckingham
+51031,Campbell County,USA.47.20_1,Virginia,Campbell
+51033,Caroline County,USA.47.21_1,Virginia,Caroline
+51035,Carroll County,USA.47.22_1,Virginia,Carroll
+51036,Charles City County,USA.47.23_1,Virginia,Charles City
+51037,Charlotte County,USA.47.24_1,Virginia,Charlotte
+51041,Chesterfield County,USA.47.27_1,Virginia,Chesterfield
+51043,Clarke County,USA.47.28_1,Virginia,Clarke
+51045,Craig County,USA.47.32_1,Virginia,Craig
+51047,Culpeper County,USA.47.33_1,Virginia,Culpeper
+51049,Cumberland County,USA.47.34_1,Virginia,Cumberland
+51051,Dickenson County,USA.47.36_1,Virginia,Dickenson
+51053,Dinwiddie County,USA.47.37_1,Virginia,Dinwiddie
+51057,Essex County,USA.47.39_1,Virginia,Essex
+51059,Fairfax County,USA.47.40_1,Virginia,Fairfax
+51061,Fauquier County,USA.47.43_1,Virginia,Fauquier
+51063,Floyd County,USA.47.44_1,Virginia,Floyd
+51065,Fluvanna County,USA.47.45_1,Virginia,Fluvanna
+51067,Franklin County,USA.47.46_1,Virginia,Franklin
+51069,Frederick County,USA.47.47_1,Virginia,Frederick
+51071,Giles County,USA.47.50_1,Virginia,Giles
+51073,Gloucester County,USA.47.51_1,Virginia,Gloucester
+51075,Goochland County,USA.47.52_1,Virginia,Goochland
+51077,Grayson County,USA.47.53_1,Virginia,Grayson
+51079,Greene County,USA.47.54_1,Virginia,Greene
+51081,Greensville County,USA.47.55_1,Virginia,Greensville
+51083,Halifax County,USA.47.56_1,Virginia,Halifax
+51085,Hanover County,USA.47.58_1,Virginia,Hanover
+51087,Henrico County,USA.47.60_1,Virginia,Henrico
+51089,Henry County,USA.47.61_1,Virginia,Henry
+51091,Highland County,USA.47.62_1,Virginia,Highland
+51093,Isle of Wight County,USA.47.64_1,Virginia,Isle of Wight
+51095,James City County,USA.47.65_1,Virginia,James City
+51097,King and Queen County,USA.47.66_1,Virginia,King and Queen
+51099,King George County,USA.47.67_1,Virginia,King George
+51101,King William County,USA.47.68_1,Virginia,King William
+51103,Lancaster County,USA.47.69_1,Virginia,Lancaster
+51105,Lee County,USA.47.70_1,Virginia,Lee
+51107,Loudoun County,USA.47.72_1,Virginia,Loudoun
+51109,Louisa County,USA.47.73_1,Virginia,Louisa
+51111,Lunenburg County,USA.47.74_1,Virginia,Lunenburg
+51113,Madison County,USA.47.76_1,Virginia,Madison
+51115,Mathews County,USA.47.80_1,Virginia,Mathews
+51117,Mecklenburg County,USA.47.81_1,Virginia,Mecklenburg
+51119,Middlesex County,USA.47.82_1,Virginia,Middlesex
+51121,Montgomery County,USA.47.83_1,Virginia,Montgomery
+51125,Nelson County,USA.47.84_1,Virginia,Nelson
+51127,New Kent County,USA.47.85_1,Virginia,New Kent
+51131,Northampton County,USA.47.88_1,Virginia,Northampton
+51133,Northumberland County,USA.47.89_1,Virginia,Northumberland
+51135,Nottoway County,USA.47.91_1,Virginia,Nottoway
+51137,Orange County,USA.47.92_1,Virginia,Orange
+51139,Page County,USA.47.93_1,Virginia,Page
+51141,Patrick County,USA.47.94_1,Virginia,Patrick
+51143,Pittsylvania County,USA.47.96_1,Virginia,Pittsylvania
+51145,Powhatan County,USA.47.99_1,Virginia,Powhatan
+51147,Prince Edward County,USA.47.100_1,Virginia,Prince Edward
+51149,Prince George County,USA.47.101_1,Virginia,Prince George
+51153,Prince William County,USA.47.102_1,Virginia,Prince William
+51155,Pulaski County,USA.47.103_1,Virginia,Pulaski
+51157,Rappahannock County,USA.47.105_1,Virginia,Rappahannock
+51159,Richmond County,USA.47.106_1,Virginia,Richmond
+51161,Roanoke County,USA.47.107_1,Virginia,Roanoke
+51163,Rockbridge County,USA.47.109_1,Virginia,Rockbridge
+51165,Rockingham County,USA.47.110_1,Virginia,Rockingham
+51167,Russell County,USA.47.111_1,Virginia,Russell
+51169,Scott County,USA.47.113_1,Virginia,Scott
+51171,Shenandoah County,USA.47.114_1,Virginia,Shenandoah
+51173,Smyth County,USA.47.115_1,Virginia,Smyth
+51175,Southampton County,USA.47.116_1,Virginia,Southampton
+51177,Spotsylvania County,USA.47.117_1,Virginia,Spotsylvania
+51179,Stafford County,USA.47.118_1,Virginia,Stafford
+51181,Surry County,USA.47.121_1,Virginia,Surry
+51183,Sussex County,USA.47.122_1,Virginia,Sussex
+51185,Tazewell County,USA.47.123_1,Virginia,Tazewell
+51187,Warren County,USA.47.125_1,Virginia,Warren
+51191,Washington County,USA.47.126_1,Virginia,Washington
+51193,Westmoreland County,USA.47.128_1,Virginia,Westmoreland
+51195,Wise County,USA.47.131_1,Virginia,Wise
+51197,Wythe County,USA.47.132_1,Virginia,Wythe
+51199,York County,USA.47.133_1,Virginia,York
+51510,Alexandria city,USA.47.3_1,Virginia,Alexandria
+51515,Bedford city,USA.47.12_1,Virginia,Bedford City
+51520,Bristol city,USA.47.15_1,Virginia,Bristol
+51530,Buena Vista city,USA.47.19_1,Virginia,Buena Vista
+51540,Charlottesville city,USA.47.25_1,Virginia,Charlottesville
+51550,Chesapeake city,USA.47.26_1,Virginia,Chesapeake
+51560,Clifton Forge city,USA.47.29_1,Virginia,Clifton Forge City
+51570,Colonial Heights city,USA.47.30_1,Virginia,Colonial Heights
+51580,Covington city,USA.47.31_1,Virginia,Covington
+51590,Danville city,USA.47.35_1,Virginia,Danville
+51595,Emporia city,USA.47.38_1,Virginia,Emporia
+51600,Fairfax city,USA.47.41_1,Virginia,Fairfax City
+51610,Falls Church city,USA.47.42_1,Virginia,Falls Church
+51620,Franklin city,USA.47.46_1,Virginia,Franklin
+51630,Fredericksburg city,USA.47.48_1,Virginia,Fredericksburg
+51640,Galax city,USA.47.49_1,Virginia,Galax
+51650,Hampton city,USA.47.57_1,Virginia,Hampton
+51660,Harrisonburg city,USA.47.59_1,Virginia,Harrisonburg
+51670,Hopewell city,USA.47.63_1,Virginia,Hopewell
+51678,Lexington city,USA.47.71_1,Virginia,Lexington
+51680,Lynchburg city,USA.47.75_1,Virginia,Lynchburg
+51683,Manassas city,USA.47.77_1,Virginia,Manassas
+51685,Manassas Park city,USA.47.78_1,Virginia,Manassas Park
+51690,Martinsville city,USA.47.79_1,Virginia,Martinsville
+51700,Newport News city,USA.47.86_1,Virginia,Newport News
+51710,Norfolk city,USA.47.87_1,Virginia,Norfolk
+51720,Norton city,USA.47.90_1,Virginia,Norton
+51730,Petersburg city,USA.47.95_1,Virginia,Petersburg
+51735,Poquoson city,USA.47.97_1,Virginia,Poquoson
+51740,Portsmouth city,USA.47.98_1,Virginia,Portsmouth
+51750,Radford city,USA.47.104_1,Virginia,Radford
+51760,Richmond city,USA.47.106_1,Virginia,Richmond
+51770,Roanoke city,USA.47.108_1,Virginia,Roanoke City
+51775,Salem city,USA.47.112_1,Virginia,Salem
+51780,"South Boston city (After 1990, part of Halifax County)",USA.47.56_1,Virginia,Halifax
+51790,Staunton city,USA.47.119_1,Virginia,Staunton
+51800,Suffolk city,USA.47.120_1,Virginia,Suffolk
+51810,Virginia Beach city,USA.47.124_1,Virginia,Virginia Beach
+51820,Waynesboro city,USA.47.127_1,Virginia,Waynesboro
+51830,Williamsburg city,USA.47.129_1,Virginia,Williamsburg
+51840,Winchester city,USA.47.130_1,Virginia,Winchester
+53001,Adams County,USA.48.1_1,Washington,Adams
+53003,Asotin County,USA.48.2_1,Washington,Asotin
+53005,Benton County,USA.48.3_1,Washington,Benton
+53007,Chelan County,USA.48.4_1,Washington,Chelan
+53009,Clallam County,USA.48.5_1,Washington,Clallam
+53011,Clark County,USA.48.6_1,Washington,Clark
+53013,Columbia County,USA.48.7_1,Washington,Columbia
+53015,Cowlitz County,USA.48.8_1,Washington,Cowlitz
+53017,Douglas County,USA.48.9_1,Washington,Douglas
+53019,Ferry County,USA.48.10_1,Washington,Ferry
+53021,Franklin County,USA.48.11_1,Washington,Franklin
+53023,Garfield County,USA.48.12_1,Washington,Garfield
+53025,Grant County,USA.48.13_1,Washington,Grant
+53027,Grays Harbor County,USA.48.14_1,Washington,Grays Harbor
+53029,Island County,USA.48.15_1,Washington,Island
+53031,Jefferson County,USA.48.16_1,Washington,Jefferson
+53033,King County,USA.48.17_1,Washington,King
+53035,Kitsap County,USA.48.18_1,Washington,Kitsap
+53037,Kittitas County,USA.48.19_1,Washington,Kittitas
+53039,Klickitat County,USA.48.20_1,Washington,Klickitat
+53041,Lewis County,USA.48.21_1,Washington,Lewis
+53043,Lincoln County,USA.48.22_1,Washington,Lincoln
+53045,Mason County,USA.48.23_1,Washington,Mason
+53047,Okanogan County,USA.48.24_1,Washington,Okanogan
+53049,Pacific County,USA.48.25_1,Washington,Pacific
+53051,Pend Oreille County,USA.48.26_1,Washington,Pend Oreille
+53053,Pierce County,USA.48.27_1,Washington,Pierce
+53055,San Juan County,USA.48.28_1,Washington,San Juan
+53057,Skagit County,USA.48.29_1,Washington,Skagit
+53059,Skamania County,USA.48.30_1,Washington,Skamania
+53061,Snohomish County,USA.48.31_1,Washington,Snohomish
+53063,Spokane County,USA.48.32_1,Washington,Spokane
+53065,Stevens County,USA.48.33_1,Washington,Stevens
+53067,Thurston County,USA.48.34_1,Washington,Thurston
+53069,Wahkiakum County,USA.48.35_1,Washington,Wahkiakum
+53071,Walla Walla County,USA.48.36_1,Washington,Walla Walla
+53073,Whatcom County,USA.48.37_1,Washington,Whatcom
+53075,Whitman County,USA.48.38_1,Washington,Whitman
+53077,Yakima County,USA.48.39_1,Washington,Yakima
+54001,Barbour County,USA.49.1_1,West Virginia,Barbour
+54003,Berkeley County,USA.49.2_1,West Virginia,Berkeley
+54005,Boone County,USA.49.3_1,West Virginia,Boone
+54007,Braxton County,USA.49.4_1,West Virginia,Braxton
+54009,Brooke County,USA.49.5_1,West Virginia,Brooke
+54011,Cabell County,USA.49.6_1,West Virginia,Cabell
+54013,Calhoun County,USA.49.7_1,West Virginia,Calhoun
+54015,Clay County,USA.49.8_1,West Virginia,Clay
+54017,Doddridge County,USA.49.9_1,West Virginia,Doddridge
+54019,Fayette County,USA.49.10_1,West Virginia,Fayette
+54021,Gilmer County,USA.49.11_1,West Virginia,Gilmer
+54023,Grant County,USA.49.12_1,West Virginia,Grant
+54025,Greenbrier County,USA.49.13_1,West Virginia,Greenbrier
+54027,Hampshire County,USA.49.14_1,West Virginia,Hampshire
+54029,Hancock County,USA.49.15_1,West Virginia,Hancock
+54031,Hardy County,USA.49.16_1,West Virginia,Hardy
+54033,Harrison County,USA.49.17_1,West Virginia,Harrison
+54035,Jackson County,USA.49.18_1,West Virginia,Jackson
+54037,Jefferson County,USA.49.19_1,West Virginia,Jefferson
+54039,Kanawha County,USA.49.20_1,West Virginia,Kanawha
+54041,Lewis County,USA.49.21_1,West Virginia,Lewis
+54043,Lincoln County,USA.49.22_1,West Virginia,Lincoln
+54045,Logan County,USA.49.23_1,West Virginia,Logan
+54047,McDowell County,USA.49.27_1,West Virginia,McDowell
+54049,Marion County,USA.49.24_1,West Virginia,Marion
+54051,Marshall County,USA.49.25_1,West Virginia,Marshall
+54053,Mason County,USA.49.26_1,West Virginia,Mason
+54055,Mercer County,USA.49.28_1,West Virginia,Mercer
+54057,Mineral County,USA.49.29_1,West Virginia,Mineral
+54059,Mingo County,USA.49.30_1,West Virginia,Mingo
+54061,Monongalia County,USA.49.31_1,West Virginia,Monongalia
+54063,Monroe County,USA.49.32_1,West Virginia,Monroe
+54065,Morgan County,USA.49.33_1,West Virginia,Morgan
+54067,Nicholas County,USA.49.34_1,West Virginia,Nicholas
+54069,Ohio County,USA.49.35_1,West Virginia,Ohio
+54071,Pendleton County,USA.49.36_1,West Virginia,Pendleton
+54073,Pleasants County,USA.49.37_1,West Virginia,Pleasants
+54075,Pocahontas County,USA.49.38_1,West Virginia,Pocahontas
+54077,Preston County,USA.49.39_1,West Virginia,Preston
+54079,Putnam County,USA.49.40_1,West Virginia,Putnam
+54081,Raleigh County,USA.49.41_1,West Virginia,Raleigh
+54083,Randolph County,USA.49.42_1,West Virginia,Randolph
+54085,Ritchie County,USA.49.43_1,West Virginia,Ritchie
+54087,Roane County,USA.49.44_1,West Virginia,Roane
+54089,Summers County,USA.49.45_1,West Virginia,Summers
+54091,Taylor County,USA.49.46_1,West Virginia,Taylor
+54093,Tucker County,USA.49.47_1,West Virginia,Tucker
+54095,Tyler County,USA.49.48_1,West Virginia,Tyler
+54097,Upshur County,USA.49.49_1,West Virginia,Upshur
+54099,Wayne County,USA.49.50_1,West Virginia,Wayne
+54101,Webster County,USA.49.51_1,West Virginia,Webster
+54103,Wetzel County,USA.49.52_1,West Virginia,Wetzel
+54105,Wirt County,USA.49.53_1,West Virginia,Wirt
+54107,Wood County,USA.49.54_1,West Virginia,Wood
+54109,Wyoming County,USA.49.55_1,West Virginia,Wyoming
+55001,Adams County,USA.50.1_1,Wisconsin,Adams
+55003,Ashland County,USA.50.2_1,Wisconsin,Ashland
+55005,Barron County,USA.50.3_1,Wisconsin,Barron
+55007,Bayfield County,USA.50.4_1,Wisconsin,Bayfield
+55009,Brown County,USA.50.5_1,Wisconsin,Brown
+55011,Buffalo County,USA.50.6_1,Wisconsin,Buffalo
+55013,Burnett County,USA.50.7_1,Wisconsin,Burnett
+55015,Calumet County,USA.50.8_1,Wisconsin,Calumet
+55017,Chippewa County,USA.50.9_1,Wisconsin,Chippewa
+55019,Clark County,USA.50.10_1,Wisconsin,Clark
+55021,Columbia County,USA.50.11_1,Wisconsin,Columbia
+55023,Crawford County,USA.50.12_1,Wisconsin,Crawford
+55025,Dane County,USA.50.13_1,Wisconsin,Dane
+55027,Dodge County,USA.50.14_1,Wisconsin,Dodge
+55029,Door County,USA.50.15_1,Wisconsin,Door
+55031,Douglas County,USA.50.16_1,Wisconsin,Douglas
+55033,Dunn County,USA.50.17_1,Wisconsin,Dunn
+55035,Eau Claire County,USA.50.18_1,Wisconsin,Eau Claire
+55037,Florence County,USA.50.19_1,Wisconsin,Florence
+55039,Fond du Lac County,USA.50.20_1,Wisconsin,Fond du Lac
+55041,Forest County,USA.50.21_1,Wisconsin,Forest
+55043,Grant County,USA.50.22_1,Wisconsin,Grant
+55045,Green County,USA.50.23_1,Wisconsin,Green
+55047,Green Lake County,USA.50.24_1,Wisconsin,Green Lake
+55049,Iowa County,USA.50.25_1,Wisconsin,Iowa
+55051,Iron County,USA.50.26_1,Wisconsin,Iron
+55053,Jackson County,USA.50.27_1,Wisconsin,Jackson
+55055,Jefferson County,USA.50.28_1,Wisconsin,Jefferson
+55057,Juneau County,USA.50.29_1,Wisconsin,Juneau
+55059,Kenosha County,USA.50.30_1,Wisconsin,Kenosha
+55061,Kewaunee County,USA.50.31_1,Wisconsin,Kewaunee
+55063,La Crosse County,USA.50.32_1,Wisconsin,La Crosse
+55065,Lafayette County,USA.50.33_1,Wisconsin,Lafayette
+55067,Langlade County,USA.50.36_1,Wisconsin,Langlade
+55069,Lincoln County,USA.50.37_1,Wisconsin,Lincoln
+55071,Manitowoc County,USA.50.38_1,Wisconsin,Manitowoc
+55073,Marathon County,USA.50.39_1,Wisconsin,Marathon
+55075,Marinette County,USA.50.40_1,Wisconsin,Marinette
+55077,Marquette County,USA.50.41_1,Wisconsin,Marquette
+55078,Menominee County,USA.50.42_1,Wisconsin,Menominee
+55079,Milwaukee County,USA.50.43_1,Wisconsin,Milwaukee
+55081,Monroe County,USA.50.44_1,Wisconsin,Monroe
+55083,Oconto County,USA.50.45_1,Wisconsin,Oconto
+55085,Oneida County,USA.50.46_1,Wisconsin,Oneida
+55087,Outagamie County,USA.50.47_1,Wisconsin,Outagamie
+55089,Ozaukee County,USA.50.48_1,Wisconsin,Ozaukee
+55091,Pepin County,USA.50.49_1,Wisconsin,Pepin
+55093,Pierce County,USA.50.50_1,Wisconsin,Pierce
+55095,Polk County,USA.50.51_1,Wisconsin,Polk
+55097,Portage County,USA.50.52_1,Wisconsin,Portage
+55099,Price County,USA.50.53_1,Wisconsin,Price
+55101,Racine County,USA.50.54_1,Wisconsin,Racine
+55103,Richland County,USA.50.55_1,Wisconsin,Richland
+55105,Rock County,USA.50.56_1,Wisconsin,Rock
+55107,Rusk County,USA.50.57_1,Wisconsin,Rusk
+55109,St. Croix County,USA.50.58_1,Wisconsin,Saint Croix
+55111,Sauk County,USA.50.59_1,Wisconsin,Sauk
+55113,Sawyer County,USA.50.60_1,Wisconsin,Sawyer
+55115,Shawano County,USA.50.61_1,Wisconsin,Shawano
+55117,Sheboygan County,USA.50.62_1,Wisconsin,Sheboygan
+55119,Taylor County,USA.50.63_1,Wisconsin,Taylor
+55121,Trempealeau County,USA.50.64_1,Wisconsin,Trempealeau
+55123,Vernon County,USA.50.65_1,Wisconsin,Vernon
+55125,Vilas County,USA.50.66_1,Wisconsin,Vilas
+55127,Walworth County,USA.50.67_1,Wisconsin,Walworth
+55129,Washburn County,USA.50.68_1,Wisconsin,Washburn
+55131,Washington County,USA.50.69_1,Wisconsin,Washington
+55133,Waukesha County,USA.50.70_1,Wisconsin,Waukesha
+55135,Waupaca County,USA.50.71_1,Wisconsin,Waupaca
+55137,Waushara County,USA.50.72_1,Wisconsin,Waushara
+55139,Winnebago County,USA.50.73_1,Wisconsin,Winnebago
+55141,Wood County,USA.50.74_1,Wisconsin,Wood
+56001,Albany County,USA.51.1_1,Wyoming,Albany
+56003,Big Horn County,USA.51.2_1,Wyoming,Big Horn
+56005,Campbell County,USA.51.3_1,Wyoming,Campbell
+56007,Carbon County,USA.51.4_1,Wyoming,Carbon
+56009,Converse County,USA.51.5_1,Wyoming,Converse
+56011,Crook County,USA.51.6_1,Wyoming,Crook
+56013,Fremont County,USA.51.7_1,Wyoming,Fremont
+56015,Goshen County,USA.51.8_1,Wyoming,Goshen
+56017,Hot Springs County,USA.51.9_1,Wyoming,Hot Springs
+56019,Johnson County,USA.51.10_1,Wyoming,Johnson
+56021,Laramie County,USA.51.11_1,Wyoming,Laramie
+56023,Lincoln County,USA.51.12_1,Wyoming,Lincoln
+56025,Natrona County,USA.51.13_1,Wyoming,Natrona
+56027,Niobrara County,USA.51.14_1,Wyoming,Niobrara
+56029,Park County,USA.51.15_1,Wyoming,Park
+56031,Platte County,USA.51.16_1,Wyoming,Platte
+56033,Sheridan County,USA.51.17_1,Wyoming,Sheridan
+56035,Sublette County,USA.51.18_1,Wyoming,Sublette
+56037,Sweetwater County,USA.51.19_1,Wyoming,Sweetwater
+56039,Teton County,USA.51.20_1,Wyoming,Teton
+56041,Uinta County,USA.51.21_1,Wyoming,Uinta
+56043,Washakie County,USA.51.22_1,Wyoming,Washakie
+56045,Weston County,USA.51.23_1,Wyoming,Weston

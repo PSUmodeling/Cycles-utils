@@ -11,7 +11,7 @@ GADM_LEVELS = {
     'county': 2,
 }
 STATE_CSV = os.path.join(pt, '../data/us_states.csv')
-
+COUNTY_CSV = os.path.join(pt, '../data/fips_gid_conversion.csv')
 
 def read_gadm(path: str, country: str, level: str, conus: bool=True) -> gpd.GeoDataFrame:
     level = GADM_LEVELS[level.lower()]
@@ -31,45 +31,54 @@ def _read_state_csv(index_col: str) -> pd.DataFrame:
     )
 
 
+def _find_state_representation(representation: str, **kwargs):
+    for name, value in kwargs.items():
+        if value is None: continue
+
+        df = _read_state_csv(name)
+        try:
+            return df.loc[value, representation]
+        except:
+            raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+
+
 def state_gid(state: str=None, abbreviation: str=None, fips: int=None) -> str:
-    for name, value in locals().items():
-        if value is None: continue
-
-        df = _read_state_csv(name)
-        try:
-            return df.loc[value, 'gid']
-        except:
-            raise KeyError(f'GID for {name} {value} cannot be found.')
+    return _find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips)
 
 
-def state_abbreviation(gid: str=None, state: str=None, fips: int=None) -> str:
-    for name, value in locals().items():
-        if value is None: continue
-
-        df = _read_state_csv(name)
-        try:
-            return df.loc[value, 'abbreviation']
-        except:
-            raise KeyError(f'State abbreviation for {name} {value} cannot be found.')
+def state_abbreviation(state: str=None, gid: str=None, fips: int=None) -> str:
+    return _find_state_representation('abbreviation', state=state, gid=gid, fips=fips)
 
 
-def state_fips(gid: str=None, state: str=None, abbreviation: str=None) -> int:
-    for name, value in locals().items():
-        if value is None: continue
-
-        df = _read_state_csv(name)
-        try:
-            return df.loc[value, 'fips']
-        except:
-            raise KeyError(f'FIPS for {name} {value} cannot be found.')
+def state_fips(state: str=None, abbreviation: str=None, gid: str=None) -> int:
+    return _find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)
 
 
-def state_name(gid: str=None, abbreviation: str=None, fips: int=None) -> str:
-    for name, value in locals().items():
-        if value is None: continue
+def state_name(abbreviation: str=None, gid: str=None, fips: int=None) -> str:
+    return _find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips)
 
-        df = _read_state_csv(name)
-        try:
-            return df.loc[value, 'state']
-        except:
-            raise KeyError(f'State name for {name} {value} cannot be found.')
+
+def _read_county_csv(index_col: str) -> pd.DataFrame:
+    return pd.read_csv(
+        COUNTY_CSV,
+        dtype={'fips': int},
+        index_col=index_col,
+    )
+
+
+def _find_county_representation(representation: str, **kwargs):
+    name, value = tuple(kwargs.items())[0]
+
+    df = _read_county_csv(name)
+    try:
+        return df.loc[value, representation]
+    except:
+        raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+
+
+def county_gid(fips: int) -> str:
+    return _find_county_representation('gid', fips=fips)
+
+
+def county_fips(gid: str) -> int:
+    return _find_county_representation('fips', gid=gid)
