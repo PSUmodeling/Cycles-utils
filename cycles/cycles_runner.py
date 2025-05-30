@@ -6,8 +6,6 @@ from typing import Callable
 from .cycles_input import generate_control_file
 from .cycles_read import read_harvest
 
-RM_CYCLES_IO = 'rm -fr input/*.ctrl input/*.operation input/*.soil output/*'
-
 class CyclesRunner():
     def __init__( self, *, simulations: pd.DataFrame | str, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
         if type(simulations) is str:
@@ -23,7 +21,7 @@ class CyclesRunner():
         self.control_dict = control_dict
 
 
-    def run(self, cycles_executable: str, *, spin_up: bool=True):
+    def run(self, cycles_executable: str, *, spin_up: bool=True, rm_input: bool=False, rm_output: bool=False) -> None:
         """Run Cycles simulations as defined
         """
         os.makedirs('summary', exist_ok=True)
@@ -55,10 +53,16 @@ class CyclesRunner():
                 print('Fail')
 
             # Remove generated input/output files
-            subprocess.run(
-                RM_CYCLES_IO,
-                shell='True',
-            )
+            if rm_input is True:
+                subprocess.run(
+                    'rm -fr input/{name}.ctrl input/{operation_fn}',
+                    shell=True,
+                )
+            if rm_output is True:
+                subprocess.run(
+                    'rm -fr output/{name}',
+                    shell=True,
+                )
 
 
 def _run_cycles(cycles_executable, simulation: str, spin_up: bool=True):
