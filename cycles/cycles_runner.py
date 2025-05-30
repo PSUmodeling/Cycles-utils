@@ -9,8 +9,13 @@ from .cycles_read import read_harvest
 RM_CYCLES_IO = 'rm -fr input/*.ctrl input/*.operation input/*.soil output/*'
 
 class CyclesRunner():
-    def __init__( self, *, simulations: str, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
-        self.simulation_file = simulations
+    def __init__( self, *, simulations: pd.DataFrame | str, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
+        if type(simulations) is str:
+            self.simulations = pd.read_csv(simulations)
+        elif type(simulations) is pd.DataFrame:
+            self.simulations = simulations
+        else:
+            raise TypeError('simulations must be a DataFrame or a path to a CSV file')
         self.summary_file = summary
         self.operation_template = operation_template
         self.operation_dict = operation_dict
@@ -24,10 +29,8 @@ class CyclesRunner():
         os.makedirs('summary', exist_ok=True)
 
         # Read simulation file
-        df = pd.read_csv(self.simulation_file)
-
         first = True
-        for _, row in df.iterrows():
+        for _, row in self.simulations.iterrows():
             # Use defined simulation name
             name = self.simulation_name(row)
 
