@@ -47,7 +47,7 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
 
-def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, xarray.DataArray]:
+def read_soilgrids_maps(path: str, maps: list[str], *, crs=None) -> dict[str, xarray.DataArray]:
     """Read SoilGrids data
 
     Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the
@@ -64,7 +64,7 @@ def read_soilgrids_maps(path: str, maps: list[str], crs=None) -> dict[str, xarra
 
 
 def extract_values(soilgrids_xds: dict[str, xarray.DataArray], coordinate: tuple[float, float]) -> dict[str, float]:
-    transformer = Transformer.from_crs('EPSG:4326', HOMOLOSINE, always_xy=True)
+    transformer = Transformer.from_crs('epsg:4326', HOMOLOSINE, always_xy=True)
     x, y = transformer.transform(coordinate[1], coordinate[0])
 
     values = {}
@@ -88,7 +88,7 @@ def reproject_match_soilgrids_maps(soilgrids_xds: dict[str, xarray.DataArray], r
     return df
 
 
-def get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[float, float, float, float]:
+def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[float, float, float, float]:
     """Convert bounding boxes to SoilGrids CRS
     """
     d = {'col1': ['NW', 'SE'], 'geometry': [Point(bbox[0], bbox[3]), Point(bbox[2], bbox[1])]}
@@ -104,7 +104,7 @@ def get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[floa
     ]
 
 
-def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: tuple[float, float, float, float], crs) -> None:
+def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: tuple[float, float, float, float], *, crs='epsg:4326') -> None:
     """Use WebCoverageService to get SoilGrids data
 
     bbox should be in the order of [west, south, east, north]
@@ -112,7 +112,7 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: 
     name for 0-5 cm bulk density should be "bulk_density@0-5cm".
     """
     # Convert bounding box to SoilGrids CRS
-    bbox = get_bounding_box(bbox, crs)
+    bbox = _get_bounding_box(bbox, crs)
 
     for m in maps:
         [parameter, layer] = m.split('@')

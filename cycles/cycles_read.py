@@ -30,7 +30,7 @@ def read_harvest(cycles_path: str, simulation: str) -> pd.DataFrame:
     return df
 
 
-def read_operation_parameter(type: type, line_no: int, lines: list[str]) -> str:
+def _read_operation_parameter(type: type, line_no: int, lines: list[str]) -> str:
     return type(lines[line_no].split()[1])
 
 
@@ -47,17 +47,17 @@ def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
             case 'FIXED_FERTILIZATION':
                 operations.append({
                     'type': 'fertilization',
-                    'year': read_operation_parameter(int, k + 1, lines),
-                    'doy': read_operation_parameter(int, k + 2, lines),
-                    'source': read_operation_parameter(str, k + 3, lines),
-                    'mass': read_operation_parameter(float, k + 4, lines),
+                    'year': _read_operation_parameter(int, k + 1, lines),
+                    'doy': _read_operation_parameter(int, k + 2, lines),
+                    'source': _read_operation_parameter(str, k + 3, lines),
+                    'mass': _read_operation_parameter(float, k + 4, lines),
                 })
                 k += 5
             case 'TILLAGE':
-                tool = read_operation_parameter(str, k + 3, lines)
-                year = read_operation_parameter(int, k + 1, lines)
-                doy = read_operation_parameter(int, k + 2, lines)
-                crop = read_operation_parameter(str, k + 7, lines)
+                tool = _read_operation_parameter(str, k + 3, lines)
+                year = _read_operation_parameter(int, k + 1, lines)
+                doy = _read_operation_parameter(int, k + 2, lines)
+                crop = _read_operation_parameter(str, k + 7, lines)
 
                 if tool.strip().lower() in HARVEST_TOOLS:
                     operations.append({
@@ -84,9 +84,9 @@ def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
             case 'PLANTING':
                 operations.append({
                     'type': 'planting',
-                    'year': read_operation_parameter(int, k + 1, lines),
-                    'doy': read_operation_parameter(int, k + 2, lines),
-                    'crop': read_operation_parameter(str, k + 8, lines),
+                    'year': _read_operation_parameter(int, k + 1, lines),
+                    'doy': _read_operation_parameter(int, k + 2, lines),
+                    'crop': _read_operation_parameter(str, k + 8, lines),
                 })
                 k += 9
             case _:
@@ -97,7 +97,7 @@ def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
     return df
 
 
-def read_weather(cycles_path: str, weather: str, start_year: int=0, end_year: int=9999) -> pd.DataFrame:
+def read_weather(cycles_path: str, weather: str, *, start_year: int=0, end_year: int=9999) -> pd.DataFrame:
     NUM_HEADER_LINES = 4
     columns = {
         'YEAR': int,

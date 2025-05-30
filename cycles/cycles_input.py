@@ -72,7 +72,7 @@ def _calculate_parameter(soil_df, parameter, top, bottom):
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
 
 
-def generate_soil_file(fn: str, desc: str, hsg: str, slope: float, soil_df: pd.DataFrame, soil_depth: float=None) -> None:
+def generate_soil_file(fn: str, soil_df: pd.DataFrame, *, desc: str='', hsg: str='', slope: float=0.0, soil_depth: float=None) -> None:
     layer_depths = np.array([layer['bottom'] for layer in SOIL_LAYERS])
 
     if soil_depth is not None:
@@ -90,7 +90,7 @@ def generate_soil_file(fn: str, desc: str, hsg: str, slope: float, soil_df: pd.D
     cn = -999 if not hsg else CURVE_NUMBERS[hsg[0]]
 
     with open(fn, 'w') as f:
-        f.write(desc)
+        if desc: f.write(desc)
 
         f.write("%-15s\t%d\n" % ("CURVE_NUMBER", cn))
         f.write("%-15s\t%.2f\n" % ("SLOPE", slope))

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def conus_plot(gdf, column, projection=ccrs.PlateCarree(), cmap='viridis', title=None, vmin=None, vmax=None, extend='neither'):
+def conus_plot(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', title=None, vmin=None, vmax=None, extend='neither'):
     fig = plt.figure(figsize=(9, 6))
     ax = fig.add_axes(
         [0.025, 0.09, 0.95, 0.93],
@@ -41,7 +41,7 @@ def conus_plot(gdf, column, projection=ccrs.PlateCarree(), cmap='viridis', title
     return fig, ax
 
 
-def yield_plot(harvest_df, ax=None, fontsize=None):
+def yield_plot(harvest_df, *, ax=None, fontsize=None):
     if ax is None:
         _, ax = plt.subplots()
 
@@ -118,7 +118,7 @@ def yield_plot(harvest_df, ax=None, fontsize=None):
     )
 
 
-def operation_plot(operation_df, rotation_size, axes=None, fontsize=None):
+def operation_plot(operation_df, rotation_size, *, axes=None, fontsize=None):
     if axes is None:
         _, axes = plt.subplots(rotation_size, 1, sharex=True)
         if rotation_size == 1: axes = [axes]

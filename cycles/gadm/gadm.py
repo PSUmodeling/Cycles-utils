@@ -13,7 +13,7 @@ GADM_LEVELS = {
 STATE_CSV = os.path.join(pt, '../data/us_states.csv')
 COUNTY_CSV = os.path.join(pt, '../data/fips_gid_conversion.csv')
 
-def read_gadm(path: str, country: str, level: str, conus: bool=True) -> gpd.GeoDataFrame:
+def read_gadm(path: str, country: str, level: str, *, conus: bool=True) -> gpd.GeoDataFrame:
     level = GADM_LEVELS[level.lower()]
     gdf = gpd.read_file(GADM(path, country, level))
     gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
@@ -42,19 +42,19 @@ def _find_state_representation(representation: str, **kwargs):
             raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
 
 
-def state_gid(state: str=None, abbreviation: str=None, fips: int=None) -> str:
+def state_gid(*, state: str=None, abbreviation: str=None, fips: int=None) -> str:
     return _find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips)
 
 
-def state_abbreviation(state: str=None, gid: str=None, fips: int=None) -> str:
+def state_abbreviation(*, state: str=None, gid: str=None, fips: int=None) -> str:
     return _find_state_representation('abbreviation', state=state, gid=gid, fips=fips)
 
 
-def state_fips(state: str=None, abbreviation: str=None, gid: str=None) -> int:
+def state_fips(*, state: str=None, abbreviation: str=None, gid: str=None) -> int:
     return _find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)
 
 
-def state_name(abbreviation: str=None, gid: str=None, fips: int=None) -> str:
+def state_name(*, abbreviation: str=None, gid: str=None, fips: int=None) -> str:
     return _find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips)
 
 
@@ -76,9 +76,9 @@ def _find_county_representation(representation: str, **kwargs):
         raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
 
 
-def county_gid(fips: int) -> str:
+def county_gid(*, fips: int) -> str:
     return _find_county_representation('gid', fips=fips)
 
 
-def county_fips(gid: str) -> int:
+def county_fips(*, gid: str) -> int:
     return _find_county_representation('fips', gid=gid)

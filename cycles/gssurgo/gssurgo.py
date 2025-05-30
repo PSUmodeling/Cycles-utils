@@ -140,7 +140,7 @@ class Gssurgo:
             self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
 
-    def group_map_units(self, *, geometry=False):
+    def group_map_units(self, *, geometry: bool=False):
         # In gSSURGO database many map units are the same soil texture with different slopes, etc. To find the dominant
         # soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map
         # unit names to identify the same soil textures among different soil map units.
@@ -167,7 +167,7 @@ class Gssurgo:
 
 
     def select_major_mapunit(self) -> tuple[int, str, str]:
-        gdf = self.mapunits[~self.non_soil_mask()]
+        gdf = self.mapunits[~self.non_soil_mask()].copy()
         gdf['area'] = gdf.area
 
         mapunit = gdf.loc[gdf['area'].idxmax()]
@@ -176,7 +176,7 @@ class Gssurgo:
 
 
     def average_slope_hsg(self) -> tuple[float, str]:
-        gdf = self.mapunits[~self.non_soil_mask()]
+        gdf = self.mapunits[~self.non_soil_mask()].copy()
         gdf['area'] = gdf.area
 
         _df = gdf[['area', 'slopegradwta']].dropna()
@@ -194,7 +194,7 @@ class Gssurgo:
         return slope, hsg
 
 
-    def get_soil_profile_parameters(self, *, mukey, major_only=True) -> pd.DataFrame:
+    def get_soil_profile_parameters(self, mukey: int, *, major_only: bool=True) -> pd.DataFrame:
         df = self.components[self.components['mukey'] == int(mukey)].copy()
 
         if major_only is True:
