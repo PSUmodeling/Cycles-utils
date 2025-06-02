@@ -7,13 +7,8 @@ from .cycles_input import generate_control_file
 from .cycles_read import read_harvest
 
 class CyclesRunner():
-    def __init__( self, *, simulations: pd.DataFrame | str, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
-        if type(simulations) is str:
-            self.simulations = pd.read_csv(simulations)
-        elif type(simulations) is pd.DataFrame:
-            self.simulations = simulations
-        else:
-            raise TypeError('simulations must be a DataFrame or a path to a CSV file')
+    def __init__( self, *, simulations: pd.DataFrame, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
+        self.simulations = simulations
         self.summary_file = summary
         self.operation_template = operation_template
         self.operation_dict = operation_dict

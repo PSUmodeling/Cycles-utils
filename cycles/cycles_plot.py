@@ -5,15 +5,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def conus_plot(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', title=None, vmin=None, vmax=None, extend='neither'):
+def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', axes=None, cb_axes=None, title=None, vmin=None, vmax=None, extend='neither', cb_orientation='horizontal', fontsize=None):
+    if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
+
     fig = plt.figure(figsize=(9, 6))
     ax = fig.add_axes(
-        [0.025, 0.09, 0.95, 0.93],
+        [0.025, 0.09, 0.95, 0.93] if axes is None else axes,
         projection=projection,
         frameon=False,
     )
     cax = fig.add_axes(
-        [0.3, 0.07, 0.4, 0.02],
+        [0.3, 0.07, 0.4, 0.02] if cb_axes is None else cb_axes,
     )
 
     gdf.plot(
@@ -31,17 +33,16 @@ def conus_plot(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', ti
     cbar = plt.colorbar(
         ax.collections[0],
         cax=cax,
-        orientation='horizontal',
+        orientation=cb_orientation,
         extend=extend,
     )
-    cbar.ax.tick_params(labelsize=14)
-    if title is not None: cbar.set_label(title, size=16)
-    cbar.ax.xaxis.set_label_position('top')
+    if title is not None: cbar.set_label(title)
+    cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')
 
     return fig, ax
 
 
-def yield_plot(harvest_df, *, ax=None, fontsize=None):
+def plot_yield(harvest_df, *, ax=None, fontsize=None):
     if ax is None:
         _, ax = plt.subplots()
 
@@ -118,7 +119,7 @@ def yield_plot(harvest_df, *, ax=None, fontsize=None):
     )
 
 
-def operation_plot(operation_df, rotation_size, *, axes=None, fontsize=None):
+def plot_operations(operation_df, rotation_size, *, axes=None, fontsize=None):
     if axes is None:
         _, axes = plt.subplots(rotation_size, 1, sharex=True)
         if rotation_size == 1: axes = [axes]

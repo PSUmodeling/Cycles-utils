@@ -1,2 +1,2 @@
-from . gssurgo import NAD83
-from . gssurgo import Gssurgo
+from .gssurgo import NAD83
+from .gssurgo import Gssurgo

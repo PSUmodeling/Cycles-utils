@@ -113,10 +113,10 @@ def read_weather(cycles_path: str, weather: str, *, start_year: int=0, end_year:
     df = pd.read_csv(
         f'{cycles_path}/input/{weather}',
         usecols=list(range(len(columns))),
-        names=columns.keys(),
+        names=list(columns.keys()),
         comment='#',
         sep=r'\s+',
-        na_values=[-999],
+        na_values='-999',
     )
     df = df.iloc[NUM_HEADER_LINES:, :]
     df = df.astype(columns)

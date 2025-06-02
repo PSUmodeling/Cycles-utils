@@ -89,11 +89,11 @@ def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
     return lookup_tables
 
 
-def _read_mupolygon(path, state, boundary=None):
+def _read_mupolygon(path, state, boundary=None) -> gpd.GeoDataFrame:
     if boundary is not None:
         boundary = boundary.to_crs(NAD83)
 
-    gdf = gpd.read_file(
+    gdf: gpd.GeoDataFrame = gpd.read_file(
             GSSURGO(path, state),
             layer='MUPOLYGON',
             mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None
@@ -121,7 +121,7 @@ def _musym(str):
 
 
 class Gssurgo:
-    def __init__(self, *, path: str, state: str, boundary: gpd.GeoDataFrame=None, lut_only: bool=False):
+    def __init__(self, *, path: str, state: str, boundary: gpd.GeoDataFrame | None =None, lut_only: bool=False):
         self.state = state
 
         luts = _read_all_luts(path, state)
