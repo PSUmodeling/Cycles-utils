@@ -4,10 +4,10 @@ import subprocess
 from string import Template
 from typing import Callable
 from .cycles_input import generate_control_file
-from .cycles_read import read_harvest
+from .cycles_read import read_output
 
 class CyclesRunner():
-    def __init__( self, *, simulations: pd.DataFrame, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
+    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
         self.simulations = simulations
         self.summary_file = summary
         self.operation_template = operation_template
@@ -16,7 +16,7 @@ class CyclesRunner():
         self.control_dict = control_dict
 
 
-    def run(self, cycles_executable: str, *, spin_up: bool=True, rm_input: bool=False, rm_output: bool=False) -> None:
+    def run(self, cycles_executable: str, *, options: str='', rm_input: bool=False, rm_output: bool=False) -> None:
         """Run Cycles simulations as defined
         """
         os.makedirs('summary', exist_ok=True)
@@ -40,7 +40,7 @@ class CyclesRunner():
             generate_control_file(f'./input/{name}.ctrl', self.control_dict(row))
 
             # Run a Cycles simulation
-            if _run_cycles(cycles_executable, name, spin_up=spin_up) == 0:
+            if _run_cycles(cycles_executable, name, options=options) == 0:
                 _write_summary(name, first, f'summary/{self.summary_file}')
                 print('Success')
                 first = False
@@ -66,8 +66,8 @@ class CyclesRunner():
                 )
 
 
-def _run_cycles(cycles_executable, simulation: str, spin_up: bool=True):
-    cmd = [cycles_executable, simulation] if spin_up is False else [cycles_executable, '-s', simulation]
+def _run_cycles(cycles_executable, simulation: str, options: str):
+    cmd = [cycles_executable, options, simulation]
 
     result = subprocess.run(
         cmd,
@@ -79,15 +79,11 @@ def _run_cycles(cycles_executable, simulation: str, spin_up: bool=True):
 
 
 def _write_summary(simulation: str, header: bool, summary_fn: str) -> None:
-    df = read_harvest('.', simulation)
+    df, _ = read_output('.', simulation, 'harvest')
     df.insert(0, 'simulation', simulation)
 
-    if header is True:
-        with open(summary_fn, 'w') as f:
-            df.to_csv(f, header=True, index=False)
-    else:
-        with open(summary_fn, 'a') as f:
-            df.to_csv(f, header=False, index=False)
+    with open(summary_fn, 'w' if header is True else 'a') as f:
+        df.to_csv(f, header=header, index=False)
 
 
 def _generate_input_from_template(template_fn: str, input_fn: str, user_dict: dict) -> None:

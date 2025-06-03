@@ -12,22 +12,23 @@ HARVEST_TOOLS = [
 ]
 
 
-def read_harvest(cycles_path: str, simulation: str) -> pd.DataFrame:
+def read_output(cycles_path: str, simulation: str, output: str) -> tuple[pd.DataFrame, dict]:
     '''Read harvest output file for harvested crops, harvest , plan dates, and yield
     '''
     df = pd.read_csv(
-        f'{cycles_path}/output/{simulation}/harvest.txt',
-        sep='\t',
-        header=0,
-        skiprows=[1],
-        skipinitialspace=True,
+        f'{cycles_path}/output/{simulation}/{output}.txt',
+        comment='#',
     )
-    df = df.rename(columns=lambda x: x.strip().lower().replace(' ', '_'))
-    df['crop'] = df['crop'].str.strip()
 
-    for col in ['date', 'plant_date']: df[col] = pd.to_datetime(df[col])
+    for col in ['date', 'plant_date']:
+        if col in df.columns: df[col] = pd.to_datetime(df[col])
 
-    return df
+    with open(f'{cycles_path}/output/{simulation}/{output}.csv') as f:
+        lines = f.readlines()
+
+    units = {col: lines[1].strip()[1:].split(',')[ind] for ind, col in enumerate(df.columns)}
+
+    return df, units
 
 
 def _read_operation_parameter(type: type, line_no: int, lines: list[str]) -> str:
