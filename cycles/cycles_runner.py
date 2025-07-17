@@ -16,7 +16,7 @@ class CyclesRunner():
         self.control_dict = control_dict
 
 
-    def run(self, cycles_executable: str, *, options: str='', rm_input: bool=False, rm_output: bool=False) -> None:
+    def run(self, cycles_executable: str, *, options: str='', rm_input: bool=False, rm_output: bool=False, silence: bool=True) -> None:
         """Run Cycles simulations as defined
         """
         os.makedirs('summary', exist_ok=True)
@@ -40,7 +40,7 @@ class CyclesRunner():
             generate_control_file(f'./input/{name}.ctrl', self.control_dict(row))
 
             # Run a Cycles simulation
-            if _run_cycles(cycles_executable, name, options=options) == 0:
+            if _run_cycles(cycles_executable, name, options=options, silence=silence) == 0:
                 _write_summary(name, first, f'summary/{self.summary_file}')
                 print('Success')
                 first = False
@@ -66,13 +66,13 @@ class CyclesRunner():
                 )
 
 
-def _run_cycles(cycles_executable, simulation: str, options: str):
+def _run_cycles(cycles_executable, simulation: str, options: str, silence: bool):
     cmd = [cycles_executable, options, simulation]
 
     result = subprocess.run(
         cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL if silence is True else None,
+        stderr=subprocess.DEVNULL if silence is True else None,
     )
 
     return result.returncode
