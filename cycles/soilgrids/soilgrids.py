@@ -131,3 +131,14 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: 
                 break
             except:
                 continue
+
+
+def get_soil_profile_parameters(maps: dict[str, xarray.DataArray], coordinate: tuple[float, float]):
+        values = extract_values(maps, coordinate)
+
+        return pd.DataFrame.from_dict([{
+                'top': layer.top,
+                'bottom': layer.bottom,
+                **{v: values[f'{v}@{key}'] for v in ['clay', 'sand', 'soc', 'bulk_density']},
+            } for key, layer in SOILGRIDS_LAYERS.items()]
+        )
