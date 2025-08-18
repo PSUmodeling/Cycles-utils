@@ -195,6 +195,37 @@ WEATHER_FILE_VARIABLES = {
     },
 }
 
+SUBDAILY_WEATHER_FILE_VARIABLES = {
+    # variable is the name of the variable in the NETCDF_VARIABLES dictionary
+    # func is the function that converts the raw data to corresponding weather file variables
+    # format is the output format in weather files
+    'PP': {
+        'variable': 'precipitation',
+        'func': lambda x, h: x * h * 3600.0,
+        'format': lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x,
+    },
+    'TMP': {
+        'variable': 'air_temperature',
+        'func': lambda x, h: x - 273.15,
+        'format': lambda x: '%-7.2f' % x,
+    },
+    'SOLAR': {
+        'variable': 'solar',
+        'func': lambda x, h: x * h * 3600.0 * 1.0E-6,
+        'format': lambda x: '%-7.3f' % x,
+    },
+    'RH': {
+        'variable': 'relative_humidity',
+        'func': lambda x, h: x * 100.0,
+        'format': lambda x: '%-7.2f' % x,
+    },
+    'WIND': {
+        'variable': 'wind',
+        'func': lambda x, h: x,
+        'format': lambda x: '%-.2f' % x,
+    },
+}
+
 COOKIE_FILE = './.urs_cookies'
 
 def _download_daily_xldas(path, xldas, day):
@@ -295,14 +326,14 @@ def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
     grid_str = '%.3f%sx%.3f%s' % (abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E')
 
     if reanalysis == 'MACA':
-        fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}.weather'
+        fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}'
     else:
-        fn = f'{reanalysis}_{grid_str}.weather'
+        fn = f'{reanalysis}_{grid_str}'
 
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']
 
 
-def find_grids(reanalysis: str, *, locations: list[tuple[float, float]]=None, model: str=None, rcp:str=None, screen_output=True) -> pd.DataFrame:
+def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, model: str=None, rcp:str=None, screen_output=True) -> pd.DataFrame:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
@@ -310,8 +341,18 @@ def find_grids(reanalysis: str, *, locations: list[tuple[float, float]]=None, mo
         df = pd.DataFrame({'grid_index': indices})
     else:
         indices = []
+        sites = []
 
-        for (lat, lon) in locations:
+        for loc in locations:
+            if isinstance(locations, list):
+                (lat, lon) = loc
+            elif isinstance(locations, dict):
+                (lat, lon) = locations[loc]
+            else:
+                raise TypeError('Location input must be a dict or list of coordinates.')
+
+            sites.append(loc)
+
             ind = np.ravel_multi_index((IND_J(reanalysis, lat), IND_I(reanalysis, lon)), NETCDF_SHAPES[reanalysis])
 
             if mask_df.loc[ind]['mask'] == 0:
@@ -323,7 +364,13 @@ def find_grids(reanalysis: str, *, locations: list[tuple[float, float]]=None, mo
                 ind = mask_df['distance'].idxmin()
 
             indices.append(ind)
-        df = pd.DataFrame({'grid_index': indices, 'input_coordinate': locations})
+
+        df = pd.DataFrame({
+            'grid_index': indices,
+            'input_coordinate': locations if isinstance(locations, list) else locations.values(),
+        })
+
+        if sites: df['site'] = sites
 
     df[['grid_latitude', 'weather_file', 'elevation']] = df.apply(
         lambda x: _find_grid(reanalysis, x['grid_index'], mask_df, model, rcp),
@@ -333,33 +380,42 @@ def find_grids(reanalysis: str, *, locations: list[tuple[float, float]]=None, mo
 
     if locations is not None:
         if any(df.duplicated(subset=['grid_index'])):
-            if screen_output is True: print(f"The following input coordinates share {reanalysis} grids:")
             indices = df['grid_index']
-            if screen_output is True: print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
-            if screen_output is True: print()
+            if screen_output is True:
+                print(f"The following input coordinates share {reanalysis} grids:")
+                print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
+                print()
 
-        if screen_output is True: print(f"{reanalysis} weather files:")
-        df = df.drop_duplicates(subset=['grid_index'], keep='first')
-        if screen_output is True: print(df[['input_coordinate', 'weather_file']].to_string(index=False))
-        if screen_output is True: print()
+        if screen_output is True:
+            print(f"{reanalysis} weather files:")
+            if not sites:
+                print(df[['input_coordinate', 'weather_file']].to_string(index=False))
+            else:
+                print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
+            print()
 
+    df = df.drop_duplicates(subset=['grid_index'], keep='first')
     df.set_index('grid_index', inplace=True)
 
     return df
 
 
-def _write_header(weather_path, fn, latitude, elevation, screening_height=10.0):
-    with open(f'{weather_path}/{fn}', 'w') as f:
+def _write_header(weather_path, fn, latitude, elevation, *, screening_height=10.0, subdaily=False):
+    with open(f'{weather_path}/{fn}.{"subdaily.weather" if subdaily else "weather"}', 'w') as f:
         # Open meteorological file and write header lines
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
         f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
-        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('YEAR', 'DOY', 'PP', 'TX', 'TN', 'SOLAR', 'RHX', 'RHN', 'WIND'))
-        f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
+        if subdaily:
+            f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('YEAR', 'DOY', 'HOUR', 'PP', 'TMP', 'SOLAR', 'RH', 'WIND'))
+            f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', '###', 'mm', 'degC', 'MJ/m2', '%', 'm/s'))
+        else:
+            f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('YEAR', 'DOY', 'PP', 'TX', 'TN', 'SOLAR', 'RHX', 'RHN', 'WIND'))
+            f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
 
 
-def _write_weather_headers(weather_path, grid_df):
-    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation']), axis=1)
+def _write_weather_headers(weather_path, grid_df, subdaily=False):
+    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], subdaily=subdaily), axis=1)
 
 
 def _relative_humidity(air_temperature: np.array, air_pressure: np.array, specific_humidity: np.array) -> np.array:
@@ -378,13 +434,8 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
 
     The netCDF variable arrays are flattened to make reading faster
     """
-    values = {}
-    for key in NETCDF_VARIABLES:
-        if not NETCDF_VARIABLES[key][xldas]:
-            values[key] = 0.0
-            continue
-
-        values[key] = nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
+    values = {key: 0.0 if not NETCDF_VARIABLES[key][xldas] else nc[NETCDF_VARIABLES[key][xldas]][0].flatten()[indices]
+        for key in NETCDF_VARIABLES}
 
     # NLDAS precipitation unit is kg m-2. Convert to kg m-2 s-1 to be consistent with GLDAS
     if xldas == 'NLDAS': values['precipitation'] /= DATA_INTERVALS[xldas] * 3600.0
@@ -398,19 +449,28 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
         df.loc[t, df.columns.get_level_values(1) == var] = values[var]
 
 
-def _write_weather_files(weather_path, daily_df, grid_df):
-    daily_df['YEAR'] = daily_df.index.year.map(lambda x: "%-7d" % x)
-    daily_df['DOY'] = daily_df.index.map(lambda x: "%-7.3d" % x.timetuple().tm_yday)
+def _write_weather_files(weather_path, weather_df, grid_df, *, subdaily=False):
+    weather_df['YEAR'] = weather_df.index.year.map(lambda x: "%-7d" % x)
+    weather_df['DOY'] = weather_df.index.map(lambda x: "%-7.3d" % x.timetuple().tm_yday)
+    if subdaily:
+        weather_df['HOUR'] = weather_df.index.hour.map(lambda x: "%-7.2d" % x)
 
     for grid in grid_df.index:
-        output_df = daily_df.loc[:, pd.IndexSlice[grid, :]].copy()
+        output_df = weather_df.loc[:, pd.IndexSlice[grid, :]].copy()
         output_df.columns = output_df.columns.droplevel()
-        output_df = daily_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
+        if subdaily:
+            output_df = weather_df[['YEAR', 'DOY', 'HOUR']].droplevel('variables', axis=1).join(output_df)
+        else:
+            output_df = weather_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
 
-        for v in WEATHER_FILE_VARIABLES:
-            output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
+        if subdaily:
+            for v in SUBDAILY_WEATHER_FILE_VARIABLES:
+                output_df[v] = output_df[v].map(SUBDAILY_WEATHER_FILE_VARIABLES[v]['format'])
+        else:
+            for v in WEATHER_FILE_VARIABLES:
+                output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
 
-        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}', 'a') as f:
+        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"subdaily.weather" if subdaily else "weather"}', 'a') as f:
             output_df.to_csv(
                 f,
                 sep='\t',
@@ -419,18 +479,18 @@ def _write_weather_files(weather_path, daily_df, grid_df):
         )
 
 
-def _initialize_weather_files(weather_path, reanalysis, locations, header):
+def _initialize_weather_files(weather_path, reanalysis, locations, *, header=False, subdaily=False):
     os.makedirs(f'{weather_path}/', exist_ok=True)
 
-    grid_df = find_grids(reanalysis, locations)
+    grid_df = find_grids(reanalysis, locations=locations)
 
-    if header == True: _write_weather_headers(weather_path,  grid_df)
+    if header == True: _write_weather_headers(weather_path,  grid_df, subdaily=subdaily)
 
     return grid_df
 
 
-def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, locations: list[tuple[float, float]]=None, header: bool=True) -> None:
-    grid_df = _initialize_weather_files(weather_path, xldas, locations, header)
+def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, subdaily: bool=False, locations: list[tuple[float, float]]=None, header: bool=True) -> None:
+    grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, subdaily=subdaily)
 
     # Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
@@ -440,35 +500,43 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
     t = date_start
     with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {xldas} files', unit=' days') as progress_bar:
         while t < date_end + timedelta(days=1):
-            if t < START_DATES[xldas] + timedelta(hours=START_HOURS[xldas]): continue
+            if t >= START_DATES[xldas] + timedelta(hours=START_HOURS[xldas]):
+                # netCDF file name
+                fn = f'{t.strftime("%Y/%j")}/{NETCDF_PREFIXES[xldas]}{t.strftime("%Y%m%d.%H%M")}.{NETCDF_SUFFIXES[xldas]}'
 
-            # netCDF file name
-            fn = f'{t.strftime("%Y/%j")}/{NETCDF_PREFIXES[xldas]}{t.strftime("%Y%m%d.%H%M")}.{NETCDF_SUFFIXES[xldas]}'
-
-            # Read one netCDF file
-            with Dataset(f'{data_path}/{fn}') as nc:
-                _read_xldas_netcdf(t, xldas, nc, np.array(grid_df.index), df)
+                # Read one netCDF file
+                with Dataset(f'{data_path}/{fn}') as nc:
+                    _read_xldas_netcdf(t, xldas, nc, np.array(grid_df.index), df)
 
             t += timedelta(hours=DATA_INTERVALS[xldas])
             if (t - date_start).total_seconds() % 86400 == 0: progress_bar.update(1)
 
-    daily_df = pd.DataFrame()
+    output_df = pd.DataFrame()
 
-    for key in WEATHER_FILE_VARIABLES:
-        variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
-        func = WEATHER_FILE_VARIABLES[key]['XLDAS']['func']
-        daily_df = pd.concat(
-            [daily_df, func(df.loc[:, df.columns.get_level_values(1) == variable]).rename(columns={variable: key}, level=1)],
-            axis=1,
-        )
+    if subdaily:
+        for key in SUBDAILY_WEATHER_FILE_VARIABLES:
+            variable = SUBDAILY_WEATHER_FILE_VARIABLES[key]['variable']
+            func = SUBDAILY_WEATHER_FILE_VARIABLES[key]['func']
+            output_df = pd.concat(
+                [output_df, func(df.loc[:, df.columns.get_level_values(1) == variable], DATA_INTERVALS[xldas]).rename(columns={variable: key}, level=1)],
+                axis=1,
+            )
+    else:
+        for key in WEATHER_FILE_VARIABLES:
+            variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
+            func = WEATHER_FILE_VARIABLES[key]['XLDAS']['func']
+            output_df = pd.concat(
+                [output_df, func(df.loc[:, df.columns.get_level_values(1) == variable]).rename(columns={variable: key}, level=1)],
+                axis=1,
+            )
 
-    _write_weather_files(weather_path, daily_df, grid_df)
+    _write_weather_files(weather_path, output_df, grid_df, subdaily=subdaily)
 
 
 def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *, locations: list[tuple[float, float]]=None, header: bool=True) -> None:
     """Process annual gridMET data and write them to weather files
     """
-    grid_df = _initialize_weather_files(weather_path, 'gridMET', locations, header)
+    grid_df = _initialize_weather_files(weather_path, 'gridMET', locations, header=header)
 
     year = -9999
     variables = list(WEATHER_FILE_VARIABLES.keys())
