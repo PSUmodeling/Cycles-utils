@@ -521,6 +521,10 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
                 [output_df, func(df.loc[:, df.columns.get_level_values(1) == variable], DATA_INTERVALS[xldas]).rename(columns={variable: key}, level=1)],
                 axis=1,
             )
+        # If data interval is not hourly, interpolate to hourly
+        if DATA_INTERVALS[xldas] != 1:
+            output_df = output_df.astype(float).resample('H').mean().interpolate(method='linear')
+            output_df.loc[:, (slice(None), 'PP')] /= DATA_INTERVALS[xldas]
     else:
         for key in WEATHER_FILE_VARIABLES:
             variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
