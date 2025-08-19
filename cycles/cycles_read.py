@@ -98,19 +98,31 @@ def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
     return df
 
 
-def read_weather(cycles_path: str, weather: str, *, start_year: int=0, end_year: int=9999) -> pd.DataFrame:
+def read_weather(cycles_path: str, weather: str, *, start_year: int=0, end_year: int=9999, subdaily: bool=False) -> pd.DataFrame:
     NUM_HEADER_LINES = 4
-    columns = {
-        'YEAR': int,
-        'DOY': int,
-        'PP': float,
-        'TX': float,
-        'TN': float,
-        'SOLAR': float,
-        'RHX': float,
-        'RHN': float,
-        'WIND': float,
-    }
+    if subdaily == True:
+        columns = {
+            'YEAR': int,
+            'DOY': int,
+            'HOUR': int,
+            'PP': float,
+            'TMP': float,
+            'SOLAR': float,
+            'RH': float,
+            'WIND': float,
+        }
+    else:
+        columns = {
+            'YEAR': int,
+            'DOY': int,
+            'PP': float,
+            'TX': float,
+            'TN': float,
+            'SOLAR': float,
+            'RHX': float,
+            'RHN': float,
+            'WIND': float,
+        }
     df = pd.read_csv(
         f'{cycles_path}/input/{weather}',
         usecols=list(range(len(columns))),
@@ -121,7 +133,10 @@ def read_weather(cycles_path: str, weather: str, *, start_year: int=0, end_year:
     )
     df = df.iloc[NUM_HEADER_LINES:, :]
     df = df.astype(columns)
-    df['date'] = pd.to_datetime(df['YEAR'].astype(str) + '-' + df['DOY'].astype(str), format='%Y-%j')
+    if subdaily == True:
+        df['date'] = pd.to_datetime(df['YEAR'].astype(str) + '-' + df['DOY'].astype(str) + ' ' + df['HOUR'].astype(str), format='%Y-%j %H')
+    else:
+        df['date'] = pd.to_datetime(df['YEAR'].astype(str) + '-' + df['DOY'].astype(str), format='%Y-%j')
     df.set_index('date', inplace=True)
 
     return df[(df['YEAR'] <= end_year) & (df['YEAR'] >= start_year)]
