@@ -489,7 +489,7 @@ def _initialize_weather_files(weather_path, reanalysis, locations, *, header=Fal
     return grid_df
 
 
-def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, subdaily: bool=False, locations: list[tuple[float, float]]=None, header: bool=True) -> None:
+def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, subdaily: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
     grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, subdaily=subdaily)
 
     # Arrays to store daily values
@@ -537,7 +537,7 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
     _write_weather_files(weather_path, output_df, grid_df, subdaily=subdaily)
 
 
-def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *, locations: list[tuple[float, float]]=None, header: bool=True) -> None:
+def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
     """Process annual gridMET data and write them to weather files
     """
     grid_df = _initialize_weather_files(weather_path, 'gridMET', locations, header=header)
