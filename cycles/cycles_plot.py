@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', axes=None, cb_axes=None, title=None, vmin=None, vmax=None, extend='neither', cb_orientation='horizontal', fontsize=None):
+def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=None, axes=None, cb_axes=None, title=None, vmin=None, vmax=None, extend='neither', cb_orientation='horizontal', fontsize=None, frameon=False):
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
 
-    fig = plt.figure(figsize=(9, 6))
+    fig = plt.figure(figsize=(9, 6)) if fig is None else fig
+
     ax = fig.add_axes(
         [0.025, 0.09, 0.95, 0.93] if axes is None else axes,
         projection=projection,
-        frameon=False,
+        frameon=frameon,
     )
     cax = fig.add_axes(
         [0.3, 0.07, 0.4, 0.02] if cb_axes is None else cb_axes,
@@ -29,6 +30,18 @@ def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', axes
     ax.add_feature(feature.LAND, facecolor=[0.8, 0.8, 0.8])
     ax.add_feature(feature.LAKES)
     ax.add_feature(feature.OCEAN)
+
+    if frameon:
+        gl = ax.gridlines(
+            draw_labels=True,
+            color='gray',
+            dms=True,
+            x_inline=False,
+            y_inline=False,
+            linestyle='--',
+        )
+        gl.bottom_labels = None
+        gl.right_labels = None
 
     cbar = plt.colorbar(
         ax.collections[0],
