@@ -400,13 +400,13 @@ def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | l
     return df
 
 
-def _write_header(weather_path, fn, latitude, elevation, *, screening_height=10.0, subdaily=False):
-    with open(f'{weather_path}/{fn}.{"subdaily.weather" if subdaily else "weather"}', 'w') as f:
+def _write_header(weather_path, fn, latitude, elevation, *, screening_height=10.0, hourly=False):
+    with open(f'{weather_path}/{fn}.{"hourly.weather" if hourly else "weather"}', 'w') as f:
         # Open meteorological file and write header lines
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
         f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
-        if subdaily:
+        if hourly:
             f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('YEAR', 'DOY', 'HOUR', 'PP', 'TMP', 'SOLAR', 'RH', 'WIND'))
             f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', '###', 'mm', 'degC', 'MJ/m2', '%', 'm/s'))
         else:
@@ -414,8 +414,8 @@ def _write_header(weather_path, fn, latitude, elevation, *, screening_height=10.
             f.write('%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%-7s\t%s\n' % ('####', '###', 'mm', 'degC', 'degC', 'MJ/m2', '%', '%', 'm/s'))
 
 
-def _write_weather_headers(weather_path, grid_df, subdaily=False):
-    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], subdaily=subdaily), axis=1)
+def _write_weather_headers(weather_path, grid_df, hourly=False):
+    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], hourly=hourly), axis=1)
 
 
 def _relative_humidity(air_temperature: np.array, air_pressure: np.array, specific_humidity: np.array) -> np.array:
@@ -449,28 +449,28 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
         df.loc[t, df.columns.get_level_values(1) == var] = values[var]
 
 
-def _write_weather_files(weather_path, weather_df, grid_df, *, subdaily=False):
+def _write_weather_files(weather_path, weather_df, grid_df, *, hourly=False):
     weather_df['YEAR'] = weather_df.index.year.map(lambda x: "%-7d" % x)
     weather_df['DOY'] = weather_df.index.map(lambda x: "%-7.3d" % x.timetuple().tm_yday)
-    if subdaily:
+    if hourly:
         weather_df['HOUR'] = weather_df.index.hour.map(lambda x: "%-7.2d" % x)
 
     for grid in grid_df.index:
         output_df = weather_df.loc[:, pd.IndexSlice[grid, :]].copy()
         output_df.columns = output_df.columns.droplevel()
-        if subdaily:
+        if hourly:
             output_df = weather_df[['YEAR', 'DOY', 'HOUR']].droplevel('variables', axis=1).join(output_df)
         else:
             output_df = weather_df[['YEAR', 'DOY']].droplevel('variables', axis=1).join(output_df)
 
-        if subdaily:
+        if hourly:
             for v in SUBDAILY_WEATHER_FILE_VARIABLES:
                 output_df[v] = output_df[v].map(SUBDAILY_WEATHER_FILE_VARIABLES[v]['format'])
         else:
             for v in WEATHER_FILE_VARIABLES:
                 output_df[v] = output_df[v].map(WEATHER_FILE_VARIABLES[v]['format'])
 
-        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"subdaily.weather" if subdaily else "weather"}', 'a') as f:
+        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"hourly.weather" if hourly else "weather"}', 'a') as f:
             output_df.to_csv(
                 f,
                 sep='\t',
@@ -479,18 +479,18 @@ def _write_weather_files(weather_path, weather_df, grid_df, *, subdaily=False):
         )
 
 
-def _initialize_weather_files(weather_path, reanalysis, locations, *, header=False, subdaily=False):
+def _initialize_weather_files(weather_path, reanalysis, locations, *, header=False, hourly=False):
     os.makedirs(f'{weather_path}/', exist_ok=True)
 
     grid_df = find_grids(reanalysis, locations=locations)
 
-    if header == True: _write_weather_headers(weather_path,  grid_df, subdaily=subdaily)
+    if header == True: _write_weather_headers(weather_path,  grid_df, hourly=hourly)
 
     return grid_df
 
 
-def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, subdaily: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
-    grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, subdaily=subdaily)
+def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
+    grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, hourly=hourly)
 
     # Arrays to store daily values
     variables = ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']
@@ -513,7 +513,7 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
 
     output_df = pd.DataFrame()
 
-    if subdaily:
+    if hourly:
         for key in SUBDAILY_WEATHER_FILE_VARIABLES:
             variable = SUBDAILY_WEATHER_FILE_VARIABLES[key]['variable']
             func = SUBDAILY_WEATHER_FILE_VARIABLES[key]['func']
@@ -534,7 +534,7 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
                 axis=1,
             )
 
-    _write_weather_files(weather_path, output_df, grid_df, subdaily=subdaily)
+    _write_weather_files(weather_path, output_df, grid_df, hourly=hourly)
 
 
 def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
