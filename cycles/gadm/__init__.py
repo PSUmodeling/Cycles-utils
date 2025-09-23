@@ -5,3 +5,4 @@ from .gadm import state_gid
 from .gadm import state_name
 from .gadm import county_fips
 from .gadm import county_gid
+from .gadm import county_name

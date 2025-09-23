@@ -67,13 +67,21 @@ def _read_county_csv(index_col: str) -> pd.DataFrame:
 
 
 def _find_county_representation(representation: str, **kwargs):
-    name, value = tuple(kwargs.items())[0]
+    for name, value in kwargs.items():
+        if value is None: continue
 
-    df = _read_county_csv(name)
-    try:
-        return df.loc[value, representation]
-    except:
-        raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+        df = _read_county_csv(name)
+
+        if representation == 'name':
+            try:
+                return f'{df.loc[value, "name_2"]}, {df.loc[value, "name_1"]}'
+            except:
+                raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+
+        try:
+            return df.loc[value, representation]
+        except:
+            raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
 
 
 def county_gid(*, fips: int) -> str:
@@ -82,3 +90,6 @@ def county_gid(*, fips: int) -> str:
 
 def county_fips(*, gid: str) -> int:
     return _find_county_representation('fips', gid=gid)
+
+def county_name(*, gid: str=None, fips: int=None) -> str:
+    return _find_county_representation('name', gid=gid, fips=fips)
