@@ -13,8 +13,6 @@ HARVEST_TOOLS = [
 
 
 def read_output(cycles_path: str, simulation: str, output: str) -> tuple[pd.DataFrame, dict]:
-    '''Read harvest output file for harvested crops, harvest , plan dates, and yield
-    '''
     df = pd.read_csv(
         f'{cycles_path}/output/{simulation}/{output}.csv',
         comment='#',
