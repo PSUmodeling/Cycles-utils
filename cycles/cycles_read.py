@@ -1,3 +1,4 @@
+import io
 import pandas as pd
 
 HARVEST_TOOLS = [
@@ -92,6 +93,24 @@ def read_operations(cycles_path: str, operation: str) -> pd.DataFrame:
                 k += 1
 
     df = pd.DataFrame(operations)
+
+    return df
+
+
+def read_soil(cycles_path: str, soil: str) -> pd.DataFrame:
+    NUM_HEADER_LINES = 3
+
+    with open(f'{cycles_path}/input/{soil}') as f:
+        lines = f.read().splitlines()
+
+    lines = [line for line in lines if (not line.strip().startswith('#')) and len(line.strip()) > 0]
+
+    df = pd.read_csv(
+        io.StringIO('\n'.join(lines[NUM_HEADER_LINES:])),
+        sep=r'\s+',
+        na_values='-999',
+        index_col='LAYER',
+    )
 
     return df
 
