@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=None, axes=None, cb_axes=None, title=None, vmin=None, vmax=None, extend='neither', cb_orientation='horizontal', fontsize=None, frameon=False):
+def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=None, axes=None, colorbar=True, cb_axes=None, title=None, vmin=None, vmax=None, extend='neither', cb_orientation='horizontal', fontsize=None, frameon=False):
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
 
     fig = plt.figure(figsize=(9, 6)) if fig is None else fig
@@ -15,9 +15,10 @@ def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=
         projection=projection,
         frameon=frameon,
     )
-    cax = fig.add_axes(
-        [0.3, 0.07, 0.4, 0.02] if cb_axes is None else cb_axes,
-    )
+    if colorbar is True:
+        cax = fig.add_axes(
+            [0.3, 0.07, 0.4, 0.02] if cb_axes is None else cb_axes,
+        )
 
     gdf.plot(
         column=column,
@@ -43,12 +44,13 @@ def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=
         gl.bottom_labels = None
         gl.right_labels = None
 
-    cbar = plt.colorbar(
-        ax.collections[0],
-        cax=cax,
-        orientation=cb_orientation,
-        extend=extend,
-    )
+    if colorbar is True:
+        cbar = plt.colorbar(
+            ax.collections[0],
+            cax=cax,
+            orientation=cb_orientation,
+            extend=extend,
+        )
     if title is not None: cbar.set_label(title)
     cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')
 
