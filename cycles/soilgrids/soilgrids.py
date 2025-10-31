@@ -40,6 +40,7 @@ SOILGRIDS_LAYERS = {
     '60-100cm': SoilGridsLayers(0.6, 1.0, 0.4),
     '100-200cm': SoilGridsLayers(1.0, 2.0, 1.0),
 }
+
 HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'GEOGCS["GCS_unnamed ellipse",DATUM["D_unknown",SPHEROID["Unknown",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],' \
     'PROJECTION["Interrupted_Goode_Homolosine"],' \
@@ -96,12 +97,12 @@ def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[flo
 
     converted = gdf.to_crs(HOMOLOSINE)
 
-    return [
+    return (
         converted.loc['NW', 'geometry'].xy[0][0],
         converted.loc['SE', 'geometry'].xy[1][0],
         converted.loc['SE', 'geometry'].xy[0][0],
         converted.loc['NW', 'geometry'].xy[1][0],
-    ]
+    )
 
 
 def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: tuple[float, float, float, float], *, crs='epsg:4326') -> None:
@@ -125,7 +126,8 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: 
                     crs='urn:ogc:def:crs:EPSG::152160',
                     bbox=bbox,
                     resx=250, resy=250,
-                    format='GEOTIFF_INT16')
+                    format='GEOTIFF_INT16',
+                )
 
                 with open(f'{path}/{v}_{layer}.tif', 'wb') as file: file.write(response.read())
                 break

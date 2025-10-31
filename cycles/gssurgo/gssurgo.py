@@ -3,8 +3,6 @@ import pandas as pd
 import shapely
 from dataclasses import dataclass
 
-GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb'
-GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
 @dataclass
 class GssurgoParameters:
     gssurgo_name: str
@@ -12,6 +10,8 @@ class GssurgoParameters:
     table: str
     unit: str
 
+GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb'
+GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
 GSSURGO_PARAMETERS = {
     'clay': GssurgoParameters('claytotal_r', 1.0, 'horizon', '%'),
     'silt': GssurgoParameters('silttotal_r', 1.0, 'horizon', '%'),
@@ -39,7 +39,6 @@ GSSURGO_URBAN_TYPES = (
     'Urban land',
 )
 NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
-
 
 def _read_lut(path: str, state: str, table: str, columns: list[str]) -> pd.DataFrame:
     df = pd.read_csv(
@@ -156,7 +155,7 @@ class Gssurgo:
         if geometry is True:
             self.mapunits = self.mapunits.dissolve(
                 by='muname',
-                aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': sum}
+                aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': sum},
             ).reset_index()
 
 

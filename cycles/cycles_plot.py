@@ -51,8 +51,8 @@ def plot_map(gdf, column, *, projection=ccrs.PlateCarree(), cmap='viridis', fig=
             orientation=cb_orientation,
             extend=extend,
         )
-    if title is not None: cbar.set_label(title)
-    cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')
+        if title is not None: cbar.set_label(title)
+        cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')
 
     return fig, ax
 

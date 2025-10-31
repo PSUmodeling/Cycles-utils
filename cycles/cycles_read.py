@@ -12,7 +12,6 @@ HARVEST_TOOLS = [
     'harvestforage',
 ]
 
-
 def read_output(cycles_path: str, simulation: str, output: str) -> tuple[pd.DataFrame, dict]:
     df = pd.read_csv(
         f'{cycles_path}/output/{simulation}/{output}.csv',

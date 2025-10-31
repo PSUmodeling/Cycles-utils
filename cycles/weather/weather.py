@@ -194,7 +194,6 @@ WEATHER_FILE_VARIABLES = {
         'format': lambda x: '%-.2f' % x,
     },
 }
-
 SUBDAILY_WEATHER_FILE_VARIABLES = {
     # variable is the name of the variable in the NETCDF_VARIABLES dictionary
     # func is the function that converts the raw data to corresponding weather file variables
@@ -225,7 +224,6 @@ SUBDAILY_WEATHER_FILE_VARIABLES = {
         'format': lambda x: '%-.2f' % x,
     },
 }
-
 COOKIE_FILE = './.urs_cookies'
 
 def _download_daily_xldas(path, xldas, day):
@@ -489,7 +487,8 @@ def _initialize_weather_files(weather_path, reanalysis, locations, *, header=Fal
     return grid_df
 
 
-def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *, hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
+def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *,
+    hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
     grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, hourly=hourly)
 
     # Arrays to store daily values

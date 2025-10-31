@@ -60,7 +60,6 @@ CONTROL_PARAMETERS = {
     }
 }
 
-
 def _overlapping_depth(top1, bottom1, top2, bottom2):
     return max(0.0, min(bottom1, bottom2) - max(top1, top2))
 
