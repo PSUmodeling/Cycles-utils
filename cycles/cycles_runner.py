@@ -20,6 +20,8 @@ class CyclesRunner():
         """
         os.makedirs('summary', exist_ok=True)
 
+        comments = _generate_comment(cycles_executable, options)
+
         # Read simulation file
         first = True
         for _, row in self.simulations.iterrows():
@@ -40,7 +42,7 @@ class CyclesRunner():
 
             # Run a Cycles simulation
             if _run_cycles(cycles_executable, name, options=options, silence=silence) == 0:
-                _write_summary(name, first, f'summary/{self.summary_file}')
+                _write_summary(name, first, comments, f'summary/{self.summary_file}')
                 print('Success')
                 first = False
             else:
@@ -65,6 +67,16 @@ class CyclesRunner():
                 )
 
 
+def _generate_comment(cycles_executable: str, options: str):
+    result = subprocess.run(
+        [cycles_executable, '-V'],
+        capture_output=True,
+        text=True,
+    )
+
+    return f'# {"".join(result.stdout.splitlines())}{" with" if "s" in options else " without"} spin-up{", grain model turned on" if "g" in options else ""}\n'
+
+
 def _run_cycles(cycles_executable, simulation: str, options: str, silence: bool):
     cmd = [cycles_executable, options, simulation]
 
@@ -77,11 +89,13 @@ def _run_cycles(cycles_executable, simulation: str, options: str, silence: bool)
     return result.returncode
 
 
-def _write_summary(simulation: str, header: bool, summary_fn: str) -> None:
+def _write_summary(simulation: str, header: bool, comments: str, summary_fn: str) -> None:
     df, _ = read_output('.', simulation, 'harvest')
     df.insert(0, 'simulation', simulation)
 
     with open(summary_fn, 'w' if header is True else 'a') as f:
+        if header is True:
+            f.write(comments)
         df.to_csv(f, header=header, index=False)
 
 
