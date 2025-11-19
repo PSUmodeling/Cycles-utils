@@ -7,12 +7,11 @@ from .cycles_input import generate_control_file
 from .cycles_read import read_output
 
 class CyclesRunner():
-    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', simulation_name: Callable, control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
+    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
         self.simulations = simulations
         self.summary_file = summary
         self.operation_template = operation_template
         self.operation_dict = operation_dict
-        self.simulation_name = simulation_name
         self.control_dict = control_dict
 
 
@@ -25,7 +24,7 @@ class CyclesRunner():
         first = True
         for _, row in self.simulations.iterrows():
             # Use defined simulation name
-            name = self.simulation_name(row)
+            name = self.control_dict(row)['simulation_name']
 
             print(f'{name} - ', end='')
 
