@@ -74,8 +74,14 @@ class Cycles:
 
         control: dict[str, Any] = {line.strip().split()[0].lower(): line.strip().split()[1] for line in lines}
 
-        control['simulation_start_date'] = datetime.strptime(control['simulation_start_date'], '%Y-%m-%d')
-        control['simulation_end_date'] = datetime.strptime(control['simulation_end_date'], '%Y-%m-%d')
+        if len(control['simulation_start_date']) > 4:
+            control['simulation_start_date'] = datetime.strptime(control['simulation_start_date'], '%Y-%m-%d')
+        else:
+            control['simulation_start_date'] = datetime.strptime(control['simulation_start_date'] + '-01-01', '%Y-%m-%d')
+        if len(control['simulation_end_date']) > 4:
+            control['simulation_end_date'] = datetime.strptime(control['simulation_end_date'], '%Y-%m-%d')
+        else:
+            control['simulation_end_date'] = datetime.strptime(control['simulation_end_date'] + '-12-31', '%Y-%m-%d')
         control['rotation_size'] = int(control['rotation_size'])
 
         self.control = control
