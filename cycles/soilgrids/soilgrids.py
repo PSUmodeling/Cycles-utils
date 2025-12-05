@@ -98,10 +98,10 @@ def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[flo
     converted = gdf.to_crs(HOMOLOSINE)
 
     return (
-        converted.loc['NW', 'geometry'].xy[0][0],
-        converted.loc['SE', 'geometry'].xy[1][0],
-        converted.loc['SE', 'geometry'].xy[0][0],
-        converted.loc['NW', 'geometry'].xy[1][0],
+        converted.loc['NW', 'geometry'].xy[0][0],   # type: ignore
+        converted.loc['SE', 'geometry'].xy[1][0],   # type: ignore
+        converted.loc['SE', 'geometry'].xy[0][0],   # type: ignore
+        converted.loc['NW', 'geometry'].xy[1][0],   # type: ignore
     )
 
 
@@ -121,7 +121,7 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str, bbox: 
         wcs = WebCoverageService(f'http://maps.isric.org/mapserv?map=/map/{v}.map', version='1.0.0')
         while True:
             try:
-                response = wcs.getCoverage(
+                response = wcs.getCoverage( # type: ignore
                     identifier=f'{v}_{layer}_mean',
                     crs='urn:ogc:def:crs:EPSG::152160',
                     bbox=bbox,
@@ -142,5 +142,5 @@ def get_soil_profile_parameters(maps: dict[str, xarray.DataArray], coordinate: t
                 'top': layer.top,
                 'bottom': layer.bottom,
                 **{v: values[f'{v}@{key}'] for v in ['clay', 'sand', 'soc', 'bulk_density']},
-            } for key, layer in SOILGRIDS_LAYERS.items()]
+            } for key, layer in SOILGRIDS_LAYERS.items()]   # type: ignore
         )

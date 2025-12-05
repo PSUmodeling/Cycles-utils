@@ -30,31 +30,33 @@ def _read_state_csv(index_col: str) -> pd.DataFrame:
     )
 
 
-def _find_state_representation(representation: str, **kwargs):
+def _find_state_representation(representation: str, **kwargs) -> str | int:
     for name, value in kwargs.items():
         if value is None: continue
 
         df = _read_state_csv(name)
         try:
-            return df.loc[value, representation]
-        except:
-            raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+            return df.loc[value, representation]    # type: ignore
+        except KeyError:
+            pass
+
+    raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
 
 
-def state_gid(*, state: str=None, abbreviation: str=None, fips: int=None) -> str:
-    return _find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips)
+def state_gid(*, state: str | None=None, abbreviation: str | None=None, fips: int | None=None) -> str:
+    return _find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips) # type: ignore
 
 
-def state_abbreviation(*, state: str=None, gid: str=None, fips: int=None) -> str:
-    return _find_state_representation('abbreviation', state=state, gid=gid, fips=fips)
+def state_abbreviation(*, state: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
+    return _find_state_representation('abbreviation', state=state, gid=gid, fips=fips)  # type: ignore
 
 
-def state_fips(*, state: str=None, abbreviation: str=None, gid: str=None) -> int:
-    return _find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)
+def state_fips(*, state: str | None=None, abbreviation: str | None=None, gid: str | None=None) -> int:
+    return _find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)  # type: ignore
 
 
-def state_name(*, abbreviation: str=None, gid: str=None, fips: int=None) -> str:
-    return _find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips)
+def state_name(*, abbreviation: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
+    return _find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips)   # type: ignore
 
 
 def _read_county_csv(index_col: str) -> pd.DataFrame:
@@ -65,7 +67,7 @@ def _read_county_csv(index_col: str) -> pd.DataFrame:
     )
 
 
-def _find_county_representation(representation: str, **kwargs):
+def _find_county_representation(representation: str, **kwargs) -> str | int:
     for name, value in kwargs.items():
         if value is None: continue
 
@@ -74,21 +76,23 @@ def _find_county_representation(representation: str, **kwargs):
         if representation == 'name':
             try:
                 return f'{df.loc[value, "name_2"]}, {df.loc[value, "name_1"]}'
-            except:
-                raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+            except KeyError:
+                pass
 
         try:
-            return df.loc[value, representation]
-        except:
-            raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
+            return df.loc[value, representation]    # type: ignore
+        except KeyError:
+            pass
+
+    raise KeyError(f'{representation.capitalize()} for {name} {value} cannot be found.')
 
 
 def county_gid(*, fips: int) -> str:
-    return _find_county_representation('gid', fips=fips)
+    return _find_county_representation('gid', fips=fips)    # type: ignore
 
 
 def county_fips(*, gid: str) -> int:
-    return _find_county_representation('fips', gid=gid)
+    return _find_county_representation('fips', gid=gid) # type: ignore
 
-def county_name(*, gid: str=None, fips: int=None) -> str:
-    return _find_county_representation('name', gid=gid, fips=fips)
+def county_name(*, gid: str | None=None, fips: int | None=None) -> str:
+    return _find_county_representation('name', gid=gid, fips=fips)  # type: ignore

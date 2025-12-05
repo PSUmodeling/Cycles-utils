@@ -106,17 +106,17 @@ def _read_mupolygon(path, state, boundary=None) -> gpd.GeoDataFrame:
     return gdf
 
 
-def _musym(str):
-    if str == 'N/A' or len(str) < 2:
-        return str
+def _musym(s: str):
+    if s == 'N/A' or len(s) < 2:
+        return s
 
-    if str[-1].isupper() and (str[-2].isnumeric() or str[-2].islower()):
-        return str[:-1]
+    if s[-1].isupper() and (s[-2].isnumeric() or s[-2].islower()):
+        return s[:-1]
 
-    if str[-1].isnumeric() and str[-2].isupper() and (str[-3].isnumeric() or str[-3].islower()):
-        return str[:-2]
+    if s[-1].isnumeric() and s[-2].isupper() and (s[-3].isnumeric() or s[-3].islower()):
+        return s[:-2]
 
-    return str
+    return s
 
 
 class Gssurgo:
@@ -127,9 +127,8 @@ class Gssurgo:
 
         if lut_only is False:
             gdf = _read_mupolygon(path, state, boundary)
-            self.mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
-        else:
-            self.mapunits = luts['mapunit']
+
+        self.mapunits: gpd.GeoDataFrame | pd.DataFrame = gdf.merge(luts['mapunit'], on='mukey', how='left') if lut_only is False else luts['mapunit']
 
         self.components = luts['component']
         self.horizons = luts['horizon']
@@ -155,8 +154,8 @@ class Gssurgo:
         if geometry is True:
             self.mapunits = self.mapunits.dissolve(
                 by='muname',
-                aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': sum},
-            ).reset_index()
+                aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
+            ).reset_index() # type: ignore
 
 
     def non_soil_mask(self) -> pd.Series:
@@ -171,7 +170,7 @@ class Gssurgo:
 
         mapunit = gdf.loc[gdf['area'].idxmax()]
 
-        return int(mapunit['mukey']), mapunit['musym'], mapunit['muname']
+        return int(mapunit['mukey']), mapunit['musym'], mapunit['muname']   # type: ignore
 
 
     def average_slope_hsg(self) -> tuple[float, str]:
@@ -188,7 +187,7 @@ class Gssurgo:
         else:
             _df['hydgrpdcd'] = _df['hydgrpdcd'].map(lambda x: x[0])
             _df = _df.groupby('hydgrpdcd').sum()
-            hsg = _df['area'].idxmax()
+            hsg = str(_df['area'].idxmax())
 
         return slope, hsg
 

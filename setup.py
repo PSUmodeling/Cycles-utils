@@ -16,12 +16,10 @@ setup(
     url='https://github.com/PSUmodeling/Cycles-utils',
     license='MIT',
     python_requires='>=3.10',
-    install_requires=['pandas>=1.2.4', 'geopandas>=0.9.0', 'numpy>=1.19.5'],
+    install_requires=['pandas>=1.2.4', 'geopandas>=0.9.0', 'numpy>=1.19.5', 'cartopy>=0.18.0', 'matplotlib>=3.4.2'],
     extras_require = {
         'soilgrids':  ['rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'shapely>=1.7.1'],
         'gssurgo': ['shapely>=1.7.1'],
-        'plot': ['cartopy>=0.18.0', 'matplotlib>=3.4.2'],
-        'soilgrids': ['rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'shapely>=1.7.1'],
         'weather': ['netCDF4>=1.5.7', 'tqdm>=4.60.0'],
     }
 )

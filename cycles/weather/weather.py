@@ -331,7 +331,7 @@ def _find_grid(reanalysis, grid_ind, mask_df, model, rcp):
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']
 
 
-def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, model: str=None, rcp:str=None, screen_output=True) -> pd.DataFrame:
+def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, model: str | None=None, rcp:str | None=None, screen_output=True) -> pd.DataFrame:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
@@ -345,7 +345,7 @@ def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | l
             if isinstance(locations, list):
                 (lat, lon) = loc
             elif isinstance(locations, dict):
-                (lat, lon) = locations[loc]
+                (lat, lon) = locations[loc] # type: ignore
             else:
                 raise TypeError('Location input must be a dict or list of coordinates.')
 
@@ -353,7 +353,7 @@ def find_grids(reanalysis: str, *, locations: dict[str, tuple[float, float]] | l
 
             ind = np.ravel_multi_index((IND_J(reanalysis, lat), IND_I(reanalysis, lon)), NETCDF_SHAPES[reanalysis])
 
-            if mask_df.loc[ind]['mask'] == 0:
+            if mask_df.loc[ind]['mask'] == 0:   # type: ignore
                 mask_df['distance'] = mask_df.apply(
                     lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
                     axis=1,
@@ -416,7 +416,7 @@ def _write_weather_headers(weather_path, grid_df, hourly=False):
     grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], hourly=hourly), axis=1)
 
 
-def _relative_humidity(air_temperature: np.array, air_pressure: np.array, specific_humidity: np.array) -> np.array:
+def _relative_humidity(air_temperature: np.ndarray, air_pressure: np.ndarray, specific_humidity: np.ndarray) -> np.ndarray:
     es = 611.2 * np.exp(17.67 * (air_temperature - 273.15) / (air_temperature - 273.15 + 243.5))
     ws = 0.622 * es / (air_pressure - es)
     w = specific_humidity / (1.0 - specific_humidity)
@@ -441,7 +441,7 @@ def _read_xldas_netcdf(t, xldas, nc, indices, df):
     values['wind'] = np.sqrt(values['wind_u'] **2 + values['wind_v'] **2)
 
     ## Calculate relative humidity from specific humidity
-    values['relative_humidity'] = _relative_humidity(values['air_temperature'], values['air_pressure'], values['specific_humidity'])
+    values['relative_humidity'] = _relative_humidity(values['air_temperature'], values['air_pressure'], values['specific_humidity'])    # type: ignore
 
     for var in ['precipitation', 'air_temperature', 'solar', 'relative_humidity', 'wind']:
         df.loc[t, df.columns.get_level_values(1) == var] = values[var]
@@ -488,7 +488,7 @@ def _initialize_weather_files(weather_path, reanalysis, locations, *, header=Fal
 
 
 def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: datetime, date_end: datetime, *,
-    hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
+    hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, header: bool=True) -> None:
     grid_df = _initialize_weather_files(weather_path, xldas, locations, header=header, hourly=hourly)
 
     # Arrays to store daily values
@@ -523,7 +523,7 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
         # If data interval is not hourly, interpolate to hourly
         if DATA_INTERVALS[xldas] != 1:
             output_df = output_df.astype(float).resample('H').mean().interpolate(method='linear')
-            output_df.loc[:, (slice(None), 'PP')] /= DATA_INTERVALS[xldas]
+            output_df.loc[:, (slice(None), 'PP')] /= DATA_INTERVALS[xldas]  # type: ignore
     else:
         for key in WEATHER_FILE_VARIABLES:
             variable = WEATHER_FILE_VARIABLES[key]['XLDAS']['variable']
@@ -536,7 +536,8 @@ def process_xldas(data_path: str, weather_path: str, xldas: str, date_start: dat
     _write_weather_files(weather_path, output_df, grid_df, hourly=hourly)
 
 
-def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *, locations: dict[str, tuple[float, float]] | list[tuple[float, float]]=None, header: bool=True) -> None:
+def process_gridmet(data_path: str, weather_path: str, date_start: datetime, date_end: datetime, *,
+                    locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, header: bool=True) -> None:
     """Process annual gridMET data and write them to weather files
     """
     grid_df = _initialize_weather_files(weather_path, 'gridMET', locations, header=header)

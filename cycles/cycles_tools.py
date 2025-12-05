@@ -1,5 +1,14 @@
+import cartopy.crs as ccrs
+import cartopy.feature as feature
+import geopandas as gpd
+import matplotlib.axes
+import matplotlib.colors
+import matplotlib.figure
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from cartopy.mpl.geoaxes import GeoAxes
+from pathlib import Path
 
 SOIL_PARAMETERS = ['clay', 'sand', 'soc', 'bulk_density']
 SOIL_LAYERS = [
@@ -71,7 +80,7 @@ def _calculate_parameter(soil_df, parameter, top, bottom):
     return np.sum(np.array(soil_df[parameter] * soil_df['weight'])) / sum(soil_df['weight'])
 
 
-def generate_soil_file(fn: str, soil_df: pd.DataFrame, *, desc: str='', hsg: str='', slope: float=0.0, soil_depth: float | None=None) -> None:
+def generate_soil_file(fn: str | Path, soil_df: pd.DataFrame, *, desc: str='', hsg: str='', slope: float=0.0, soil_depth: float | None=None) -> None:
     layer_depths = np.array([layer['bottom'] for layer in SOIL_LAYERS])
 
     if soil_depth is not None:
@@ -95,13 +104,9 @@ def generate_soil_file(fn: str, soil_df: pd.DataFrame, *, desc: str='', hsg: str
         f.write("%-15s\t%.2f\n" % ("SLOPE", slope))
 
         f.write("%-15s\t%d\n" % ("TOTAL_LAYERS", len(df)))
-        f.write(('%-7s\t'*12 + '%s\n') % (
-            "LAYER", "THICK", "CLAY", "SAND", "SOC", "BD", "FC", "PWP", "SON", "NO3", "NH4", "BYP_H", "BYP_V"
-        ))
+        f.write(('%-7s\t'*12 + '%s\n') % ("LAYER", "THICK", "CLAY", "SAND", "SOC", "BD", "FC", "PWP", "SON", "NO3", "NH4", "BYP_H", "BYP_V"))
 
-        f.write(('%-7s\t'*12 + '%s\n') % (
-            "#", "m", "%", "%", "%", "Mg/m3", "m3/m3", "m3/m3", "kg/ha", "kg/ha", "kg/ha", "-", "-"
-        ))
+        f.write(('%-7s\t'*12 + '%s\n') % ("#", "m", "%", "%", "%", "Mg/m3", "m3/m3", "m3/m3", "kg/ha", "kg/ha", "kg/ha", "-", "-"))
 
         for _, row in df.iterrows():
             f.write('%-7d\t' % row['layer'])
@@ -110,12 +115,10 @@ def generate_soil_file(fn: str, soil_df: pd.DataFrame, *, desc: str='', hsg: str
             f.write('%-7s\t' % '-999' if np.isnan(row['sand']) else '%-7.1f\t' % float(row['sand']))
             f.write('%-7s\t' % '-999' if np.isnan(row['soc']) else '%-7.2f\t' % float(row['soc']))
             f.write('%-7s\t' % '-999' if np.isnan(row['bulk_density']) else '%-7.2f\t' % float(row['bulk_density']))
-            f.write(('%-7d\t'*3 + '%-7.1f\t'*2 + '%-7.1f\t%.1f\n') % (
-                -999, -999, -999, float(row['no3']), float(row['nh4']), 0.0, 0.0
-            ))
+            f.write(('%-7d\t'*3 + '%-7.1f\t'*2 + '%-7.1f\t%.1f\n') % (-999, -999, -999, float(row['no3']), float(row['nh4']), 0.0, 0.0))
 
 
-def generate_control_file(fn: str, user_control_dict: dict) -> None:
+def generate_control_file(fn: str | Path, user_control_dict: dict) -> None:
     with open(fn, 'w') as f:
         for block, parameters in CONTROL_PARAMETERS.items():
             f.write(f'## {block.upper()} ##\n')
@@ -128,3 +131,57 @@ def generate_control_file(fn: str, user_control_dict: dict) -> None:
 
                 f.write('%-23s\t%s\n' % (name.upper(), str(value)))
             f.write('\n')
+
+
+def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection =ccrs.PlateCarree(), cmap: matplotlib.colors.Colormap | str='viridis',
+             fig: matplotlib.figure.Figure | None=None, axes: tuple[float, float, float, float] | None=None,
+             colorbar: bool=True, cb_axes: tuple[float, float, float, float] | None=None,
+             title: str | None=None, vmin: float | None=None, vmax: float | None=None, extend: str='neither', cb_orientation: str='horizontal',
+             fontsize: int | None=None, frameon: bool=False) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
+    if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
+
+    fig = plt.figure(figsize=(9, 6)) if fig is None else fig
+
+    ax: GeoAxes = fig.add_axes(
+        (0.025, 0.09, 0.95, 0.93) if axes is None else axes,
+        projection=projection,
+        frameon=frameon,
+    )   # type: ignore
+    if colorbar is True:
+        cax = fig.add_axes((0.3, 0.07, 0.4, 0.02) if cb_axes is None else cb_axes)
+
+    gdf.plot(
+        column=column,
+        cmap=cmap,
+        ax=ax,
+        vmin=vmin,
+        vmax=vmax,
+    )
+    ax.add_feature(feature.STATES, edgecolor=[0.7, 0.7, 0.7], linewidth=0.5)
+    ax.add_feature(feature.LAND, facecolor=[0.8, 0.8, 0.8])
+    ax.add_feature(feature.LAKES)
+    ax.add_feature(feature.OCEAN)
+
+    if frameon:
+        gl = ax.gridlines(
+            draw_labels=True,
+            color='gray',
+            dms=True,
+            x_inline=False,
+            y_inline=False,
+            linestyle='--',
+        )
+        gl.bottom_labels = None # type: ignore
+        gl.right_labels = None  # type: ignore
+
+    if colorbar is True:
+        cbar = plt.colorbar(
+            ax.collections[0],
+            cax=cax,
+            orientation=cb_orientation,
+            extend=extend,
+        )
+        if title is not None: cbar.set_label(title)
+        cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')  # type: ignore
+
+    return fig, ax
