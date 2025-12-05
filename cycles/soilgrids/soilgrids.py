@@ -47,8 +47,10 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'UNIT["metre",1,AUTHORITY["EPSG","9001"]],' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
+ALL_MAPS = [f'{parameter}@{layer}' for parameter in ['clay', 'sand', 'soc', 'bulk_density'] for layer in SOILGRIDS_LAYERS]
 
-def read_soilgrids_maps(path: str, maps: list[str], *, crs=None) -> dict[str, xarray.DataArray]:
+
+def read_soilgrids_maps(path: str, *, maps: list[str]=ALL_MAPS, crs: str | None=None) -> dict[str, xarray.DataArray]:
     """Read SoilGrids data
 
     Parameter maps should be a list of map name strings, with each map name defined as variable@layer. For example, the
