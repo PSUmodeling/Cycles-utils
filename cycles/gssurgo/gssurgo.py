@@ -50,13 +50,14 @@ class Gssurgo:
     def __init__(self, *, path: str, state: str, boundary: gpd.GeoDataFrame | None =None, lut_only: bool=False):
         self.state = state
         self.mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
-        self.components: df.DataFrame | None = None
-        self.horizons: df.DataFrame | None = None
+        self.components: pd.DataFrame | None = None
+        self.horizons: pd.DataFrame | None = None
         self.mukey: int | None = None
         self.muname: str | None = None
         self.musym: str | None = None
         self.slope: float = 0.0
         self.hsg: str = ''
+        self.soil_profile: pd.DataFrame | None = None
 
         luts = _read_all_luts(path, state)
 
@@ -70,7 +71,7 @@ class Gssurgo:
         if boundary is not None:
             self.components = self.components[self.components['mukey'].isin(self.mapunits['mukey'].unique())]
             self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
-        
+
         self._average_slope_hsg()
 
 
@@ -78,6 +79,8 @@ class Gssurgo:
         # In gSSURGO database many map units are the same soil texture with different slopes, etc. To find the dominant
         # soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map
         # unit names to identify the same soil textures among different soil map units.
+        assert self.mapunits is not None
+
         self.mapunits['muname'] = self.mapunits['muname'].map(lambda name: name.split(',')[0])
         self.mapunits['musym'] = self.mapunits['musym'].map(_musym)
 
@@ -95,23 +98,27 @@ class Gssurgo:
 
 
     def non_soil_mask(self) -> pd.Series:
-        return self.mapunits['mukey'].isna() | \
-            self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | \
-            self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
+        assert self.mapunits is not None
+
+        return self.mapunits['mukey'].isna() | self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
 
 
     def select_major_mapunit(self) -> None:
+        assert self.mapunits is not None
+
         gdf = self.mapunits[~self.non_soil_mask()].copy()
         gdf['area'] = gdf.area
 
         mapunit = gdf.loc[gdf['area'].idxmax()]
 
-        self.mukey = int(mapunit['mukey'])
-        self.musym = mapunit['musym']
-        self.muname = mapunit['muname']
+        self.mukey = int(mapunit['mukey'])  # type: ignore
+        self.musym = mapunit['musym']   # type: ignore
+        self.muname = mapunit['muname'] # type: ignore
 
 
     def _average_slope_hsg(self) -> None:
+        assert self.mapunits is not None
+
         gdf = self.mapunits[~self.non_soil_mask()].copy()
         gdf['area'] = gdf.area
 
@@ -126,22 +133,25 @@ class Gssurgo:
             _df['hydgrpdcd'] = _df['hydgrpdcd'].map(lambda x: x[0])
             _df = _df.groupby('hydgrpdcd').sum()
             hsg = str(_df['area'].idxmax())
-        
+
         self.hsg = hsg
 
 
-    def get_soil_profile_parameters(self, mukey: int=None, *, major_only: bool=True) -> None:
+    def get_soil_profile_parameters(self, mukey: int | None=None, *, major_only: bool=True) -> None:
         if mukey is None:
             mukey = self.mukey
+        assert mukey is not None
 
+        assert self.components is not None
         df = self.components[self.components['mukey'] == int(mukey)].copy()
 
         if major_only is True:
             df = df[df['majcompflag'] == 'Yes']
 
+        assert self.horizons is not None
         df = pd.merge(df, self.horizons, on='cokey')
 
-        self.soil_profile: df.DataFrame = df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
+        self.soil_profile = df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
 
 
     def generate_soil_file(self, fn: Path | str, *, soil_depth: float | None=None) -> None:
@@ -157,6 +167,7 @@ class Gssurgo:
             desc += f"# Hydrologic soil group {self.hsg}.\n"
             desc += "# The curve number for row crops with straight row treatment is used.\n"
 
+        assert self.soil_profile is not None
         _generate_soil_file(fn, self.soil_profile, desc=desc, hsg=self.hsg, slope=self.slope, soil_depth=soil_depth)
 
 
