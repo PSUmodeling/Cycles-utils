@@ -1,3 +1,4 @@
+import os
 import pandas as pd
 import shutil
 import subprocess
@@ -63,6 +64,7 @@ class CyclesRunner():
 def _generate_comment(cycles_executable: str, options: str):
     result = subprocess.run(
         [cycles_executable, '-V'],
+        shell=True if os.name == 'nt' else False,
         capture_output=True,
         text=True,
     )
@@ -75,6 +77,7 @@ def _run_cycles(cycles_executable: str, simulation: str, options: str, silence: 
 
     result = subprocess.run(
         cmd,
+        shell=True if os.name == 'nt' else False,
         stdout=subprocess.DEVNULL if silence is True else None,
         stderr=subprocess.DEVNULL if silence is True else None,
     )
