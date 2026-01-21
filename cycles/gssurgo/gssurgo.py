@@ -87,8 +87,9 @@ class Gssurgo:
     def mapunits(self) -> gpd.GeoDataFrame | pd.DataFrame | None:
         return self._mapunits
 
-    
+
     def _get_muname(self, mukey: int) -> str:
+        assert self._mapunits is not None
         return self._mapunits[self._mapunits['mukey'] == mukey]['muname'].iloc[0]
 
 
@@ -187,6 +188,7 @@ class Gssurgo:
             self.group_map_units(geometry=True)
             self.select_major_mapunit()
             mukey = self.mukey
+        assert mukey is not None
 
         df = self.get_soil_profile(mukey=mukey)
 
