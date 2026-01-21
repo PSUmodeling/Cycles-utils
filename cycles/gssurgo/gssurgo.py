@@ -5,6 +5,7 @@ import shapely
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from shapely.geometry import Point
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from cycles_tools import generate_soil_file as _generate_soil_file
 
@@ -15,15 +16,16 @@ class GssurgoParameters:
     table: str
     unit: str
 
-GSSURGO = lambda path, state: f'{path}/gSSURGO_{state}.gdb'
-GSSURGO_LUT = lambda path, lut, state: f'{path}/{lut}_{state}.csv'
+GSSURGO = lambda path, state: path / f'gSSURGO_{state}.gdb'
+GSSURGO_LUT = lambda path, lut, state: path / f'{lut}_{state}.csv'
 GSSURGO_PARAMETERS = {
     'clay': GssurgoParameters('claytotal_r', 1.0, 'horizon', '%'),
     'silt': GssurgoParameters('silttotal_r', 1.0, 'horizon', '%'),
     'sand': GssurgoParameters('sandtotal_r', 1.0, 'horizon', '%'),
     'soc': GssurgoParameters('om_r', 0.58, 'horizon', '%'),
     'bulk_density': GssurgoParameters('dbthirdbar_r', 1.0, 'horizon', 'g/m3'),
-    'coarse_fragments': GssurgoParameters('fragvol_r', 1.0, 'horizon', '%'),
+    'coarse_fragments': GssurgoParameters('fragvol_r', 0.01, 'horizon', 'm3/m3'),
+    'pH': GssurgoParameters('ph1to1h2o_r', 1.0, 'horizon', '-'),
     'area_fraction': GssurgoParameters('comppct_r', 1.0, 'component', '%'),
     'top': GssurgoParameters('hzdept_r', 0.01, 'horizon', 'm'),
     'bottom': GssurgoParameters('hzdepb_r', 0.01, 'horizon', 'm'),
@@ -45,10 +47,9 @@ GSSURGO_URBAN_TYPES = (
 )
 NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 
-
 class Gssurgo:
-    def __init__(self, *, path: str, state: str, boundary: gpd.GeoDataFrame | None =None, lut_only: bool=False):
-        self.state = state
+    def __init__(self, path: str | Path, state: str, *, coordinate: tuple[float, float] | None=None, boundary: gpd.GeoDataFrame | None=None, lut_only: bool=False):
+        self.state: str = state
         self.mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
         self.components: pd.DataFrame | None = None
         self.horizons: pd.DataFrame | None = None
@@ -59,10 +60,16 @@ class Gssurgo:
         self.hsg: str = ''
         self.soil_profile: pd.DataFrame | None = None
 
-        luts = _read_all_luts(path, state)
+        luts = _read_all_luts(Path(path), state)
 
         if not lut_only:
-            gdf = _read_mupolygon(path, state, boundary)
+            if (coordinate is None) and (boundary is None):
+                raise ValueError('Field coorinate or field boundary must be provided.')
+            
+            if (coordinate is not None) and (boundary is None):
+                boundary = gpd.GeoDataFrame({'name': ['point']}, geometry=[Point(coordinate)], crs='epsg:4326')
+
+            gdf = _read_mupolygon(Path(path), state, boundary)
 
         self.mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left') if lut_only is False else luts['mapunit']
         self.components = luts['component']
@@ -72,7 +79,8 @@ class Gssurgo:
             self.components = self.components[self.components['mukey'].isin(self.mapunits['mukey'].unique())]
             self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
-        self._average_slope_hsg()
+        if not lut_only:
+            self._average_slope_hsg()
 
 
     def group_map_units(self, *, geometry: bool=False):
@@ -123,7 +131,7 @@ class Gssurgo:
         gdf['area'] = gdf.area
 
         _df = gdf[['area', 'slopegradwta']].dropna()
-        self.slope = (_df['slopegradwta'] * _df['area']).sum() / _df['area'].sum()
+        self.slope = (_df['slopegradwta'] * _df['area']).sum() / _df['area'].sum() if len(_df) > 1 else _df['slopegradwta'].iloc[0]
 
         _df = gdf[['area', 'hydgrpdcd']].dropna()
 
@@ -137,7 +145,7 @@ class Gssurgo:
         self.hsg = hsg
 
 
-    def get_soil_profile_parameters(self, mukey: int | None=None, *, major_only: bool=True) -> None:
+    def get_soil_profile(self, *, mukey: int | None=None, major_only: bool=True) -> None:
         if mukey is None:
             mukey = self.mukey
         assert mukey is not None
@@ -154,28 +162,25 @@ class Gssurgo:
         self.soil_profile = df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
 
 
-    def generate_soil_file(self, fn: Path | str, *, soil_depth: float | None=None) -> None:
+    def generate_soil_file(self, fn: Path | str, *, desc: str | None=None, soil_depth: float | None=None) -> None:
         self.group_map_units(geometry=True)
         self.select_major_mapunit()
-        self.get_soil_profile_parameters()
+        self.get_soil_profile()
 
-        desc = f"# Soil file for MUNAME: {self.muname}, MUKEY: {self.mukey}\n"
-        desc += "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n"
-        if self.hsg == '':
-            desc += "# Hydrologic soil group MISSING DATA.\n"
-        else:
-            desc += f"# Hydrologic soil group {self.hsg}.\n"
-            desc += "# The curve number for row crops with straight row treatment is used.\n"
+        if desc is None:
+            desc = f"# Soil file for MUNAME: {self.muname}, MUKEY: {self.mukey}\n"
+            desc += "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n"
+            if self.hsg == '':
+                desc += "# Hydrologic soil group MISSING DATA.\n"
+            else:
+                desc += f"# Hydrologic soil group {self.hsg}.\n"
+                desc += "# The curve number for row crops with straight row treatment is used.\n"
 
         assert self.soil_profile is not None
         _generate_soil_file(fn, self.soil_profile, desc=desc, hsg=self.hsg, slope=self.slope, soil_depth=soil_depth)
 
 
-    def __str__(self):
-        return f'gSSURGO data for {self.state}'
-
-
-def _read_lut(path: str, state: str, table: str, columns: list[str]) -> pd.DataFrame:
+def _read_lut(path: Path, state: str, table: str, columns: list[str]) -> pd.DataFrame:
     df = pd.read_csv(
         GSSURGO_LUT(path, table, state),
         usecols=columns,
@@ -196,7 +201,7 @@ def _read_lut(path: str, state: str, table: str, columns: list[str]) -> pd.DataF
     return df
 
 
-def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
+def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
     TABLES = {
         'mapunit':{
             'muaggatt': ['hydgrpdcd', 'muname', 'slopegradwta', 'mukey'],
@@ -205,7 +210,7 @@ def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
             'component': ['comppct_r', 'majcompflag', 'mukey', 'cokey'],
         },
         'horizon': {
-            'chorizon': ['hzname', 'hzdept_r', 'hzdepb_r', 'sandtotal_r', 'silttotal_r', 'claytotal_r', 'om_r', 'dbthirdbar_r', 'cokey', 'chkey'],
+            'chorizon': ['hzname', 'hzdept_r', 'hzdepb_r', 'sandtotal_r', 'silttotal_r', 'claytotal_r', 'om_r', 'dbthirdbar_r', 'ph1to1h2o_r', 'cokey', 'chkey'],
             'chfrags': ['fragvol_r', 'chkey'],
         },
     }
@@ -223,7 +228,7 @@ def _read_all_luts(path: str, state: str) -> dict[str, pd.DataFrame]:
     return lookup_tables
 
 
-def _read_mupolygon(path, state, boundary=None) -> gpd.GeoDataFrame:
+def _read_mupolygon(path: Path, state: str, boundary=None) -> gpd.GeoDataFrame:
     if boundary is not None:
         boundary = boundary.to_crs(NAD83)
 

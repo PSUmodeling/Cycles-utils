@@ -1,10 +1,11 @@
 import geopandas as gpd
 import os
 import pandas as pd
+from pathlib import Path
 
 pt = os.path.dirname(os.path.realpath(__file__))
 
-GADM = lambda path, country, level: f'{path}/gadm41_{country}_{level}.shp'
+GADM = lambda path, country, level: path / f'gadm41_{country}_{level}.shp'
 GADM_LEVELS = {
     'country': 0,
     'state': 1,
@@ -13,9 +14,9 @@ GADM_LEVELS = {
 STATE_CSV = os.path.join(pt, '../data/us_states.csv')
 COUNTY_CSV = os.path.join(pt, '../data/fips_gid_conversion.csv')
 
-def read_gadm(path: str, country: str, level_str: str, *, conus: bool=True) -> gpd.GeoDataFrame:
-    level = GADM_LEVELS[level_str.lower()]
-    gdf = gpd.read_file(GADM(path, country, level))
+def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool=True) -> gpd.GeoDataFrame:
+    level: int = GADM_LEVELS[level_str.lower()]
+    gdf: gpd.GeoDataFrame = gpd.read_file(GADM(Path(path), country, level))
     gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
     gdf.set_index('GID', inplace=True)
 
@@ -52,7 +53,7 @@ def state_abbreviation(*, state: str | None=None, gid: str | None=None, fips: in
 
 
 def state_fips(*, state: str | None=None, abbreviation: str | None=None, gid: str | None=None) -> int:
-    return _find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)  # type: ignore
+    return int(_find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)) # type: ignore
 
 
 def state_name(*, abbreviation: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
@@ -93,6 +94,7 @@ def county_gid(*, fips: int) -> str:
 
 def county_fips(*, gid: str) -> int:
     return _find_county_representation('fips', gid=gid) # type: ignore
+
 
 def county_name(*, gid: str | None=None, fips: int | None=None) -> str:
     return _find_county_representation('name', gid=gid, fips=fips)  # type: ignore

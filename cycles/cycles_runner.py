@@ -9,10 +9,10 @@ from .cycles import Cycles
 from .cycles_tools import generate_control_file
 
 class CyclesRunner():
-    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, operation_template: str | None=None, operation_dict: Callable | None=None):
+    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, operation_template: str | Path | None=None, operation_dict: Callable | None=None):
         self.simulations: pd.DataFrame = simulations
         self.summary_file: str = summary
-        self.operation_template: str | None = operation_template
+        self.operation_template: Path | None = Path(operation_template) if operation_template is not None else None
         self.operation_dict: Callable | None = operation_dict
         self.control_dict: Callable = control_dict
 
@@ -73,7 +73,7 @@ def _generate_comment(cycles_executable: str, options: str):
 
 
 def _run_cycles(cycles_executable: str, simulation: str, options: str, silence: bool):
-    cmd = [cycles_executable, options, simulation]
+    cmd = [cycles_executable, options, simulation] if options else [cycles_executable, simulation]
 
     result = subprocess.run(
         cmd,
@@ -85,8 +85,8 @@ def _run_cycles(cycles_executable: str, simulation: str, options: str, silence: 
     return result.returncode
 
 
-def _write_summary(simulation: str, header: bool, comments: str, summary_fn: str | Path) -> None:
-    cycles = Cycles(cycles_path='.', simulation=simulation)
+def _write_summary(simulation: str, header: bool, comments: str, summary_fn: Path) -> None:
+    cycles = Cycles(path='.', simulation=simulation)
     cycles.read_output('harvest')
     cycles.output['harvest'].data.insert(0, 'simulation', simulation)
 
@@ -96,7 +96,7 @@ def _write_summary(simulation: str, header: bool, comments: str, summary_fn: str
         cycles.output['harvest'].data.to_csv(f, header=header, index=False)
 
 
-def _generate_input_from_template(template_fn: str, input_fn: str | Path, user_dict: dict) -> None:
+def _generate_input_from_template(template_fn: Path, input_fn: Path, user_dict: dict) -> None:
     with open(template_fn) as f:
         operation_file_template = Template(f.read())
 
