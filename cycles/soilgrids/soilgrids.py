@@ -12,6 +12,7 @@ from rasterio.enums import Resampling
 from shapely.geometry import Point, Polygon
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from cycles_tools import generate_soil_file as _generate_soil_file
+from cycles_tools import SOIL_PARAMETERS
 
 @dataclass
 class SoilGridsProperties:
@@ -53,7 +54,7 @@ HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'UNIT["metre",1,AUTHORITY["EPSG","9001"]],' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
 
-ALL_MAPS = [f'{parameter}@{layer}' for parameter in ['clay', 'sand', 'soc', 'bulk_density', 'coarse_fragments', 'pH'] for layer in SOILGRIDS_LAYERS]
+ALL_MAPS = [f'{parameter}@{layer}' for parameter in SOIL_PARAMETERS for layer in SOILGRIDS_LAYERS]
 
 
 class SoilGrids:
@@ -90,11 +91,11 @@ class SoilGrids:
     def get_soil_profile(self, coordinate: tuple[float, float]) -> None:
         values = self._extract_values(coordinate)
 
-        self.soil_profile = pd.DataFrame.from_dict([{
-            'top': layer.top,
-            'bottom': layer.bottom,
-            **{v: values[f'{v}@{key}'] for v in ['clay', 'sand', 'soc', 'bulk_density', 'coarse_fragments', 'pH']},
-        } for key, layer in SOILGRIDS_LAYERS.items()])
+        self.soil_profile = pd.DataFrame.from_dict({
+            'top': [layer.top for _, layer in SOILGRIDS_LAYERS.items()],
+            'bottom': [layer.bottom for _, layer in SOILGRIDS_LAYERS.items()],
+            **{v: [values[f'{v}@{key}'] for key in SOILGRIDS_LAYERS] for v in SOIL_PARAMETERS},
+        })
 
 
     def generate_soil_file(self, fn: Path | str, coordinate: tuple[float, float] | None=None, *, desc: str | None=None, hsg: str='', slope: float=0.0) -> None:
