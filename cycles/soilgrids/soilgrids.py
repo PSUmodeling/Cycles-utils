@@ -47,13 +47,11 @@ SOILGRIDS_LAYERS = {
     '60-100cm': SoilGridsLayers(0.6, 1.0, 0.4),
     '100-200cm': SoilGridsLayers(1.0, 2.0, 1.0),
 }
-
 HOMOLOSINE = 'PROJCS["Interrupted_Goode_Homolosine",' \
     'GEOGCS["GCS_unnamed ellipse",DATUM["D_unknown",SPHEROID["Unknown",6378137,298.257223563]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],' \
     'PROJECTION["Interrupted_Goode_Homolosine"],' \
     'UNIT["metre",1,AUTHORITY["EPSG","9001"]],' \
     'AXIS["Easting",EAST],AXIS["Northing",NORTH]]'
-
 ALL_MAPS = [f'{parameter}@{layer}' for parameter in SOIL_PARAMETERS for layer in SOILGRIDS_LAYERS]
 
 
@@ -61,11 +59,11 @@ class SoilGrids:
     def __init__(self, path: str | Path, *, maps: list[str]=ALL_MAPS, crs: str | None=None):
         self.maps: dict[str, xarray.DataArray] = _read_soilgrids_maps(Path(path), maps, crs)
         self.crs: str = crs if crs is not None else HOMOLOSINE
-        self.matched_maps: df.DataFrame | None = None
-        self.soil_profile: df.DataFrame | None = None
+        self.matched_maps: pd.DataFrame | None = None
+        self.soil_profile: pd.DataFrame | None = None
 
 
-    def reproject_match_soilgrids_maps(self, *, reference_xds: xarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> pd.DataFrame:
+    def reproject_match_soilgrids_maps(self, *, reference_xds: xarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> None:
         reference_xds = reference_xds.rio.clip([boundary], from_disk=True)
         df = pd.DataFrame(reference_xds[0].to_series().rename(reference_name))
 
@@ -79,17 +77,17 @@ class SoilGrids:
         self.matched_maps = df
 
 
-    def _extract_values(self, coordinate: tuple[float, float]) -> dict[str, float]:
+    def _extract_values(self, lat_lon: tuple[float, float]) -> dict[str, float]:
         transformer = Transformer.from_crs('epsg:4326', self.crs, always_xy=True)
-        x, y = transformer.transform(coordinate[1], coordinate[0])
+        x, y = transformer.transform(lat_lon[1], lat_lon[0])
 
         values = {m: xds.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[m.split('@')[0]].multiplier for m, xds in self.maps.items()}
 
         return values
 
 
-    def get_soil_profile(self, coordinate: tuple[float, float]) -> None:
-        values = self._extract_values(coordinate)
+    def get_soil_profile(self, lat_lon: tuple[float, float]) -> None:
+        values = self._extract_values(lat_lon)
 
         self.soil_profile = pd.DataFrame.from_dict({
             'top': [layer.top for _, layer in SOILGRIDS_LAYERS.items()],
@@ -98,12 +96,12 @@ class SoilGrids:
         })
 
 
-    def generate_soil_file(self, fn: Path | str, coordinate: tuple[float, float] | None=None, *, desc: str | None=None, hsg: str='', slope: float=0.0) -> None:
-        if coordinate is not None:
-            self.get_soil_profile(coordinate)
+    def generate_soil_file(self, fn: Path | str, lat_lon: tuple[float, float] | None=None, *, desc: str | None=None, hsg: str='', slope: float=0.0) -> None:
+        if lat_lon is not None:
+            self.get_soil_profile(lat_lon)
 
         if desc is None:
-            desc = f"# Soil file sampled at Latitude {coordinate[0]}, Longitude {coordinate[1]}.\n" if coordinate is not None else ""
+            desc = f"# Soil file sampled at Latitude {lat_lon[0]}, Longitude {lat_lon[1]}.\n" if lat_lon is not None else ""
             desc += "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n"
             if hsg == '':
                 desc += "# Hydrologic soil group MISSING DATA.\n"
@@ -133,6 +131,8 @@ def _read_soilgrids_maps(path: Path, maps: list[str], crs: str | None=None) -> d
 
 def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[float, float, float, float]:
     """Convert bounding boxes to SoilGrids CRS
+
+    bbox should be in the order of [west, south, east, north]
     """
     d = {'col1': ['NW', 'SE'], 'geometry': [Point(bbox[0], bbox[3]), Point(bbox[2], bbox[1])]}
     gdf = gpd.GeoDataFrame(d, crs=crs).set_index('col1')
@@ -147,7 +147,7 @@ def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[flo
     )
 
 
-def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str | Path, *, boundary: Polygon | None=None, bbox: tuple[float, float, float, float] | None=None, crs: str='epsg:4326') -> None:
+def download_soilgrids_data(path: str | Path, *, maps: list[str]=ALL_MAPS, boundary: Polygon | None=None, bbox: tuple[float, float, float, float] | None=None, crs: str='epsg:4326') -> None:
     """Use WebCoverageService to get SoilGrids data
 
     bbox should be in the order of [west, south, east, north]

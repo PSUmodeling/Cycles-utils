@@ -30,7 +30,6 @@ GSSURGO_PARAMETERS = {
     'top': GssurgoParameters('hzdept_r', 0.01, 'horizon', 'm'),
     'bottom': GssurgoParameters('hzdepb_r', 0.01, 'horizon', 'm'),
 }
-
 GSSURGO_NON_SOIL_TYPES = (
     'Acidic rock land',
     'Area not surveyed',
@@ -48,7 +47,7 @@ GSSURGO_URBAN_TYPES = (
 NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 
 class Gssurgo:
-    def __init__(self, path: str | Path, state: str, *, coordinate: tuple[float, float] | None=None, boundary: gpd.GeoDataFrame | None=None, lut_only: bool=False):
+    def __init__(self, path: str | Path, state: str, *, lat_lon: tuple[float, float] | None=None, boundary: gpd.GeoDataFrame | None=None, lut_only: bool=False):
         self.state: str = state
         self.mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
         self.components: pd.DataFrame | None = None
@@ -63,11 +62,14 @@ class Gssurgo:
         luts = _read_all_luts(Path(path), state)
 
         if not lut_only:
-            if (coordinate is None) and (boundary is None):
-                raise ValueError('Field coorinate or field boundary must be provided.')
-            
-            if (coordinate is not None) and (boundary is None):
-                boundary = gpd.GeoDataFrame({'name': ['point']}, geometry=[Point(coordinate)], crs='epsg:4326')
+            if (lat_lon is None) and (boundary is None):
+                raise ValueError("Geographic coordinate (lat_lon) or field boundary (boundary) must be provided.")
+
+            if (lat_lon is not None) and (boundary is not None):
+                raise ValueError("Geographic coordinate (lat_lon) or field boundary (boundary) are mutually exclusive. Please provide only one.")
+
+            if (lat_lon is not None) and (boundary is None):
+                boundary = gpd.GeoDataFrame({'name': ['point']}, geometry=[Point(lat_lon[1], lat_lon[0])], crs='epsg:4326')
 
             gdf = _read_mupolygon(Path(path), state, boundary)
 
@@ -84,9 +86,13 @@ class Gssurgo:
 
 
     def group_map_units(self, *, geometry: bool=False):
-        # In gSSURGO database many map units are the same soil texture with different slopes, etc. To find the dominant
-        # soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map
-        # unit names to identify the same soil textures among different soil map units.
+        """
+        Group gSSURGO map units by soil series name.
+
+        In gSSURGO database many map units are the same soil texture with different slopes, etc. To find the dominant
+        soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map
+        unit names to identify the same soil textures among different soil map units.
+        """
         assert self.mapunits is not None
 
         self.mapunits['muname'] = self.mapunits['muname'].map(lambda name: name.split(',')[0])

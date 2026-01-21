@@ -45,19 +45,19 @@ def _find_state_representation(representation: str, **kwargs) -> str | int:
 
 
 def state_gid(*, state: str | None=None, abbreviation: str | None=None, fips: int | None=None) -> str:
-    return _find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips) # type: ignore
+    return str(_find_state_representation('gid', state=state, abbreviation=abbreviation, fips=fips))
 
 
 def state_abbreviation(*, state: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
-    return _find_state_representation('abbreviation', state=state, gid=gid, fips=fips)  # type: ignore
+    return str(_find_state_representation('abbreviation', state=state, gid=gid, fips=fips))
 
 
 def state_fips(*, state: str | None=None, abbreviation: str | None=None, gid: str | None=None) -> int:
-    return int(_find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid)) # type: ignore
+    return int(_find_state_representation('fips', state=state, abbreviation=abbreviation, gid=gid))
 
 
 def state_name(*, abbreviation: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
-    return _find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips)   # type: ignore
+    return str(_find_state_representation('state', abbreviation=abbreviation, gid=gid, fips=fips))
 
 
 def _read_county_csv(index_col: str) -> pd.DataFrame:
@@ -89,12 +89,12 @@ def _find_county_representation(representation: str, **kwargs) -> str | int:
 
 
 def county_gid(*, fips: int) -> str:
-    return _find_county_representation('gid', fips=fips)    # type: ignore
+    return str(_find_county_representation('gid', fips=fips))
 
 
 def county_fips(*, gid: str) -> int:
-    return _find_county_representation('fips', gid=gid) # type: ignore
+    return int(_find_county_representation('fips', gid=gid))
 
 
 def county_name(*, gid: str | None=None, fips: int | None=None) -> str:
-    return _find_county_representation('name', gid=gid, fips=fips)  # type: ignore
+    return str(_find_county_representation('name', gid=gid, fips=fips))
