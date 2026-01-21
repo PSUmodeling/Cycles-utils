@@ -74,7 +74,7 @@ class SoilGrids:
 
             soil_df = pd.DataFrame(soil_xds[0].to_series().rename(m)) * SOILGRIDS_PROPERTIES[m.split('@')[0]].multiplier
             df = pd.concat([df, soil_df], axis=1)
-        
+
         self.matched_maps = df
 
 
@@ -94,8 +94,8 @@ class SoilGrids:
             'top': layer.top,
             'bottom': layer.bottom,
             **{v: values[f'{v}@{key}'] for v in ['clay', 'sand', 'soc', 'bulk_density', 'coarse_fragments', 'pH']},
-        } for key, layer in SOILGRIDS_LAYERS.items()])  # type:ognore
-    
+        } for key, layer in SOILGRIDS_LAYERS.items()])
+
 
     def generate_soil_file(self, fn: Path | str, coordinate: tuple[float, float] | None=None, *, desc: str | None=None, hsg: str='', slope: float=0.0) -> None:
         if coordinate is not None:
@@ -161,13 +161,14 @@ def download_soilgrids_data(maps: dict[str, xarray.DataArray], path: str | Path,
         # entire state. Therefore a buffer zone is being used to ensure data integrity.
         buffer = [min(2.0, 0.5 * (bbox[2] - bbox[0])), min(2.0, 0.5 * (bbox[3] - bbox[1]))]
 
-        bbox = [
+        bbox = (
             bbox[0] - buffer[0],
             bbox[1] - buffer[1],
             bbox[2] + buffer[0],
             bbox[3] + buffer[1],
-        ]
+        )
 
+    assert bbox is not None
     bbox = _get_bounding_box(bbox, crs)
 
     for m in maps:

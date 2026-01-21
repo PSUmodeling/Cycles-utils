@@ -1,13 +1,17 @@
 import cartopy.crs as ccrs
 import cartopy.feature as feature
 import geopandas as gpd
+import io
 import matplotlib.axes
 import matplotlib.colors
 import matplotlib.figure
+import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from cartopy.mpl.geoaxes import GeoAxes
+from dataclasses import dataclass
+from matplotlib.axes import Axes
 from pathlib import Path
 
 SOIL_PARAMETERS = ['clay', 'sand', 'soc', 'bulk_density', 'coarse_fragments', 'pH']
@@ -221,8 +225,6 @@ def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[
     with open(Path(path) / f'{output_type}.csv') as f:
         lines = f.read().splitlines()
 
-    units = {col: lines[1].strip()[1:].split(',')[ind] for ind, col in enumerate(df.columns)}
-
     df = pd.read_csv(
         io.StringIO('\n'.join(lines)),
         comment='#',
@@ -231,10 +233,23 @@ def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[
     for col in ['date', 'plant_date']:
         if col in df.columns: df[col] = pd.to_datetime(df[col])
 
+    units = {col: lines[1].strip()[1:].split(',')[ind] for ind, col in enumerate(df.columns)}
+
     return df, units
 
 
 def read_operations(operation: str | Path) -> pd.DataFrame:
+    HARVEST_TOOLS = [
+        'grain_harvest',
+        'harvest_grain',
+        'grainharvest',
+        'harvestgrain',
+        'forage_harvest',
+        'harvest_forage',
+        'forageharvest',
+        'harvestforage',
+    ]
+
     with open(Path(operation)) as f:
         lines = f.read().splitlines()
     lines = [line for line in lines if (not line.strip().startswith('#')) and line.strip()]
@@ -292,7 +307,7 @@ def read_operations(operation: str | Path) -> pd.DataFrame:
                 k += 1
 
     return pd.DataFrame(operations)
-    
+
 
 def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
     if ax is None:
@@ -517,3 +532,7 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection 
         cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')  # type: ignore
 
     return fig, ax
+
+
+def _read_operation_parameter(type: type, line_no: int, lines: list[str]) -> str:
+    return type(lines[line_no].split()[1])
