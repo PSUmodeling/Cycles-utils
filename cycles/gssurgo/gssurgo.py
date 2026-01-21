@@ -49,15 +49,13 @@ NAD83 = 'epsg:5070'     # NAD83 / Conus Albers, CRS of gSSURGO
 class Gssurgo:
     def __init__(self, path: str | Path, state: str, *, lat_lon: tuple[float, float] | None=None, boundary: gpd.GeoDataFrame | None=None, lut_only: bool=False):
         self.state: str = state
-        self.mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
+        self._mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
+        self.grouped_mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
         self.components: pd.DataFrame | None = None
         self.horizons: pd.DataFrame | None = None
         self.mukey: int | None = None
-        self.muname: str | None = None
-        self.musym: str | None = None
         self.slope: float = 0.0
         self.hsg: str = ''
-        self.soil_profile: pd.DataFrame | None = None
 
         luts = _read_all_luts(Path(path), state)
 
@@ -73,16 +71,25 @@ class Gssurgo:
 
             gdf = _read_mupolygon(Path(path), state, boundary)
 
-        self.mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left') if lut_only is False else luts['mapunit']
+        self._mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left') if lut_only is False else luts['mapunit']
         self.components = luts['component']
         self.horizons = luts['horizon']
 
         if boundary is not None:
-            self.components = self.components[self.components['mukey'].isin(self.mapunits['mukey'].unique())]
+            self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
             self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
         if not lut_only:
             self._average_slope_hsg()
+
+
+    @property
+    def mapunits(self) -> gpd.GeoDataFrame | pd.DataFrame | None:
+        return self._mapunits
+
+    
+    def _get_muname(self, mukey: int) -> str:
+        return self._mapunits[self._mapunits['mukey'] == mukey]['muname'].iloc[0]
 
 
     def group_map_units(self, *, geometry: bool=False):
@@ -93,47 +100,52 @@ class Gssurgo:
         soil series, same soil texture with different slopes should be aggregated together. Therefore we use the map
         unit names to identify the same soil textures among different soil map units.
         """
-        assert self.mapunits is not None
+        if self.grouped_mapunits is not None:
+            return
 
-        self.mapunits['muname'] = self.mapunits['muname'].map(lambda name: name.split(',')[0])
-        self.mapunits['musym'] = self.mapunits['musym'].map(_musym)
+        assert self._mapunits is not None
+
+        self.grouped_mapunits = self._mapunits.copy()
+        self.grouped_mapunits['muname'] = self.grouped_mapunits['muname'].map(lambda name: name.split(',')[0])
+        self.grouped_mapunits['musym'] = self.grouped_mapunits['musym'].map(_musym)
 
         # Use the same name for all non-soil map units
-        mask = self.non_soil_mask()
-        self.mapunits.loc[mask, 'muname'] = 'Water, urban, etc.'
-        self.mapunits.loc[mask, 'mukey'] = -999
-        self.mapunits.loc[mask, 'musym'] = 'N/A'
+        mask = self.non_soil_mask(self.grouped_mapunits)
+        self.grouped_mapunits.loc[mask, 'muname'] = 'Water, urban, etc.'
+        self.grouped_mapunits.loc[mask, 'mukey'] = -999
+        self.grouped_mapunits.loc[mask, 'musym'] = 'N/A'
 
         if geometry is True:
-            self.mapunits = self.mapunits.dissolve(
+            self.grouped_mapunits = self.grouped_mapunits.dissolve(
                 by='muname',
                 aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
             ).reset_index() # type: ignore
 
 
-    def non_soil_mask(self) -> pd.Series:
-        assert self.mapunits is not None
-
-        return self.mapunits['mukey'].isna() | self.mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | self.mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
+    def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
+        return mapunits['mukey'].isna() | mapunits['muname'].isin(GSSURGO_NON_SOIL_TYPES) | mapunits['muname'].str.contains('|'.join(GSSURGO_URBAN_TYPES), na=False)
 
 
     def select_major_mapunit(self) -> None:
-        assert self.mapunits is not None
+        if self.mukey is not None:
+            return
 
-        gdf = self.mapunits[~self.non_soil_mask()].copy()
+        if self.grouped_mapunits is None:
+            self.group_map_units(geometry=True)
+
+        assert self.grouped_mapunits is not None
+        gdf = self.grouped_mapunits[~self.non_soil_mask(self.grouped_mapunits)].copy()
         gdf['area'] = gdf.area
 
         mapunit = gdf.loc[gdf['area'].idxmax()]
 
         self.mukey = int(mapunit['mukey'])  # type: ignore
-        self.musym = mapunit['musym']   # type: ignore
-        self.muname = mapunit['muname'] # type: ignore
 
 
     def _average_slope_hsg(self) -> None:
-        assert self.mapunits is not None
+        assert self._mapunits is not None
 
-        gdf = self.mapunits[~self.non_soil_mask()].copy()
+        gdf = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
         gdf['area'] = gdf.area
 
         _df = gdf[['area', 'slopegradwta']].dropna()
@@ -151,8 +163,10 @@ class Gssurgo:
         self.hsg = hsg
 
 
-    def get_soil_profile(self, *, mukey: int | None=None, major_only: bool=True) -> None:
+    def get_soil_profile(self, *, mukey: int | None=None, major_only: bool=True) -> pd.DataFrame:
         if mukey is None:
+            if self.mukey is None:
+                self.select_major_mapunit()
             mukey = self.mukey
         assert mukey is not None
 
@@ -165,16 +179,19 @@ class Gssurgo:
         assert self.horizons is not None
         df = pd.merge(df, self.horizons, on='cokey')
 
-        self.soil_profile = df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
+        return df[df['hzname'] != 'R'].sort_values(by=['cokey', 'top'], ignore_index=True)
 
 
-    def generate_soil_file(self, fn: Path | str, *, desc: str | None=None, soil_depth: float | None=None) -> None:
-        self.group_map_units(geometry=True)
-        self.select_major_mapunit()
-        self.get_soil_profile()
+    def generate_soil_file(self, fn: Path | str, *, mukey: int | None=None, desc: str | None=None, soil_depth: float | None=None) -> None:
+        if mukey is None:
+            self.group_map_units(geometry=True)
+            self.select_major_mapunit()
+            mukey = self.mukey
+
+        df = self.get_soil_profile(mukey=mukey)
 
         if desc is None:
-            desc = f"# Soil file for MUNAME: {self.muname}, MUKEY: {self.mukey}\n"
+            desc = f"# Soil file for MUNAME: {self._get_muname(mukey)}, MUKEY: {mukey}\n"
             desc += "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n"
             if self.hsg == '':
                 desc += "# Hydrologic soil group MISSING DATA.\n"
@@ -182,8 +199,7 @@ class Gssurgo:
                 desc += f"# Hydrologic soil group {self.hsg}.\n"
                 desc += "# The curve number for row crops with straight row treatment is used.\n"
 
-        assert self.soil_profile is not None
-        _generate_soil_file(fn, self.soil_profile, desc=desc, hsg=self.hsg, slope=self.slope, soil_depth=soil_depth)
+        _generate_soil_file(fn, df, desc=desc, hsg=self.hsg, slope=self.slope, soil_depth=soil_depth)
 
 
 def _read_lut(path: Path, state: str, table: str, columns: list[str]) -> pd.DataFrame:
