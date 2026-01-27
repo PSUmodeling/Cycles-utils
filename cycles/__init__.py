@@ -1,5 +1,6 @@
 from .cycles import Cycles
 from .cycles_tools import generate_control_file
+from .cycles_tools import generate_nudge_file
 from .cycles_tools import generate_soil_file
 from .cycles_tools import read_soil
 from .cycles_tools import read_weather

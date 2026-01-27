@@ -73,6 +73,29 @@ CONTROL_PARAMETERS = {
         'annual_nflux_out': 0,
     }
 }
+CALIBRATION_PARAMETERS = {
+    'calibration multipliers': {
+        'soc_decomp_rate' : 1.0,
+        'residue_decomp_rate' : 1.0,
+        'root_decomp_rate' : 1.0,
+        'rhizo_decomp_rate' : 1.0,
+        'manure_decomp_rate' : 1.0,
+        'ferment_decomp_rate' : 1.0,
+        'microb_decomp_rate' : 1.0,
+        'soc_humif_power' : 1.0,
+        'nitrif_rate' : 1.0,
+        'pot_denitrif_rate' : 1.0,
+        'denitrif_half_rate' : 1.0,
+        'decomp_half_resp' : 1.0,
+        'decomp_resp_power' : 1.0,
+        'rooting_depth_growth' : 1.0,
+    },
+    'parameter values': {
+        'kd_no3' : 0.0,
+        'kd_nh4' : 5.6,
+    }
+}
+
 
 def _overlapping_depth(top1, bottom1, top2, bottom2):
     return max(0.0, min(bottom1, bottom2) - max(top1, top2))
@@ -126,21 +149,34 @@ def generate_soil_file(fn: str | Path, soil_df: pd.DataFrame, *, desc: str='', h
             f.write('%s\n' % '-999' if np.isnan(row['pH']) else '%.1f\n' % float(row['pH']))
 
 
-def generate_control_file(fn: str | Path, user_control_dict: dict) -> None:
+def generate_control_file(fn: str | Path, user_dict: dict) -> None:
     fn = Path(fn)
     with open(fn, 'w') as f:
         for block, parameters in CONTROL_PARAMETERS.items():
             f.write(f'## {block.upper()} ##\n')
             for name, value in parameters.items():
-                if name in user_control_dict:
+                if name in user_dict:
                     # Overwrite default values with user input values
-                    value = user_control_dict[name]
+                    value = user_dict[name]
                 elif value is None:
                     if name == 'soil_layers':
-                        value = _get_soil_layers(fn.parent / user_control_dict['soil_file'])
+                        value = _get_soil_layers(fn.parent / user_dict['soil_file'])
                     else:
                         raise KeyError(f'Parameter {name.upper()} must be defined')
 
+                f.write('%-23s\t%s\n' % (name.upper(), str(value)))
+            f.write('\n')
+
+
+def generate_nudge_file(fn: str | Path, user_dict: dict) -> None:
+    fn = Path(fn)
+    with open(fn, 'w') as f:
+        for block, parameters in CALIBRATION_PARAMETERS.items():
+            f.write(f'## {block.upper()} ##\n')
+            for name, value in parameters.items():
+                if name in user_dict:
+                    # Overwrite default values with user input values
+                    value = user_dict[name]
                 f.write('%-23s\t%s\n' % (name.upper(), str(value)))
             f.write('\n')
 
