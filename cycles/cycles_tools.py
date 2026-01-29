@@ -88,7 +88,8 @@ CALIBRATION_PARAMETERS = {
         'denitrif_half_rate' : 1.0,
         'decomp_half_resp' : 1.0,
         'decomp_resp_power' : 1.0,
-        'rooting_depth_growth' : 1.0,
+        'root_progression' : 1.0,
+        'radiation_use_efficiency' : 1.0,
     },
     'parameter values': {
         'kd_no3' : 0.0,
@@ -177,7 +178,7 @@ def generate_nudge_file(fn: str | Path, user_dict: dict) -> None:
                 if name in user_dict:
                     # Overwrite default values with user input values
                     value = user_dict[name]
-                f.write('%-23s\t%s\n' % (name.upper(), str(value)))
+                f.write('%-27s\t%s\n' % (name.upper(), str(value)))
             f.write('\n')
 
 
