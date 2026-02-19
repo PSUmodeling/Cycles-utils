@@ -10,16 +10,20 @@ from .cycles_tools import generate_control_file
 from .cycles_tools import generate_nudge_file
 
 class CyclesRunner():
-    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, calibration_dict: Callable | dict | None=None, operation_template: str | Path | None=None, operation_dict: Callable | dict | None=None):
+    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, calibration_dict: Callable | dict | None=None, operation_template: str | Path | None=None, operation_dict: Callable | dict | None=None, rotation_builder: bool=False) -> None:
         self.simulations: pd.DataFrame = simulations
         self.summary_file: str = summary
         self.operation_template: Path | None = Path(operation_template) if operation_template is not None else None
         self.operation_dict: Callable | None = operation_dict
         self.control_dict: Callable = control_dict
         self.calibration_dict: Callable | dict | None = calibration_dict
+        self.rotation_builder: bool = rotation_builder
 
 
     def run(self, cycles_executable: Path | str, *, options: str='', rm_input: bool=False, rm_output: bool=False, silence: bool=True) -> None:
+        if 's' in options and self.rotation_builder:
+            raise ValueError('Spin-up cannot be used with rotation builder.')
+
         Path('summary').mkdir(exist_ok=True)
 
         if isinstance(cycles_executable, Path):
@@ -44,7 +48,7 @@ class CyclesRunner():
             if self.calibration_dict is not None:
                 generate_nudge_file(Path('input') / f'{name}.nudge', self.calibration_dict(row) if callable(self.calibration_dict) else self.calibration_dict)
 
-            generate_control_file(Path('input') / f'{name}.ctrl', self.control_dict(row))
+            generate_control_file(Path('input') / f'{name}.ctrl', self.control_dict(row), rotation_builder=self.rotation_builder)
 
             # Run a Cycles simulation
             if _run_cycles(cycles_executable, name, options=options, silence=silence) == 0:

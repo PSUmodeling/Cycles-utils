@@ -44,12 +44,20 @@ CONTROL_PARAMETERS = {
         'simulation_end_date': None,
         'rotation_size': None,
     },
-    'other input files': {
+    'input files': {
         'crop_file': 'GenericCrops.crop',
         'operation_file': None,
         'soil_file': None,
         'weather_file': None,
         'reinit_file': 'N/A',
+    },
+    'rotation builder input files': {
+        'yield_file': 'N/A',
+        'grain_price_file': 'N/A',
+        'forage_price_file': 'N/A',
+        'production_cost_file': 'N/A',
+        'fertilizer_cost_file': 'N/A',
+        'rotation_frequency_file': 'N/A',
     },
     'simulation options': {
         'soil_layers': None,
@@ -151,10 +159,12 @@ def generate_soil_file(fn: str | Path, soil_df: pd.DataFrame, *, desc: str='', h
             f.write('%s\n' % '-999' if np.isnan(row['pH']) else '%.1f\n' % float(row['pH']))
 
 
-def generate_control_file(fn: str | Path, user_dict: dict) -> None:
+def generate_control_file(fn: str | Path, user_dict: dict, *, rotation_builder: bool=False) -> None:
     fn = Path(fn)
     with open(fn, 'w') as f:
         for block, parameters in CONTROL_PARAMETERS.items():
+            if not rotation_builder and block == 'rotation builder input files':
+                continue
             f.write(f'## {block.upper()} ##\n')
             for name, value in parameters.items():
                 if name in user_dict:
