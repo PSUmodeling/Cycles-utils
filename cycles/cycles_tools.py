@@ -9,6 +9,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import warnings
 from cartopy.mpl.geoaxes import GeoAxes
 from dataclasses import dataclass
 from matplotlib.axes import Axes
@@ -162,6 +163,9 @@ def generate_control_file(fn: str | Path, user_dict: dict) -> None:
                 elif value is None:
                     if name == 'soil_layers':
                         value = _get_soil_layers(fn.parent / user_dict['soil_file'])
+                        if value == -999:
+                            warnings.warn("Warning: Soil file not found. Control file cannot be correctly generated.")
+                            break
                     else:
                         raise KeyError(f'Parameter {name.upper()} must be defined')
 
@@ -188,10 +192,10 @@ def _get_soil_layers(fn: Path) -> int:
     try:
         with open(fn) as f:
             lines = f.read().splitlines()
+        return len([line for line in lines if (not line.strip().startswith('#')) and line.strip()]) - NUM_HEADER_LINES - 1
     except:
-        raise FileNotFoundError("Soil file was not found")
-
-    return len([line for line in lines if (not line.strip().startswith('#')) and line.strip()]) - NUM_HEADER_LINES - 1
+        warnings.warn("Warning: Soil file not found")
+        return -999
 
 
 def read_soil(soil: str | Path) -> tuple[pd.DataFrame, int, float]:
