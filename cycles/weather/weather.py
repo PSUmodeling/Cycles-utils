@@ -364,15 +364,11 @@ def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
         f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
         if hourly:
-            f.write('\t'.join(['%-7s' for var in WEATHER_FILE_VARIABLES.values() if var.hourly]) % tuple([key for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly]))
-            f.write('\n')
-            f.write('\t'.join(['%-7s' for var in WEATHER_FILE_VARIABLES.values() if var.hourly]) % tuple([var.unit for var in WEATHER_FILE_VARIABLES.values() if var.hourly]))
-            f.write('\n')
+            f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly]) + '\n')
+            f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if var.hourly]) + '\n')
         else:
-            f.write('\t'.join(['%-7s' for var in WEATHER_FILE_VARIABLES.values() if var.daily]) % tuple([key for key, var in WEATHER_FILE_VARIABLES.items() if var.daily]))
-            f.write('\n')
-            f.write('\t'.join(['%-7s' for var in WEATHER_FILE_VARIABLES.values() if var.daily]) % tuple([var.unit for var in WEATHER_FILE_VARIABLES.values() if var.daily]))
-            f.write('\n')
+            f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if var.daily]) + '\n')
+            f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if var.daily]) + '\n')
 
 
 def _write_weather_headers(weather_path: Path, grid_df: pd.DataFrame, hourly: bool=False):
