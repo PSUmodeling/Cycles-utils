@@ -2,15 +2,15 @@ import os
 import pandas as pd
 import shutil
 import subprocess
+from collections.abc import Callable
 from pathlib import Path
 from string import Template
-from typing import Callable
 from .cycles import Cycles
 from .cycles_tools import generate_control_file
 from .cycles_tools import generate_nudge_file
 
 class CyclesRunner():
-    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, calibration_dict: Callable | dict | None=None, operation_template: str | Path | None=None, operation_dict: Callable | dict | None=None, rotation_builder: bool=False) -> None:
+    def __init__(self, *, simulations: pd.DataFrame, summary: str='summary.csv', control_dict: Callable, calibration_dict: Callable | dict | None=None, operation_template: str | Path | None=None, operation_dict: Callable | None=None, rotation_builder: bool=False) -> None:
         self.simulations: pd.DataFrame = simulations
         self.summary_file: str = summary
         self.operation_template: Path | None = Path(operation_template) if operation_template is not None else None
