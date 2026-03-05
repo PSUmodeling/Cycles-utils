@@ -1,21 +1,23 @@
-import geopandas as gpd
 import math
 import numpy as np
 import os
 import pandas as pd
 import subprocess
-from collections.abc import Callable
-from dataclasses import dataclass
+from collections.abc import Callable, Mapping, Sequence
+from dataclasses import astuple, dataclass
 from datetime import datetime, timedelta
+from enum import Enum
 from netCDF4 import Dataset
 from pathlib import Path
 from tqdm import tqdm
 
 pt = os.path.dirname(os.path.realpath(__file__))
 
+Coordinate = tuple[float, float]
+LocationInput = Sequence[Coordinate] | Mapping[str, Coordinate] | None
+
 @dataclass
-class Reanalysis:
-    name: str
+class ReanalysisDataMixin:
     url: str
     netcdf_extension: str | None
     netcdf_prefix: str | None
@@ -36,9 +38,8 @@ class Reanalysis:
     netcdf_variables: dict[str, str]
     weather_file_variables: dict[str, Callable]
 
-REANALYSES = {
-    'GLDAS': Reanalysis(
-        name='GLDAS',
+class REANALYSIS(ReanalysisDataMixin, Enum):
+    GLDAS = astuple(ReanalysisDataMixin(
         url='https://hydro1.gesdisc.eosdis.nasa.gov/data/GLDAS/GLDAS_NOAH025_3H.2.1',
         netcdf_extension='nc4',
         netcdf_prefix='GLDAS_NOAH025_3H.A',
@@ -75,9 +76,8 @@ REANALYSES = {
             'RHN': lambda dfs, _: _relative_humidity(dfs).resample('D').min() * 100.0,
             'WIND': lambda dfs, hourly: _interpolate_to_hourly(dfs['wind']) if hourly else dfs['wind'].resample('D').mean(),
         }
-    ),
-    'gridMET': Reanalysis(
-        name='gridMET',
+    ))
+    gridMET = astuple(ReanalysisDataMixin(
         url='http://www.northwestknowledge.net/metdata/data/',
         netcdf_extension=None,
         netcdf_prefix=None,
@@ -114,9 +114,8 @@ REANALYSES = {
             'RHN': lambda dfs, _: dfs['rmin'],
             'WIND': lambda dfs, _: dfs['vs'],
         }
-    ),
-    'NLDAS': Reanalysis(
-        name='NLDAS',
+    ))
+    NLDAS = astuple(ReanalysisDataMixin(
         url='https://hydro1.gesdisc.eosdis.nasa.gov/data/NLDAS/NLDAS_FORA0125_H.2.0',
         netcdf_extension='nc',
         netcdf_prefix='NLDAS_FORA0125_H.A',
@@ -154,8 +153,7 @@ REANALYSES = {
             'RHN': lambda dfs, _: _relative_humidity(dfs).resample('D').min() * 100.0,
             'WIND': lambda dfs, hourly: _wind_speed(dfs) if hourly else _wind_speed(dfs).resample('D').mean(),
         }
-    ),
-}
+    ))
 
 @dataclass
 class WeatherFileVariable:
@@ -178,60 +176,131 @@ WEATHER_FILE_VARIABLES = {
     'RHN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', daily=True, hourly=False),
     'WIND': WeatherFileVariable(fmt=lambda x: '%-.2f' % x, unit='m/s', daily=True, hourly=True),
 }
+
 COOKIE_FILE = './.urs_cookies'
 
 
-def _interpolate_to_hourly(s: pd.DataFrame) -> pd.DataFrame:
-    return s.astype(float).resample('h').mean().interpolate(method='linear')
+def download_forcing(data_path: Path | str, forcing: str, date_start: datetime | int, date_end: datetime | int) -> None:
+    # Create data directory if it doesn't exist
+    data_path = Path(data_path)
+    data_path.mkdir(parents=True, exist_ok=True)
+
+    if isinstance(date_start, int) and isinstance(date_end, int):
+        date_start = datetime(date_start, 1, 1)
+        date_end = datetime(date_end, 12, 31)
+
+    reanalysis = REANALYSIS[forcing]
+    if reanalysis is REANALYSIS.gridMET:
+        _download_gridmet(data_path, reanalysis, date_start.year, date_end.year)
+    else:
+        _download_xldas(data_path, reanalysis, date_start, date_end)
 
 
-def _download_daily_xldas(path: Path, forcing: str, day: datetime):
-    cmd = [
-        'wget',
-        '--load-cookies',
-        COOKIE_FILE,
-        '--save-cookies',
-        COOKIE_FILE,
-        '--keep-session-cookies',
-        '--no-check-certificate',
-        '-r',
-        '-c',
-        '-N',
-        '-nH',
-        '-nd',
-        '-np',
-        '-A',
-        REANALYSES[forcing].netcdf_extension,
-        f'{REANALYSES[forcing].url}/{day.strftime("%Y/%j")}/',
-        '-P',
-        path/f'{day.strftime("%Y/%j")}',
-    ]
-    subprocess.run(
-        cmd,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
+def find_grids(forcing: str, *, locations: LocationInput=None, screen_output=True) -> pd.DataFrame:
+    """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information and corresponding weather file names.
+    """
+    _find_grids(REANALYSIS[forcing], locations, screen_output)
+
+
+def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output: bool) -> pd.DataFrame:
+    mask_df = _read_land_mask(reanalysis)
+
+    if locations is None:
+        indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
+        df = pd.DataFrame({'grid_index': indices})
+    else:
+        indices = []
+        sites = []
+
+        for loc in locations:
+            if isinstance(locations, list):
+                (lat, lon) = loc
+            elif isinstance(locations, dict):
+                (lat, lon) = locations[loc] # type: ignore
+            else:
+                raise TypeError('Location input must be a dict or list of coordinates.')
+
+            sites.append(loc)
+
+            ind = np.ravel_multi_index((reanalysis.ind_j(lat), reanalysis.ind_i(lon)), reanalysis.netcdf_shape)
+
+            if mask_df.loc[ind]['mask'] == 0:   # type: ignore
+                mask_df['distance'] = mask_df.apply(
+                    lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
+                    axis=1,
+                )
+                mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
+                ind = mask_df['distance'].idxmin()
+
+            indices.append(ind)
+
+        df = pd.DataFrame({
+            'grid_index': indices,
+            'input_coordinate': locations if isinstance(locations, list) else locations.values(),
+        })
+
+        if sites: df['site'] = sites
+
+    df[['grid_latitude', 'weather_file', 'elevation']] = df.apply(
+        lambda x: _get_grid_info(reanalysis, x['grid_index'], mask_df),
+        axis=1,
+        result_type='expand',
     )
 
+    if locations is not None:
+        if any(df.duplicated(subset=['grid_index'])):
+            indices = df['grid_index']
+            if screen_output is True:
+                print(f"The following input coordinates share {reanalysis.name} grids:")
+                print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
+                print()
 
-def download_xldas(data_path: Path | str, forcing: str, date_start: datetime, date_end: datetime) -> None:
-    # Create data directory if it doesn't exist
-    Path(data_path).mkdir(parents=True, exist_ok=True)
+        if screen_output is True:
+            print(f"{reanalysis.name} weather files:")
+            if not sites:
+                print(df[['input_coordinate', 'weather_file']].to_string(index=False))
+            else:
+                print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
+            print()
 
+    df = df.drop_duplicates(subset=['grid_index'], keep='first')
+    df.set_index('grid_index', inplace=True)
+
+    return df
+
+
+def generate_weather_files(data_path: Path | str, weather_path: Path | str, forcing: str, date_start: datetime, date_end: datetime, *,
+    hourly: bool=False, locations: LocationInput=None, header: bool=True) -> None:
+    '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with valid data will be used.
+    '''
+    reanalysis = REANALYSIS[forcing]
+    grid_df = _initialize_weather_files(Path(weather_path), reanalysis, locations, header, hourly)
+
+    if reanalysis is REANALYSIS.gridMET:
+        dfs = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
+    elif reanalysis in [REANALYSIS.GLDAS, REANALYSIS.NLDAS]:
+        dfs = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, hourly)
+
+    if hourly:
+        weather_data = {key: func(dfs, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].hourly}
+    else:
+        weather_data = {key: func(dfs, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].daily}
+
+    _write_weather_files(Path(weather_path), weather_data, grid_df, hourly)
+
+
+def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime) -> None:
     d = date_start
-    with tqdm(total=(date_end - date_start).days + 1, desc=f'Download {forcing} files', unit=' days') as progress_bar:
+    with tqdm(total=(date_end - date_start).days + 1, desc=f'Download {reanalysis.name} files', unit=' days') as progress_bar:
         while d <= date_end:
-            _download_daily_xldas(Path(data_path), forcing, d)
+            _download_daily_xldas(data_path, reanalysis, d)
             d += timedelta(days=1)
             progress_bar.update(1)
 
 
-def download_gridmet(data_path: Path | str, year_start: int, year_end: int) -> None:
+def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, year_end: int) -> None:
     """Download gridMET forcing files
     """
-    # Create data directory if it doesn't exist
-    Path(data_path).mkdir(parents=True, exist_ok=True)
-    gridmet = REANALYSES['gridMET']
-
     with tqdm(total=(year_end - year_start + 1) * len(gridmet.netcdf_variables), desc='Download gridMET files', unit=' files') as progress_bar:
         for year in range(year_start, year_end + 1):
             for var in gridmet.netcdf_variables:
@@ -252,15 +321,47 @@ def download_gridmet(data_path: Path | str, year_start: int, year_end: int) -> N
                 progress_bar.update(1)
 
 
-def _read_land_mask(forcing: str) -> pd.DataFrame:
+def _interpolate_to_hourly(s: pd.DataFrame) -> pd.DataFrame:
+    return s.astype(float).resample('h').mean().interpolate(method='linear')
+
+
+def _download_daily_xldas(path: Path, reanalysis: REANALYSIS, day: datetime):
+    cmd = [
+        'wget',
+        '--load-cookies',
+        COOKIE_FILE,
+        '--save-cookies',
+        COOKIE_FILE,
+        '--keep-session-cookies',
+        '--no-check-certificate',
+        '-r',
+        '-c',
+        '-N',
+        '-nH',
+        '-nd',
+        '-np',
+        '-A',
+        reanalysis.netcdf_extension,
+        f'{reanalysis.url}/{day.strftime("%Y/%j")}/',
+        '-P',
+        path/f'{day.strftime("%Y/%j")}',
+    ]
+    subprocess.run(
+        cmd,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+
+
+def _read_land_mask(reanalysis: REANALYSIS) -> pd.DataFrame:
     # Land mask
-    with Dataset(REANALYSES[forcing].land_mask_file) as nc:
-        mask = REANALYSES[forcing].land_mask(nc)
+    with Dataset(reanalysis.land_mask_file) as nc:
+        mask = reanalysis.land_mask(nc)
         lats, lons = np.meshgrid(nc['lat'][:], nc['lon'][:], indexing='ij')
 
     # Elevation
-    with Dataset(REANALYSES[forcing].elevation_file) as nc:
-        elevations = REANALYSES[forcing].elevation(nc)
+    with Dataset(reanalysis.elevation_file) as nc:
+        elevations = reanalysis.elevation(nc)
 
     grid_df = pd.DataFrame({
         'latitude': lats.flatten(),
@@ -269,7 +370,7 @@ def _read_land_mask(forcing: str) -> pd.DataFrame:
         'elevation': elevations.flatten(),
     })
 
-    if forcing == 'gridMET':
+    if reanalysis.name == 'gridMET':
         grid_df.loc[~grid_df['mask'].isna(), 'mask'] = 1
         grid_df.loc[grid_df['mask'].isna(), 'mask'] = 0
 
@@ -278,86 +379,16 @@ def _read_land_mask(forcing: str) -> pd.DataFrame:
     return grid_df
 
 
-def _find_grid(forcing: str, grid_ind: int, mask_df: pd.DataFrame, model: str | None, rcp: str | None) -> tuple[float, str, float]:
+def _get_grid_info(reanalysis: REANALYSIS, grid_ind: int, mask_df: pd.DataFrame) -> tuple[float, str, float]:
     grid_lat, grid_lon = mask_df.loc[grid_ind, ['latitude', 'longitude']]   # type: ignore
     grid_str = '%.3f%sx%.3f%s' % (abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E')
 
-    fn = f'macav2metdata_{model}_rcp{rcp}_{grid_str}' if forcing == 'MACA' else f'{forcing}_{grid_str}'
+    fn = f'{reanalysis.name}_{grid_str}'
 
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']     # type: ignore
 
 
-def find_grids(forcing: str, *,
-    locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, model: str | None=None, rcp:str | None=None, screen_output=True) -> pd.DataFrame:
-    """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information and corresponding weather file names.
-    """
-    mask_df = _read_land_mask(forcing)
-
-    if locations is None:
-        indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
-        df = pd.DataFrame({'grid_index': indices})
-    else:
-        indices = []
-        sites = []
-
-        for loc in locations:
-            if isinstance(locations, list):
-                (lat, lon) = loc
-            elif isinstance(locations, dict):
-                (lat, lon) = locations[loc] # type: ignore
-            else:
-                raise TypeError('Location input must be a dict or list of coordinates.')
-
-            sites.append(loc)
-
-            ind = np.ravel_multi_index((REANALYSES[forcing].ind_j(lat), REANALYSES[forcing].ind_i(lon)), REANALYSES[forcing].netcdf_shape)
-
-            if mask_df.loc[ind]['mask'] == 0:   # type: ignore
-                mask_df['distance'] = mask_df.apply(
-                    lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
-                    axis=1,
-                )
-                mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
-                ind = mask_df['distance'].idxmin()
-
-            indices.append(ind)
-
-        df = pd.DataFrame({
-            'grid_index': indices,
-            'input_coordinate': locations if isinstance(locations, list) else locations.values(),
-        })
-
-        if sites: df['site'] = sites
-
-    df[['grid_latitude', 'weather_file', 'elevation']] = df.apply(
-        lambda x: _find_grid(forcing, x['grid_index'], mask_df, model, rcp),
-        axis=1,
-        result_type='expand',
-    )
-
-    if locations is not None:
-        if any(df.duplicated(subset=['grid_index'])):
-            indices = df['grid_index']
-            if screen_output is True:
-                print(f"The following input coordinates share {forcing} grids:")
-                print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
-                print()
-
-        if screen_output is True:
-            print(f"{forcing} weather files:")
-            if not sites:
-                print(df[['input_coordinate', 'weather_file']].to_string(index=False))
-            else:
-                print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
-            print()
-
-    df = df.drop_duplicates(subset=['grid_index'], keep='first')
-    df.set_index('grid_index', inplace=True)
-
-    return df
-
-
-def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float, *, screening_height: float=10.0, hourly: bool=False):
+def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float, hourly: bool, *, screening_height: float=10.0) -> None:
     with open(weather_path/f'{fn}.{"hourly.weather" if hourly else "weather"}', 'w') as f:
         # Open meteorological file and write header lines
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
@@ -372,7 +403,7 @@ def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float
 
 
 def _write_weather_headers(weather_path: Path, grid_df: pd.DataFrame, hourly: bool=False) -> None:
-    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], hourly=hourly), axis=1)  # type: ignore
+    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], hourly), axis=1)  # type: ignore
 
 
 def _relative_humidity(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
@@ -399,21 +430,21 @@ def _wind_speed(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
     return wind
 
 
-def _read_xldas_netcdf(t: datetime, forcing: str, nc: Dataset, indices: np.ndarray, dfs: dict[str, pd.DataFrame]):
+def _read_xldas_netcdf(t: datetime, reanalysis: REANALYSIS, nc: Dataset, indices: np.ndarray, dfs: dict[str, pd.DataFrame]):
     """Read meteorological variables of an array of desired grids from netCDF
 
     The netCDF variable arrays are flattened to make reading faster
     """
-    values = {key: nc[REANALYSES[forcing].netcdf_variables[key]][0].flatten()[indices] for key in REANALYSES[forcing].netcdf_variables}
+    values = {key: nc[reanalysis.netcdf_variables[key]][0].flatten()[indices] for key in reanalysis.netcdf_variables}
 
-    for var in REANALYSES[forcing].netcdf_variables:
+    for var in reanalysis.netcdf_variables:
         if dfs[var].empty:
             dfs[var] = pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in indices], index=[t])
         else:
             dfs[var] = pd.concat([dfs[var], pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in indices], index=[t])])
 
 
-def _write_weather_files(weather_path: Path | str, weather_data: dict[str, pd.DataFrame], grid_df, *, hourly=False):
+def _write_weather_files(weather_path: Path | str, weather_data: dict[str, pd.DataFrame], grid_df: pd.DataFrame, hourly: bool):
     for grid in grid_df.index:
         # Choose variables for output
         if hourly:
@@ -438,32 +469,32 @@ def _write_weather_files(weather_path: Path | str, weather_data: dict[str, pd.Da
         )
 
 
-def _initialize_weather_files(weather_path: Path, forcing: str, locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, *, header=False, hourly=False):
+def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locations: LocationInput, header: bool, hourly:bool):
     weather_path.mkdir(parents=True, exist_ok=True)
 
-    grid_df = find_grids(forcing, locations=locations)
+    grid_df = _find_grids(reanalysis, locations, False)
 
-    if header == True: _write_weather_headers(weather_path,  grid_df, hourly=hourly)
+    if header == True: _write_weather_headers(weather_path,  grid_df, hourly)
 
     return grid_df
 
 
-def _process_xldas(data_path: Path, forcing: str, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, hourly: bool) -> dict[str, pd.DataFrame]:
+def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, hourly: bool) -> dict[str, pd.DataFrame]:
     # Arrays to store daily values
-    dfs = {var: pd.DataFrame() for var in REANALYSES[forcing].netcdf_variables}
+    dfs = {var: pd.DataFrame() for var in reanalysis.netcdf_variables}
 
     t = date_start
-    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {forcing} files', unit=' days') as progress_bar:
+    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {reanalysis.name} files', unit=' days') as progress_bar:
         while t < date_end + timedelta(days=1):
-            if t >= REANALYSES[forcing].start_time:
+            if t >= reanalysis.start_time:
                 # netCDF file name
-                fn = f'{t.strftime("%Y/%j")}/{REANALYSES[forcing].netcdf_prefix}{t.strftime("%Y%m%d.%H%M")}.{REANALYSES[forcing].netcdf_suffix}'
+                fn = f'{t.strftime("%Y/%j")}/{reanalysis.netcdf_prefix}{t.strftime("%Y%m%d.%H%M")}.{reanalysis.netcdf_suffix}'
 
                 # Read one netCDF file
                 with Dataset(data_path/fn) as nc:
-                    _read_xldas_netcdf(t, forcing, nc, np.array(grid_df.index), dfs)
+                    _read_xldas_netcdf(t, reanalysis, nc, np.array(grid_df.index), dfs)
 
-            t += timedelta(hours=REANALYSES[forcing].data_interval)     # type: ignore
+            t += timedelta(hours=reanalysis.data_interval)     # type: ignore
             if (t - date_start).total_seconds() % 86400 == 0: progress_bar.update(1)
 
     return dfs
@@ -472,7 +503,7 @@ def _process_xldas(data_path: Path, forcing: str, date_start: datetime, date_end
 def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
     """Process annual gridMET data and write them to weather files
     """
-    gridmet = REANALYSES['gridMET']
+    gridmet = REANALYSIS.gridMET
 
     dfs = {var: pd.DataFrame() for var in gridmet.netcdf_variables}
 
@@ -502,22 +533,3 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
     for key in gridmet.netcdf_variables: ncs[key].close()
 
     return dfs
-
-
-def generate_weather_files(data_path: Path | str, weather_path: Path | str, forcing: str, date_start: datetime, date_end: datetime, *,
-    hourly: bool=False, locations: dict[str, tuple[float, float]] | list[tuple[float, float]] | None=None, header: bool=True) -> None:
-    '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with valid data will be used.
-    '''
-    grid_df = _initialize_weather_files(Path(weather_path), forcing, locations, header=header, hourly=hourly)
-
-    if forcing == 'gridMET':
-        dfs = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
-    elif forcing in ['GLDAS', 'NLDAS']:
-        dfs = _process_xldas(Path(data_path), forcing, date_start, date_end, grid_df, hourly=hourly)
-
-    if hourly:
-        weather_data = {key: func(dfs, hourly) for key, func in REANALYSES[forcing].weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].hourly}
-    else:
-        weather_data = {key: func(dfs, hourly) for key, func in REANALYSES[forcing].weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].daily}
-
-    _write_weather_files(Path(weather_path), weather_data, grid_df, hourly=hourly)
