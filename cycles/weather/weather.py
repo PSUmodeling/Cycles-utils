@@ -1,8 +1,8 @@
-import math
 import numpy as np
 import os
 import pandas as pd
 import subprocess
+import typing
 from collections.abc import Callable, Mapping, Sequence
 from dataclasses import astuple, dataclass
 from datetime import datetime, timedelta
@@ -29,10 +29,6 @@ class ReanalysisDataMixin:
     elevation_file: Path | str
     elevation: Callable
     start_time: datetime
-    la1: float
-    lo1: float
-    di: float
-    dj: float
     ind_j: Callable
     ind_i: Callable
     netcdf_variables: dict[str, str]
@@ -51,10 +47,6 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/GLDASp5_elevation_025d.nc4'),
         elevation=lambda nc: nc['GLDAS_elevation'][0],
         start_time=datetime.strptime('2000-01-01 03:00', '%Y-%m-%d %H:%M'),
-        la1=-59.875,
-        lo1=-179.875,
-        di=0.25,
-        dj=0.25,
         ind_j=lambda lat: int(round((lat - (-59.875)) / 0.25)),
         ind_i=lambda lon: int(round((lon - (-179.875)) / 0.25)),
         netcdf_variables={
@@ -66,15 +58,15 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'Psurf_f_inst',
         },
         weather_file_variables={
-            'PP': lambda dfs, hourly: _interpolate_to_hourly(dfs['precipitation']) * 3600.0 if hourly else dfs['precipitation'].resample('D').mean() * 86400.0,
-            'TMP': lambda dfs, _: _interpolate_to_hourly(dfs['air temperature']) - 273.15,
-            'TX': lambda dfs, _: dfs['air temperature'].resample('D').max() - 273.15,
-            'TN': lambda dfs, _: dfs['air temperature'].resample('D').min() - 273.15,
-            'SOLAR': lambda dfs, hourly: _interpolate_to_hourly(dfs['solar']) * 3600.0 * 1.0E-6 if hourly else dfs['solar'].resample('D').mean() * 86400.0 * 1.0E-6,
-            'RH': lambda dfs, _: _interpolate_to_hourly(_relative_humidity(dfs)) * 100.0,
-            'RHX': lambda dfs, _: _relative_humidity(dfs).resample('D').max() * 100.0,
-            'RHN': lambda dfs, _: _relative_humidity(dfs).resample('D').min() * 100.0,
-            'WIND': lambda dfs, hourly: _interpolate_to_hourly(dfs['wind']) if hourly else dfs['wind'].resample('D').mean(),
+            'PP': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['precipitation']) * 3600.0 if hourly else np.nanmean(_reshape_to_daily(nc_data['precipitation'], 3), axis=1) * 86400.0,
+            'TMP': lambda ts, nc_data, _: _interpolate_to_hourly(ts, nc_data['air temperature']) - 273.15,
+            'TX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
+            'TN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
+            'SOLAR': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['solar']) * 3600.0 * 1.0E-6 if hourly else np.nanmean(_reshape_to_daily(nc_data['solar'], 3), axis=1) * 86400.0 * 1.0E-6,
+            'RH': lambda ts, nc_data, _: _interpolate_to_hourly(ts, _relative_humidity(nc_data)) * 100.0,
+            'RHX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
+            'RHN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
+            'WIND': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['wind']) if hourly else np.nanmean(_reshape_to_daily(nc_data['wind'], 3), axis=1),
         }
     ))
     gridMET = astuple(ReanalysisDataMixin(
@@ -90,10 +82,6 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
         elevation=lambda nc: nc['elevation'][:, :],
         start_time=datetime.strptime('1979-01-01', '%Y-%m-%d'),
-        la1=49.4,
-        lo1=-124.76667,
-        di=1.0 / 24.0,
-        dj=-1.0 / 24.0,
         ind_j=lambda lat: int(round((lat - 49.4) / (-1.0 / 24.0))),
         ind_i=lambda lon: int(round((lon - (-124.76667)) / (1.0 / 24.0))),
         netcdf_variables={
@@ -106,13 +94,13 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'vs': 'wind_speed',
         },
         weather_file_variables={
-            'PP': lambda dfs, _: dfs['pr'],
-            'TX': lambda dfs, _: dfs['tmmx'] - 273.15,
-            'TN': lambda dfs, _: dfs['tmmn'] - 273.15,
-            'SOLAR': lambda dfs, _: dfs['srad'] * 86400.0 * 1.0E-6,
-            'RHX': lambda dfs, _: dfs['rmax'],
-            'RHN': lambda dfs, _: dfs['rmin'],
-            'WIND': lambda dfs, _: dfs['vs'],
+            'PP': lambda _ts, nc_data, _hourly: nc_data['pr'],
+            'TX': lambda _ts, nc_data, _hourly: nc_data['tmmx'] - 273.15,
+            'TN': lambda _ts, nc_data, _hourly: nc_data['tmmn'] - 273.15,
+            'SOLAR': lambda _ts, nc_data, _hourly: nc_data['srad'] * 86400.0 * 1.0E-6,
+            'RHX': lambda _ts, nc_data, _hourly: nc_data['rmax'],
+            'RHN': lambda _ts, nc_data, _hourly: nc_data['rmin'],
+            'WIND': lambda _ts, nc_data, _hourly: nc_data['vs'],
         }
     ))
     NLDAS = astuple(ReanalysisDataMixin(
@@ -120,17 +108,13 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         netcdf_extension='nc',
         netcdf_prefix='NLDAS_FORA0125_H.A',
         netcdf_suffix='020.nc',
-        netcdf_shape=(224, 464),   # NLDAS grid is 0.125 degree, but only covers CONUS (25.0625N-49.9375N, 124.9375W-66.0625W)
+        netcdf_shape=(224, 464),
         data_interval=1,
         land_mask_file=os.path.join(pt, '../data/NLDAS_masks-veg-soil.nc4'),
         land_mask=lambda nc: nc['CONUS_mask'][0],
         elevation_file=os.path.join(pt, '../data/NLDAS_elevation.nc4'),
         elevation=lambda nc: nc['NLDAS_elev'][0],
         start_time=datetime.strptime('1979-01-01 13:00', '%Y-%m-%d %H:%M'),
-        la1=25.0625,
-        lo1=-124.9375,
-        di=0.125,
-        dj=0.125,
         ind_j=lambda lat: int(round((lat - 25.0625) / 0.125)),
         ind_i=lambda lon: int(round((lon - (-124.9375)) / 0.125)),
         netcdf_variables={
@@ -143,17 +127,21 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'PSurf',
         },
         weather_file_variables={
-            'PP': lambda dfs, hourly: dfs['precipitation'] if hourly else dfs['precipitation'].resample('D').sum(),
-            'TMP': lambda dfs, _: dfs['air temperature'] - 273.15,
-            'TX': lambda dfs, _: dfs['air temperature'].resample('D').max() - 273.15,
-            'TN': lambda dfs, _: dfs['air temperature'].resample('D').min() - 273.15,
-            'SOLAR': lambda dfs, hourly: dfs['solar'] * 3600.0 * 1.0E-6 if hourly else dfs['solar'].resample('D').mean() * 86400.0 * 1.0E-6,
-            'RH': lambda dfs, _: _relative_humidity(dfs) * 100.0,
-            'RHX': lambda dfs, _: _relative_humidity(dfs).resample('D').max() * 100.0,
-            'RHN': lambda dfs, _: _relative_humidity(dfs).resample('D').min() * 100.0,
-            'WIND': lambda dfs, hourly: _wind_speed(dfs) if hourly else _wind_speed(dfs).resample('D').mean(),
+            'PP': lambda _ts, nc_data, hourly: nc_data['precipitation'] if hourly else np.nansum(_reshape_to_daily(nc_data['precipitation'], 1), axis=1),
+            'TMP': lambda _ts, nc_data, _hourly: nc_data['air temperature'] - 273.15,
+            'TX': lambda _ts, nc_data, _hourly: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
+            'TN': lambda _ts, nc_data, _hourly: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
+            'SOLAR': lambda _ts, nc_data, hourly: nc_data['solar'] * 3600.0 * 1.0E-6 if hourly else np.nanmean(_reshape_to_daily(nc_data['solar'], 1), axis=1) * 86400.0 * 1.0E-6,
+            'RH': lambda _ts, nc_data, _hourly: _relative_humidity(nc_data) * 100.0,
+            'RHX': lambda _ts, nc_data, _hourly: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
+            'RHN': lambda _ts, nc_data, _hourly: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
+            'WIND': lambda _ts, nc_data, hourly: _wind_speed(nc_data) if hourly else np.nanmean(_reshape_to_daily(_wind_speed(nc_data), 1), axis=1),
         }
     ))
+
+
+def _reshape_to_daily(nc_data: np.ndarray, interval: int) -> np.ndarray:
+    return nc_data.reshape(-1, 24 // interval, nc_data.shape[1])
 
 @dataclass
 class WeatherFileVariable:
@@ -206,7 +194,8 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
-        indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
+        #indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
+        indices = list(mask_df[mask_df['mask'] > 0].index)
         df = pd.DataFrame({'grid_index': indices})
     else:
         indices = []
@@ -226,7 +215,7 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
 
             if mask_df.loc[ind]['mask'] == 0:   # type: ignore
                 mask_df['distance'] = mask_df.apply(
-                    lambda x: math.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
+                    lambda x: np.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
                     axis=1,
                 )
                 mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
@@ -274,19 +263,21 @@ def generate_weather_files(data_path: Path | str, weather_path: Path | str, forc
     '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with valid data will be used.
     '''
     reanalysis = REANALYSIS[forcing]
-    grid_df = _initialize_weather_files(Path(weather_path), reanalysis, locations, header, hourly)
+    grid_df = _initialize_weather_files(Path(weather_path), reanalysis, locations)
 
     if reanalysis is REANALYSIS.gridMET:
-        dfs = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
+        nc_data = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
     elif reanalysis in [REANALYSIS.GLDAS, REANALYSIS.NLDAS]:
-        dfs = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, hourly)
+        timestamps, nc_data = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, hourly)
 
     if hourly:
-        weather_data = {key: func(dfs, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].hourly}
+        weather_data = {key: func(timestamps, nc_data, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].hourly}
     else:
-        weather_data = {key: func(dfs, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].daily}
+        weather_data = {key: func(None, nc_data, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].daily}
 
-    _write_weather_files(Path(weather_path), weather_data, grid_df, hourly)
+    time_index = pd.date_range(start=date_start, end=date_end + timedelta(days=1), freq='1h' if hourly else '1d', inclusive='left')
+
+    _write_weather_files(Path(weather_path), time_index, weather_data, grid_df, header, hourly)
 
 
 def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime) -> None:
@@ -321,8 +312,9 @@ def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, yea
                 progress_bar.update(1)
 
 
-def _interpolate_to_hourly(s: pd.DataFrame) -> pd.DataFrame:
-    return s.astype(float).resample('h').mean().interpolate(method='linear')
+def _interpolate_to_hourly(time_index: pd.Series, array: np.ndarray) -> np.ndarray:
+    df = pd.DataFrame(array, index=time_index).astype(float)
+    return df.resample('h').mean().interpolate(method='linear').values
 
 
 def _download_daily_xldas(path: Path, reanalysis: REANALYSIS, day: datetime):
@@ -388,8 +380,7 @@ def _get_grid_info(reanalysis: REANALYSIS, grid_ind: int, mask_df: pd.DataFrame)
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']     # type: ignore
 
 
-def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float, hourly: bool, *, screening_height: float=10.0) -> None:
-    with open(weather_path/f'{fn}.{"hourly.weather" if hourly else "weather"}', 'w') as f:
+def _write_header(f: typing.IO, latitude: float, elevation: float, hourly: bool, *, screening_height: float=10.0) -> None:
         # Open meteorological file and write header lines
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
@@ -402,65 +393,58 @@ def _write_header(weather_path: Path, fn: str, latitude: float, elevation: float
             f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if var.daily]) + '\n')
 
 
-def _write_weather_headers(weather_path: Path, grid_df: pd.DataFrame, hourly: bool=False) -> None:
-    grid_df.apply(lambda x: _write_header(weather_path, x['weather_file'], x['grid_latitude'], x['elevation'], hourly), axis=1)  # type: ignore
-
-
-def _relative_humidity(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
-    air_temperature = dfs['air temperature']
-    air_pressure = dfs['air pressure']
-    specific_humidity = dfs['specific humidity']
+def _relative_humidity(nc_data: dict[str, np.ndarray]) -> np.ndarray:
+    air_temperature = nc_data['air temperature']
+    air_pressure = nc_data['air pressure']
+    specific_humidity = nc_data['specific humidity']
 
     es = 611.2 * np.exp(17.67 * (air_temperature - 273.15) / (air_temperature - 273.15 + 243.5))
     ws = 0.622 * es / (air_pressure - es)
     w = specific_humidity / (1.0 - specific_humidity)
     rh = w / ws
-    rh = np.minimum(rh, pd.DataFrame(np.full(rh.shape, 1.0), index=rh.index, columns=rh.columns))   # type: ignore
-    rh = np.maximum(rh, pd.DataFrame(np.full(rh.shape, 0.01), index=rh.index, columns=rh.columns))  # type: ignore
+    rh[rh > 1.0] = 1.0
+    rh[rh < 0.01] = 0.01
 
-    return pd.DataFrame(rh)
-
-
-def _wind_speed(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
-    u = dfs['wind_u']
-    v = dfs['wind_v']
-
-    wind = pd.DataFrame(np.sqrt(u ** 2 + v ** 2))
-
-    return wind
+    return rh
 
 
-def _read_xldas_netcdf(t: datetime, reanalysis: REANALYSIS, nc: Dataset, indices: np.ndarray, dfs: dict[str, pd.DataFrame]):
+def _wind_speed(nc_data: dict[str, np.ndarray]) -> np.ndarray:
+    return np.sqrt(nc_data['wind_u'] ** 2 + nc_data['wind_v'] ** 2)
+
+
+def _read_xldas_netcdf(t: datetime, reanalysis: REANALYSIS, nc: Dataset, indices: np.ndarray, nc_data: dict[str, list]) -> None:
     """Read meteorological variables of an array of desired grids from netCDF
 
     The netCDF variable arrays are flattened to make reading faster
     """
-    values = {key: nc[reanalysis.netcdf_variables[key]][0].flatten()[indices] for key in reanalysis.netcdf_variables}
-
     for var in reanalysis.netcdf_variables:
-        if dfs[var].empty:
-            dfs[var] = pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in indices], index=[t])
-        else:
-            dfs[var] = pd.concat([dfs[var], pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in indices], index=[t])])
+        nc_data[var].append(list(nc[reanalysis.netcdf_variables[var]][0].flatten()[indices]))
 
 
-def _write_weather_files(weather_path: Path | str, weather_data: dict[str, pd.DataFrame], grid_df: pd.DataFrame, hourly: bool):
-    for grid in grid_df.index:
+def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[str, np.ndarray], grid_df: pd.DataFrame, header: bool, hourly: bool):
+    # Add time columns
+    time_df = pd.DataFrame({
+        'YEAR': time_ts.year,   # type: ignore
+        'DOY': time_ts.map(lambda x: x.timetuple().tm_yday),   # type: ignore
+    })
+    if hourly:
+        time_df['HOUR'] = time_ts.hour   # type: ignore
+
+    for ind, grid in enumerate(grid_df.index):
         # Choose variables for output
         if hourly:
-            output_df = pd.DataFrame({key: weather_data[key][f'grid_{grid}'] for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly and not var.unit.startswith('#')})
+            output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly and not var.unit.startswith('#')})
         else:
-            output_df = pd.DataFrame({key: weather_data[key][f'grid_{grid}'] for key, var in WEATHER_FILE_VARIABLES.items() if var.daily and not var.unit.startswith('#')})
+            output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if var.daily and not var.unit.startswith('#')})
 
-        # Add time columns
-        output_df.insert(0, 'YEAR', output_df.index.year)   # type: ignore
-        output_df.insert(1, 'DOY', output_df.index.map(lambda x: x.timetuple().tm_yday))
-        if hourly: output_df.insert(2, 'HOUR', output_df.index.hour)    # type: ignore
+        output_df = pd.concat([time_df, output_df.reset_index(drop=True)], axis=1).dropna()
 
         for c in output_df.columns:
             output_df[c] = output_df[c].map(WEATHER_FILE_VARIABLES[c].fmt)
 
-        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"hourly.weather" if hourly else "weather"}', 'a') as f:
+        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"hourly.weather" if hourly else "weather"}', 'w' if header else 'a') as f:
+            if header:
+                _write_header(f, grid_df.loc[grid, 'grid_latitude'], grid_df.loc[grid, 'elevation'], hourly)   # type: ignore
             output_df.to_csv(
                 f,
                 sep='\t',
@@ -469,35 +453,40 @@ def _write_weather_files(weather_path: Path | str, weather_data: dict[str, pd.Da
         )
 
 
-def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locations: LocationInput, header: bool, hourly:bool):
+def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locations: LocationInput):
     weather_path.mkdir(parents=True, exist_ok=True)
 
     grid_df = _find_grids(reanalysis, locations, False)
 
-    if header == True: _write_weather_headers(weather_path,  grid_df, hourly)
-
     return grid_df
 
 
-def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, hourly: bool) -> dict[str, pd.DataFrame]:
+def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, hourly: bool) -> tuple(list(datetime), dict[str, np.ndarray]):
     # Arrays to store daily values
-    dfs = {var: pd.DataFrame() for var in reanalysis.netcdf_variables}
+    nc_data = {var: [] for var in reanalysis.netcdf_variables}
 
+    timestamps = []
     t = date_start
     with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {reanalysis.name} files', unit=' days') as progress_bar:
         while t < date_end + timedelta(days=1):
-            if t >= reanalysis.start_time:
+            if t < reanalysis.start_time:
+                for var in reanalysis.netcdf_variables:
+                    nc_data[var].append(list(np.full(len(grid_df), np.nan)))
+            else:
                 # netCDF file name
                 fn = f'{t.strftime("%Y/%j")}/{reanalysis.netcdf_prefix}{t.strftime("%Y%m%d.%H%M")}.{reanalysis.netcdf_suffix}'
 
                 # Read one netCDF file
                 with Dataset(data_path/fn) as nc:
-                    _read_xldas_netcdf(t, reanalysis, nc, np.array(grid_df.index), dfs)
+                    _read_xldas_netcdf(t, reanalysis, nc, np.array(grid_df.index), nc_data)
 
+            timestamps.append(t)
             t += timedelta(hours=reanalysis.data_interval)     # type: ignore
             if (t - date_start).total_seconds() % 86400 == 0: progress_bar.update(1)
 
-    return dfs
+    nc_data = {var: np.array(nc_data[var]) for var in nc_data}
+
+    return timestamps, nc_data
 
 
 def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
@@ -505,7 +494,7 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
     """
     gridmet = REANALYSIS.gridMET
 
-    dfs = {var: pd.DataFrame() for var in gridmet.netcdf_variables}
+    nc_data = {var: [] for var in gridmet.netcdf_variables}
 
     year = -9999
     t = date_start
@@ -519,17 +508,14 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
                 year = t.year
                 ncs = {key: Dataset(data_path/f'{key}_{year}.nc') for key in gridmet.netcdf_variables}
 
-            values = {key: ncs[key][var][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)] for key, var in gridmet.netcdf_variables.items()}
-
             for var in gridmet.netcdf_variables:
-                if dfs[var].empty:
-                    dfs[var] = pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in np.array(grid_df.index)], index=[t])
-                else:
-                    dfs[var] = pd.concat([dfs[var], pd.DataFrame([values[var]], columns=[f'grid_{k}' for k in np.array(grid_df.index)], index=[t])])
+                nc_data[var].append(list(ncs[var][gridmet.netcdf_variables[var]][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]))
 
             t += timedelta(days=1)
             progress_bar.update(1)
 
-    for key in gridmet.netcdf_variables: ncs[key].close()
+    for key in gridmet.netcdf_variables:
+        nc_data[key] = np.array(nc_data[key])
+        ncs[key].close()
 
-    return dfs
+    return nc_data
