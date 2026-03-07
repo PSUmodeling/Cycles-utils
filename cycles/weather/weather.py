@@ -16,6 +16,10 @@ pt = os.path.dirname(os.path.realpath(__file__))
 Coordinate = tuple[float, float]
 LocationInput = Sequence[Coordinate] | Mapping[str, Coordinate] | None
 
+class Resolution(Enum):
+    DAILY = 1
+    HOURLY = 2
+
 @dataclass
 class ReanalysisDataMixin:
     url: str
@@ -58,15 +62,15 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'Psurf_f_inst',
         },
         weather_file_variables={
-            'PP': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['precipitation']) * 3600.0 if hourly else np.nanmean(_reshape_to_daily(nc_data['precipitation'], 3), axis=1) * 86400.0,
+            'PP': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['precipitation']) * 3600.0 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['precipitation'], 3), axis=1) * 86400.0,
             'TMP': lambda ts, nc_data, _: _interpolate_to_hourly(ts, nc_data['air temperature']) - 273.15,
             'TX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
             'TN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
-            'SOLAR': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['solar']) * 3600.0 * 1.0E-6 if hourly else np.nanmean(_reshape_to_daily(nc_data['solar'], 3), axis=1) * 86400.0 * 1.0E-6,
+            'SOLAR': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['solar']) * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['solar'], 3), axis=1) * 86400.0 * 1.0E-6,
             'RH': lambda ts, nc_data, _: _interpolate_to_hourly(ts, _relative_humidity(nc_data)) * 100.0,
             'RHX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
             'RHN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
-            'WIND': lambda ts, nc_data, hourly: _interpolate_to_hourly(ts, nc_data['wind']) if hourly else np.nanmean(_reshape_to_daily(nc_data['wind'], 3), axis=1),
+            'WIND': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['wind']) if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['wind'], 3), axis=1),
         }
     ))
     gridMET = astuple(ReanalysisDataMixin(
@@ -94,13 +98,13 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'vs': 'wind_speed',
         },
         weather_file_variables={
-            'PP': lambda _ts, nc_data, _hourly: nc_data['pr'],
-            'TX': lambda _ts, nc_data, _hourly: nc_data['tmmx'] - 273.15,
-            'TN': lambda _ts, nc_data, _hourly: nc_data['tmmn'] - 273.15,
-            'SOLAR': lambda _ts, nc_data, _hourly: nc_data['srad'] * 86400.0 * 1.0E-6,
-            'RHX': lambda _ts, nc_data, _hourly: nc_data['rmax'],
-            'RHN': lambda _ts, nc_data, _hourly: nc_data['rmin'],
-            'WIND': lambda _ts, nc_data, _hourly: nc_data['vs'],
+            'PP': lambda _ts, nc_data, _resolution: nc_data['pr'],
+            'TX': lambda _ts, nc_data, _resolution: nc_data['tmmx'] - 273.15,
+            'TN': lambda _ts, nc_data, _resolution: nc_data['tmmn'] - 273.15,
+            'SOLAR': lambda _ts, nc_data, _resolution: nc_data['srad'] * 86400.0 * 1.0E-6,
+            'RHX': lambda _ts, nc_data, _resolution: nc_data['rmax'],
+            'RHN': lambda _ts, nc_data, _resolution: nc_data['rmin'],
+            'WIND': lambda _ts, nc_data, _resolution: nc_data['vs'],
         }
     ))
     NLDAS = astuple(ReanalysisDataMixin(
@@ -127,15 +131,15 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'PSurf',
         },
         weather_file_variables={
-            'PP': lambda _ts, nc_data, hourly: nc_data['precipitation'] if hourly else np.nansum(_reshape_to_daily(nc_data['precipitation'], 1), axis=1),
-            'TMP': lambda _ts, nc_data, _hourly: nc_data['air temperature'] - 273.15,
-            'TX': lambda _ts, nc_data, _hourly: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
-            'TN': lambda _ts, nc_data, _hourly: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
-            'SOLAR': lambda _ts, nc_data, hourly: nc_data['solar'] * 3600.0 * 1.0E-6 if hourly else np.nanmean(_reshape_to_daily(nc_data['solar'], 1), axis=1) * 86400.0 * 1.0E-6,
-            'RH': lambda _ts, nc_data, _hourly: _relative_humidity(nc_data) * 100.0,
-            'RHX': lambda _ts, nc_data, _hourly: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
-            'RHN': lambda _ts, nc_data, _hourly: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
-            'WIND': lambda _ts, nc_data, hourly: _wind_speed(nc_data) if hourly else np.nanmean(_reshape_to_daily(_wind_speed(nc_data), 1), axis=1),
+            'PP': lambda _ts, nc_data, resolution: nc_data['precipitation'] if resolution is Resolution.HOURLY else np.nansum(_reshape_to_daily(nc_data['precipitation'], 1), axis=1),
+            'TMP': lambda _ts, nc_data, _resolution: nc_data['air temperature'] - 273.15,
+            'TX': lambda _ts, nc_data, _resolution: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
+            'TN': lambda _ts, nc_data, _resolution: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
+            'SOLAR': lambda _ts, nc_data, resolution: nc_data['solar'] * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['solar'], 1), axis=1) * 86400.0 * 1.0E-6,
+            'RH': lambda _ts, nc_data, _resolution: _relative_humidity(nc_data) * 100.0,
+            'RHX': lambda _ts, nc_data, _resolution: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
+            'RHN': lambda _ts, nc_data, _resolution: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
+            'WIND': lambda _ts, nc_data, resolution: _wind_speed(nc_data) if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(_wind_speed(nc_data), 1), axis=1),
         }
     ))
 
@@ -147,22 +151,21 @@ def _reshape_to_daily(nc_data: np.ndarray, interval: int) -> np.ndarray:
 class WeatherFileVariable:
     fmt: Callable
     unit: str
-    daily: bool
-    hourly: bool
+    resolution: list[Resolution]
 
 WEATHER_FILE_VARIABLES = {
-    'YEAR': WeatherFileVariable(fmt=lambda x: '%-7.4d' % x, unit='####', daily=True, hourly=True),
-    'DOY': WeatherFileVariable(fmt=lambda x: '%-7.3d' % x, unit='###', daily=True, hourly=True),
-    'HOUR': WeatherFileVariable(fmt=lambda x: '%-7.2d' % x, unit='####', daily=False, hourly=True),
-    'PP': WeatherFileVariable(fmt=lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x, unit='mm', daily=True, hourly=True),
-    'TMP': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', daily=False, hourly=True),
-    'TX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', daily=True, hourly=False),
-    'TN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', daily=True, hourly=False),
-    'SOLAR': WeatherFileVariable(fmt=lambda x: '%-7.3f' % x, unit='MJ/m2', daily=True, hourly=True),
-    'RH': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', daily=False, hourly=True),
-    'RHX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', daily=True, hourly=False),
-    'RHN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', daily=True, hourly=False),
-    'WIND': WeatherFileVariable(fmt=lambda x: '%-.2f' % x, unit='m/s', daily=True, hourly=True),
+    'YEAR': WeatherFileVariable(fmt=lambda x: '%-7.4d' % x, unit='####', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'DOY': WeatherFileVariable(fmt=lambda x: '%-7.3d' % x, unit='###', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'HOUR': WeatherFileVariable(fmt=lambda x: '%-7.2d' % x, unit='####', resolution=[Resolution.HOURLY]),
+    'PP': WeatherFileVariable(fmt=lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x, unit='mm', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'TMP': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.HOURLY]),
+    'TX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
+    'TN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
+    'SOLAR': WeatherFileVariable(fmt=lambda x: '%-7.3f' % x, unit='MJ/m2', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'RH': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.HOURLY]),
+    'RHX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
+    'RHN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
+    'WIND': WeatherFileVariable(fmt=lambda x: '%-.2f' % x, unit='m/s', resolution=[Resolution.DAILY, Resolution.HOURLY]),
 }
 
 COOKIE_FILE = './.urs_cookies'
@@ -263,21 +266,21 @@ def generate_weather_files(data_path: Path | str, weather_path: Path | str, forc
     '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with valid data will be used.
     '''
     reanalysis = REANALYSIS[forcing]
+    resolution = Resolution.HOURLY if hourly else Resolution.DAILY
+
     grid_df = _initialize_weather_files(Path(weather_path), reanalysis, locations)
 
     if reanalysis is REANALYSIS.gridMET:
         nc_data = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
+        timestamps = []
     elif reanalysis in [REANALYSIS.GLDAS, REANALYSIS.NLDAS]:
-        timestamps, nc_data = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, hourly)
+        timestamps, nc_data = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, resolution)
 
-    if hourly:
-        weather_data = {key: func(timestamps, nc_data, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].hourly}
-    else:
-        weather_data = {key: func(None, nc_data, hourly) for key, func in reanalysis.weather_file_variables.items() if WEATHER_FILE_VARIABLES[key].daily}
+    weather_data = {key: func(timestamps, nc_data, resolution) for key, func in reanalysis.weather_file_variables.items() if resolution in WEATHER_FILE_VARIABLES[key].resolution}
 
-    time_index = pd.date_range(start=date_start, end=date_end + timedelta(days=1), freq='1h' if hourly else '1d', inclusive='left')
+    time_index = pd.date_range(start=date_start, end=date_end + timedelta(days=1), freq='1h' if resolution is Resolution.HOURLY else '1d', inclusive='left')
 
-    _write_weather_files(Path(weather_path), time_index, weather_data, grid_df, header, hourly)
+    _write_weather_files(Path(weather_path), time_index, weather_data, grid_df, header, resolution)
 
 
 def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime) -> None:
@@ -380,17 +383,13 @@ def _get_grid_info(reanalysis: REANALYSIS, grid_ind: int, mask_df: pd.DataFrame)
     return grid_lat, fn, mask_df.loc[grid_ind, 'elevation']     # type: ignore
 
 
-def _write_header(f: typing.IO, latitude: float, elevation: float, hourly: bool, *, screening_height: float=10.0) -> None:
+def _write_header(f: typing.IO, latitude: float, elevation: float, resolution: Resolution, *, screening_height: float=10.0) -> None:
         # Open meteorological file and write header lines
         f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
         f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
         f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
-        if hourly:
-            f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly]) + '\n')
-            f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if var.hourly]) + '\n')
-        else:
-            f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if var.daily]) + '\n')
-            f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if var.daily]) + '\n')
+        f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if resolution in var.resolution]) + '\n')
+        f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if resolution in var.resolution]) + '\n')
 
 
 def _relative_humidity(nc_data: dict[str, np.ndarray]) -> np.ndarray:
@@ -421,30 +420,27 @@ def _read_xldas_netcdf(t: datetime, reanalysis: REANALYSIS, nc: Dataset, indices
         nc_data[var].append(list(nc[reanalysis.netcdf_variables[var]][0].flatten()[indices]))
 
 
-def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[str, np.ndarray], grid_df: pd.DataFrame, header: bool, hourly: bool):
+def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[str, np.ndarray], grid_df: pd.DataFrame, header: bool, resolution: Resolution) -> None:
     # Add time columns
     time_df = pd.DataFrame({
         'YEAR': time_ts.year,   # type: ignore
         'DOY': time_ts.map(lambda x: x.timetuple().tm_yday),   # type: ignore
     })
-    if hourly:
+    if resolution is Resolution.HOURLY:
         time_df['HOUR'] = time_ts.hour   # type: ignore
 
     for ind, grid in enumerate(grid_df.index):
         # Choose variables for output
-        if hourly:
-            output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if var.hourly and not var.unit.startswith('#')})
-        else:
-            output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if var.daily and not var.unit.startswith('#')})
+        output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if resolution in var.resolution and not var.unit.startswith('#')})
 
         output_df = pd.concat([time_df, output_df.reset_index(drop=True)], axis=1).dropna()
 
         for c in output_df.columns:
             output_df[c] = output_df[c].map(WEATHER_FILE_VARIABLES[c].fmt)
 
-        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"hourly.weather" if hourly else "weather"}', 'w' if header else 'a') as f:
+        with open(f'{weather_path}/{grid_df.loc[grid, "weather_file"]}.{"hourly.weather" if resolution is Resolution.HOURLY else "weather"}', 'w' if header else 'a') as f:
             if header:
-                _write_header(f, grid_df.loc[grid, 'grid_latitude'], grid_df.loc[grid, 'elevation'], hourly)   # type: ignore
+                _write_header(f, grid_df.loc[grid, 'grid_latitude'], grid_df.loc[grid, 'elevation'], resolution)   # type: ignore
             output_df.to_csv(
                 f,
                 sep='\t',
@@ -461,7 +457,7 @@ def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locati
     return grid_df
 
 
-def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, hourly: bool) -> tuple(list(datetime), dict[str, np.ndarray]):
+def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, resolution: Resolution) -> tuple(list(datetime), dict[str, np.ndarray]):
     # Arrays to store daily values
     nc_data = {var: [] for var in reanalysis.netcdf_variables}
 
