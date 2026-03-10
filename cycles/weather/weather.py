@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from enum import Enum
 from netCDF4 import Dataset
 from pathlib import Path
+from scipy.interpolate import interp1d
 from tqdm import tqdm
 
 pt = os.path.dirname(os.path.realpath(__file__))
@@ -51,8 +52,8 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/GLDASp5_elevation_025d.nc4'),
         elevation=lambda nc: nc['GLDAS_elevation'][0],
         start_time=datetime.strptime('2000-01-01 03:00', '%Y-%m-%d %H:%M'),
-        ind_j=lambda lat: int(round((lat - (-59.875)) / 0.25)),
-        ind_i=lambda lon: int(round((lon - (-179.875)) / 0.25)),
+        ind_j=lambda lat: round((lat - (-59.875)) / 0.25),
+        ind_i=lambda lon: round((lon - (-179.875)) / 0.25),
         netcdf_variables={
             'precipitation': 'Rainf_f_tavg',
             'air temperature': 'Tair_f_inst',
@@ -62,15 +63,15 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'Psurf_f_inst',
         },
         weather_file_variables={
-            'PP': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['precipitation']) * 3600.0 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['precipitation'], 3), axis=1) * 86400.0,
-            'TMP': lambda ts, nc_data, _: _interpolate_to_hourly(ts, nc_data['air temperature']) - 273.15,
-            'TX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
-            'TN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 3), axis=1) - 273.15,
-            'SOLAR': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['solar']) * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['solar'], 3), axis=1) * 86400.0 * 1.0E-6,
-            'RH': lambda ts, nc_data, _: _interpolate_to_hourly(ts, _relative_humidity(nc_data)) * 100.0,
-            'RHX': lambda ts, nc_data, _: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
-            'RHN': lambda ts, nc_data, _: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 3), axis=1) * 100.0,
-            'WIND': lambda ts, nc_data, resolution: _interpolate_to_hourly(ts, nc_data['wind']) if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['wind'], 3), axis=1),
+            'PP': lambda nc_data, resolution: nc_data['precipitation'] * 3600.0 if resolution is Resolution.HOURLY else nc_data['precipitation'].mean(axis=0, keepdims=True) * 86400.0,
+            'TMP': lambda nc_data, _: nc_data['air temperature'] - 273.15,
+            'TX': lambda nc_data, _: nc_data['air temperature'].max(axis=0, keepdims=True) - 273.15,
+            'TN': lambda nc_data, _: nc_data['air temperature'].min(axis=0, keepdims=True) - 273.15,
+            'SOLAR': lambda nc_data, resolution: nc_data['solar'] * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else nc_data['solar'].mean(axis=0, keepdims=True) * 86400.0 * 1.0E-6,
+            'RH': lambda nc_data, _: _relative_humidity(nc_data) * 100.0,
+            'RHX': lambda nc_data, _: _relative_humidity(nc_data).max(axis=0, keepdims=True) * 100.0,
+            'RHN': lambda nc_data, _: _relative_humidity(nc_data).min(axis=0, keepdims=True) * 100.0,
+            'WIND': lambda nc_data, resolution: nc_data['wind'] if resolution is Resolution.HOURLY else nc_data['wind'].mean(axis=0, keepdims=True),
         }
     ))
     gridMET = astuple(ReanalysisDataMixin(
@@ -79,15 +80,15 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         netcdf_prefix=None,
         netcdf_suffix=None,
         netcdf_shape=(585, 1386),
-        data_interval=None,
+        data_interval=24,
         # For gridMET, land mask and elevation are the same file
         land_mask_file=os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
         land_mask=lambda nc: nc['elevation'][:, :],
         elevation_file=os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
         elevation=lambda nc: nc['elevation'][:, :],
         start_time=datetime.strptime('1979-01-01', '%Y-%m-%d'),
-        ind_j=lambda lat: int(round((lat - 49.4) / (-1.0 / 24.0))),
-        ind_i=lambda lon: int(round((lon - (-124.76667)) / (1.0 / 24.0))),
+        ind_j=lambda lat: round((lat - 49.4) / (-1.0 / 24.0)),
+        ind_i=lambda lon: round((lon - (-124.76667)) / (1.0 / 24.0)),
         netcdf_variables={
             'pr': 'precipitation_amount',
             'tmmx': 'air_temperature',
@@ -98,13 +99,13 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'vs': 'wind_speed',
         },
         weather_file_variables={
-            'PP': lambda _ts, nc_data, _resolution: nc_data['pr'],
-            'TX': lambda _ts, nc_data, _resolution: nc_data['tmmx'] - 273.15,
-            'TN': lambda _ts, nc_data, _resolution: nc_data['tmmn'] - 273.15,
-            'SOLAR': lambda _ts, nc_data, _resolution: nc_data['srad'] * 86400.0 * 1.0E-6,
-            'RHX': lambda _ts, nc_data, _resolution: nc_data['rmax'],
-            'RHN': lambda _ts, nc_data, _resolution: nc_data['rmin'],
-            'WIND': lambda _ts, nc_data, _resolution: nc_data['vs'],
+            'PP': lambda nc_data, _: nc_data['pr'],
+            'TX': lambda nc_data, _: nc_data['tmmx'] - 273.15,
+            'TN': lambda nc_data, _: nc_data['tmmn'] - 273.15,
+            'SOLAR': lambda nc_data, _: nc_data['srad'] * 86400.0 * 1.0E-6,
+            'RHX': lambda nc_data, _: nc_data['rmax'],
+            'RHN': lambda nc_data, _: nc_data['rmin'],
+            'WIND': lambda nc_data, _: nc_data['vs'],
         }
     ))
     NLDAS = astuple(ReanalysisDataMixin(
@@ -119,8 +120,8 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/NLDAS_elevation.nc4'),
         elevation=lambda nc: nc['NLDAS_elev'][0],
         start_time=datetime.strptime('1979-01-01 13:00', '%Y-%m-%d %H:%M'),
-        ind_j=lambda lat: int(round((lat - 25.0625) / 0.125)),
-        ind_i=lambda lon: int(round((lon - (-124.9375)) / 0.125)),
+        ind_j=lambda lat: round((lat - 25.0625) / 0.125),
+        ind_i=lambda lon: round((lon - (-124.9375)) / 0.125),
         netcdf_variables={
             'precipitation': 'Rainf',
             'air temperature': 'Tair',
@@ -131,41 +132,38 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'air pressure': 'PSurf',
         },
         weather_file_variables={
-            'PP': lambda _ts, nc_data, resolution: nc_data['precipitation'] if resolution is Resolution.HOURLY else np.nansum(_reshape_to_daily(nc_data['precipitation'], 1), axis=1),
-            'TMP': lambda _ts, nc_data, _resolution: nc_data['air temperature'] - 273.15,
-            'TX': lambda _ts, nc_data, _resolution: np.nanmax(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
-            'TN': lambda _ts, nc_data, _resolution: np.nanmin(_reshape_to_daily(nc_data['air temperature'], 1), axis=1) - 273.15,
-            'SOLAR': lambda _ts, nc_data, resolution: nc_data['solar'] * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(nc_data['solar'], 1), axis=1) * 86400.0 * 1.0E-6,
-            'RH': lambda _ts, nc_data, _resolution: _relative_humidity(nc_data) * 100.0,
-            'RHX': lambda _ts, nc_data, _resolution: np.nanmax(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
-            'RHN': lambda _ts, nc_data, _resolution: np.nanmin(_reshape_to_daily(_relative_humidity(nc_data), 1), axis=1) * 100.0,
-            'WIND': lambda _ts, nc_data, resolution: _wind_speed(nc_data) if resolution is Resolution.HOURLY else np.nanmean(_reshape_to_daily(_wind_speed(nc_data), 1), axis=1),
+            'PP': lambda nc_data, resolution: nc_data['precipitation'] if resolution is Resolution.HOURLY else nc_data['precipitation'].sum(axis=0, keepdims=True),
+            'TMP': lambda nc_data, _: nc_data['air temperature'] - 273.15,
+            'TX': lambda nc_data, _: nc_data['air temperature'].max(axis=0, keepdims=True) - 273.15,
+            'TN': lambda nc_data, _: nc_data['air temperature'].min(axis=0, keepdims=True) - 273.15,
+            'SOLAR': lambda nc_data, resolution: nc_data['solar'] * 3600.0 * 1.0E-6 if resolution is Resolution.HOURLY else nc_data['solar'].mean(axis=0, keepdims=True) * 86400.0 * 1.0E-6,
+            'RH': lambda nc_data, _: _relative_humidity(nc_data) * 100.0,
+            'RHX': lambda nc_data, _: _relative_humidity(nc_data).max(axis=0, keepdims=True) * 100.0,
+            'RHN': lambda nc_data, _: _relative_humidity(nc_data).min(axis=0, keepdims=True) * 100.0,
+            'WIND': lambda nc_data, resolution: _wind_speed(nc_data) if resolution is Resolution.HOURLY else _wind_speed(nc_data).mean(axis=0, keepdims=True),
         }
     ))
 
 
-def _reshape_to_daily(nc_data: np.ndarray, interval: int) -> np.ndarray:
-    return nc_data.reshape(-1, 24 // interval, nc_data.shape[1])
-
 @dataclass
-class WeatherFileVariable:
+class WeatherFileDataMixin:
     fmt: Callable
     unit: str
     resolution: list[Resolution]
 
 WEATHER_FILE_VARIABLES = {
-    'YEAR': WeatherFileVariable(fmt=lambda x: '%-7.4d' % x, unit='####', resolution=[Resolution.DAILY, Resolution.HOURLY]),
-    'DOY': WeatherFileVariable(fmt=lambda x: '%-7.3d' % x, unit='###', resolution=[Resolution.DAILY, Resolution.HOURLY]),
-    'HOUR': WeatherFileVariable(fmt=lambda x: '%-7.2d' % x, unit='####', resolution=[Resolution.HOURLY]),
-    'PP': WeatherFileVariable(fmt=lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x, unit='mm', resolution=[Resolution.DAILY, Resolution.HOURLY]),
-    'TMP': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.HOURLY]),
-    'TX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
-    'TN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
-    'SOLAR': WeatherFileVariable(fmt=lambda x: '%-7.3f' % x, unit='MJ/m2', resolution=[Resolution.DAILY, Resolution.HOURLY]),
-    'RH': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.HOURLY]),
-    'RHX': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
-    'RHN': WeatherFileVariable(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
-    'WIND': WeatherFileVariable(fmt=lambda x: '%-.2f' % x, unit='m/s', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'YEAR': WeatherFileDataMixin(fmt=lambda x: '%-7.4d' % x, unit='####', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'DOY': WeatherFileDataMixin(fmt=lambda x: '%-7.3d' % x, unit='###', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'HOUR': WeatherFileDataMixin(fmt=lambda x: '%-7.2d' % x, unit='####', resolution=[Resolution.HOURLY]),
+    'PP': WeatherFileDataMixin(fmt=lambda x: "%-#.5g" % x if x >= 1.0 else "%-.4f" % x, unit='mm', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'TMP': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.HOURLY]),
+    'TX': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
+    'TN': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='degC', resolution=[Resolution.DAILY]),
+    'SOLAR': WeatherFileDataMixin(fmt=lambda x: '%-7.3f' % x, unit='MJ/m2', resolution=[Resolution.DAILY, Resolution.HOURLY]),
+    'RH': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.HOURLY]),
+    'RHX': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
+    'RHN': WeatherFileDataMixin(fmt=lambda x: '%-7.2f' % x, unit='%', resolution=[Resolution.DAILY]),
+    'WIND': WeatherFileDataMixin(fmt=lambda x: '%-.2f' % x, unit='m/s', resolution=[Resolution.DAILY, Resolution.HOURLY]),
 }
 
 COOKIE_FILE = './.urs_cookies'
@@ -188,7 +186,8 @@ def download_forcing(data_path: Path | str, forcing: str, date_start: datetime |
 
 
 def find_grids(forcing: str, *, locations: LocationInput=None, screen_output=True) -> pd.DataFrame:
-    """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information and corresponding weather file names.
+    """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information
+    and corresponding weather file names.
     """
     _find_grids(REANALYSIS[forcing], locations, screen_output)
 
@@ -197,9 +196,7 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
-        #indices = [ind for ind, row in mask_df.iterrows() if row['mask'] > 0]
-        indices = list(mask_df[mask_df['mask'] > 0].index)
-        df = pd.DataFrame({'grid_index': indices})
+        df = pd.DataFrame({'grid_index': list(mask_df[mask_df['mask'] > 0].index)})
     else:
         indices = []
         sites = []
@@ -263,33 +260,38 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
 
 def generate_weather_files(data_path: Path | str, weather_path: Path | str, forcing: str, date_start: datetime, date_end: datetime, *,
     hourly: bool=False, locations: LocationInput=None, header: bool=True) -> None:
-    '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with valid data will be used.
+    '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with
+    valid data will be used.
     '''
     reanalysis = REANALYSIS[forcing]
     resolution = Resolution.HOURLY if hourly else Resolution.DAILY
 
-    grid_df = _initialize_weather_files(Path(weather_path), reanalysis, locations)
+    Path(weather_path).mkdir(parents=True, exist_ok=True)
+
+    grid_df = _find_grids(reanalysis, locations, False)
 
     if reanalysis is REANALYSIS.gridMET:
-        nc_data = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
-        timestamps = []
+        weather_data = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
     elif reanalysis in [REANALYSIS.GLDAS, REANALYSIS.NLDAS]:
-        timestamps, nc_data = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, resolution)
+        weather_data = _process_xldas(Path(data_path), reanalysis, date_start, date_end, grid_df, resolution)
 
-    weather_data = {key: func(timestamps, nc_data, resolution) for key, func in reanalysis.weather_file_variables.items() if resolution in WEATHER_FILE_VARIABLES[key].resolution}
+    if resolution is Resolution.HOURLY:
+        start = max(date_start, reanalysis.start_time)
+        freq = '1h'
+    elif resolution is Resolution.DAILY:
+        start = date_start
+        freq = '1d'
 
-    time_index = pd.date_range(start=date_start, end=date_end + timedelta(days=1), freq='1h' if resolution is Resolution.HOURLY else '1d', inclusive='left')
+    time_index = pd.date_range(start=start, end=date_end + timedelta(days=1), freq=freq, inclusive='left')
+
+    weather_data = {key: _interpolate_to_hourly(reanalysis, np.array(value)) if hourly and reanalysis.data_interval > 1 else np.array(value) for key, value in weather_data.items()}
 
     _write_weather_files(Path(weather_path), time_index, weather_data, grid_df, header, resolution)
 
 
 def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime) -> None:
-    d = date_start
-    with tqdm(total=(date_end - date_start).days + 1, desc=f'Download {reanalysis.name} files', unit=' days') as progress_bar:
-        while d <= date_end:
-            _download_daily_xldas(data_path, reanalysis, d)
-            d += timedelta(days=1)
-            progress_bar.update(1)
+    for d in tqdm(pd.date_range(start=date_start, end=date_end), desc=f'Download {reanalysis.name} files', unit=' days'):
+        _download_daily_xldas(data_path, reanalysis, d)
 
 
 def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, year_end: int) -> None:
@@ -313,11 +315,6 @@ def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, yea
                     stderr=subprocess.DEVNULL,
                 )
                 progress_bar.update(1)
-
-
-def _interpolate_to_hourly(time_index: pd.Series, array: np.ndarray) -> np.ndarray:
-    df = pd.DataFrame(array, index=time_index).astype(float)
-    return df.resample('h').mean().interpolate(method='linear').values
 
 
 def _download_daily_xldas(path: Path, reanalysis: REANALYSIS, day: datetime):
@@ -411,15 +408,6 @@ def _wind_speed(nc_data: dict[str, np.ndarray]) -> np.ndarray:
     return np.sqrt(nc_data['wind_u'] ** 2 + nc_data['wind_v'] ** 2)
 
 
-def _read_xldas_netcdf(t: datetime, reanalysis: REANALYSIS, nc: Dataset, indices: np.ndarray, nc_data: dict[str, list]) -> None:
-    """Read meteorological variables of an array of desired grids from netCDF
-
-    The netCDF variable arrays are flattened to make reading faster
-    """
-    for var in reanalysis.netcdf_variables:
-        nc_data[var].append(list(nc[reanalysis.netcdf_variables[var]][0].flatten()[indices]))
-
-
 def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[str, np.ndarray], grid_df: pd.DataFrame, header: bool, resolution: Resolution) -> None:
     # Add time columns
     time_df = pd.DataFrame({
@@ -457,35 +445,37 @@ def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locati
     return grid_df
 
 
-def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, resolution: Resolution) -> tuple(list(datetime), dict[str, np.ndarray]):
+def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, resolution: Resolution) -> dict[str, np.ndarray]:
     # Arrays to store daily values
+    weather_data = {var: [] for var in reanalysis.weather_file_variables if resolution in WEATHER_FILE_VARIABLES[var].resolution}
+
+    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process {reanalysis.name} files', unit=' days'):
+        _process_daily_xldas(data_path, reanalysis, d, grid_df, resolution, weather_data)
+
+    weather_data = {key: np.array(value) for key, value in weather_data.items()}
+
+    return weather_data
+
+
+def _process_daily_xldas(data_path: Path, reanalysis: REANALYSIS, t: datetime, grid_df: pd.DataFrame, resolution: Resolution, weather_data: dict[str, list]) -> None:
     nc_data = {var: [] for var in reanalysis.netcdf_variables}
+    for _t in pd.date_range(start=t, end=t + timedelta(days=1), freq=f'{reanalysis.data_interval}h', inclusive='left'):
+        if _t < reanalysis.start_time:
+            continue
+        # Read one netCDF file
+        with Dataset(data_path / f'{_t.strftime("%Y/%j")}/{reanalysis.netcdf_prefix}{_t.strftime("%Y%m%d.%H%M")}.{reanalysis.netcdf_suffix}') as nc:
+            for nc_var in reanalysis.netcdf_variables:
+                nc_data[nc_var].append(nc[reanalysis.netcdf_variables[nc_var]][0].flatten()[grid_df.index].tolist())
 
-    timestamps = []
-    t = date_start
-    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process {reanalysis.name} files', unit=' days') as progress_bar:
-        while t < date_end + timedelta(days=1):
-            if t < reanalysis.start_time:
-                for var in reanalysis.netcdf_variables:
-                    nc_data[var].append(list(np.full(len(grid_df), np.nan)))
-            else:
-                # netCDF file name
-                fn = f'{t.strftime("%Y/%j")}/{reanalysis.netcdf_prefix}{t.strftime("%Y%m%d.%H%M")}.{reanalysis.netcdf_suffix}'
+    nc_data = {key: np.array(value) for key, value in nc_data.items()}
 
-                # Read one netCDF file
-                with Dataset(data_path/fn) as nc:
-                    _read_xldas_netcdf(t, reanalysis, nc, np.array(grid_df.index), nc_data)
-
-            timestamps.append(t)
-            t += timedelta(hours=reanalysis.data_interval)     # type: ignore
-            if (t - date_start).total_seconds() % 86400 == 0: progress_bar.update(1)
-
-    nc_data = {var: np.array(nc_data[var]) for var in nc_data}
-
-    return timestamps, nc_data
+    for weather_var, func in reanalysis.weather_file_variables.items():
+        if resolution not in WEATHER_FILE_VARIABLES[weather_var].resolution:
+            continue
+        weather_data[weather_var] += func(nc_data, resolution).tolist()
 
 
-def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame) -> dict[str, pd.DataFrame]:
+def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame) -> dict[str, np.ndarray]:
     """Process annual gridMET data and write them to weather files
     """
     gridmet = REANALYSIS.gridMET
@@ -493,25 +483,32 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
     nc_data = {var: [] for var in gridmet.netcdf_variables}
 
     year = -9999
-    t = date_start
-    with tqdm(total=(date_end - date_start).days + 1, desc=f'Process gridMET files', unit=' days') as progress_bar:
-        while t < date_end + timedelta(days=1):
-            if t.year != year:
-                # Close netCDF files that are open
-                if year != -9999:
-                    for key in gridmet.netcdf_variables: ncs[key].close()
+    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process gridMET files', unit=' days'):
+        if d.year != year:
+            # Close netCDF files that are open
+            if year != -9999:
+                for key in gridmet.netcdf_variables: ncs[key].close()
 
-                year = t.year
-                ncs = {key: Dataset(data_path/f'{key}_{year}.nc') for key in gridmet.netcdf_variables}
+            year = d.year
+            ncs = {key: Dataset(data_path/f'{key}_{year}.nc') for key in gridmet.netcdf_variables}
 
-            for var in gridmet.netcdf_variables:
-                nc_data[var].append(list(ncs[var][gridmet.netcdf_variables[var]][t.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)]))
+        for var in gridmet.netcdf_variables:
+            nc_data[var].append(ncs[var][gridmet.netcdf_variables[var]][d.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)].tolist())
 
-            t += timedelta(days=1)
-            progress_bar.update(1)
-
-    for key in gridmet.netcdf_variables:
+    for key, values in nc_data.items():
         nc_data[key] = np.array(nc_data[key])
         ncs[key].close()
 
-    return nc_data
+    # Note that gridMET only provides daily data
+    weather_data = {key: func(nc_data, None) for key, func in gridmet.weather_file_variables.items() if Resolution.DAILY in WEATHER_FILE_VARIABLES[key].resolution}
+
+    return weather_data
+
+
+def _interpolate_to_hourly(reanalysis: REANALYSIS, array: np.ndarray) -> np.ndarray:
+    x0 = np.linspace(0, array.shape[0] - 1, array.shape[0])
+    x = np.linspace(0, array.shape[0] - 1, array.shape[0] + (array.shape[0] - 1) * (reanalysis.data_interval - 1))
+
+    f = interp1d(x0, array, axis=0, kind='linear')
+
+    return f(x)
