@@ -28,7 +28,7 @@ class ReanalysisDataMixin:
     netcdf_prefix: str | None
     netcdf_suffix: str | None
     netcdf_shape: tuple[int, int]
-    data_interval: int | None
+    data_interval: int
     land_mask_file: Path | str
     land_mask: Callable
     elevation_file: Path | str
@@ -178,6 +178,8 @@ def download_forcing(data_path: Path | str, forcing: str, date_start: datetime |
         date_start = datetime(date_start, 1, 1)
         date_end = datetime(date_end, 12, 31)
 
+    assert isinstance(date_start, datetime) and isinstance(date_end, datetime)
+
     reanalysis = REANALYSIS[forcing]
     if reanalysis is REANALYSIS.gridMET:
         _download_gridmet(data_path, reanalysis, date_start.year, date_end.year)
@@ -185,7 +187,7 @@ def download_forcing(data_path: Path | str, forcing: str, date_start: datetime |
         _download_xldas(data_path, reanalysis, date_start, date_end)
 
 
-def find_grids(forcing: str, *, locations: LocationInput=None, screen_output=True) -> pd.DataFrame:
+def find_grids(forcing: str, *, locations: LocationInput=None, screen_output=True) -> None:
     """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information
     and corresponding weather file names.
     """
@@ -225,7 +227,7 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
 
         df = pd.DataFrame({
             'grid_index': indices,
-            'input_coordinate': locations if isinstance(locations, list) else locations.values(),
+            'input_coordinate': locations if isinstance(locations, list) else locations.values(),   # type: ignore
         })
 
         if sites: df['site'] = sites
@@ -495,8 +497,9 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
         for var in gridmet.netcdf_variables:
             nc_data[var].append(ncs[var][gridmet.netcdf_variables[var]][d.timetuple().tm_yday - 1].flatten()[np.array(grid_df.index)].tolist())
 
+    nc_data = {key: np.array(value) for key, value in nc_data.items()}
+
     for key, values in nc_data.items():
-        nc_data[key] = np.array(nc_data[key])
         ncs[key].close()
 
     # Note that gridMET only provides daily data
