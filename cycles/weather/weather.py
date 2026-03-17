@@ -34,10 +34,16 @@ class ReanalysisDataMixin:
     elevation_file: Path | str
     elevation: Callable
     start_time: datetime
-    ind_j: Callable
-    ind_i: Callable
+    la1: float
+    lo1: float
+    di: float
+    dj: float
     netcdf_variables: dict[str, str]
     weather_file_variables: dict[str, Callable]
+
+    def nearest_grid_index(self, lat, lon) -> int:
+        return np.ravel_multi_index((round((lat - self.la1) / self.dj), round((lon - self.lo1) / self.di)), self.netcdf_shape)
+
 
 class REANALYSIS(ReanalysisDataMixin, Enum):
     GLDAS = astuple(ReanalysisDataMixin(
@@ -52,8 +58,10 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/GLDASp5_elevation_025d.nc4'),
         elevation=lambda nc: nc['GLDAS_elevation'][0],
         start_time=datetime.strptime('2000-01-01 03:00', '%Y-%m-%d %H:%M'),
-        ind_j=lambda lat: round((lat - (-59.875)) / 0.25),
-        ind_i=lambda lon: round((lon - (-179.875)) / 0.25),
+        la1=-59.875,
+        lo1=-179.875,
+        di=0.25,
+        dj=0.25,
         netcdf_variables={
             'precipitation': 'Rainf_f_tavg',
             'air temperature': 'Tair_f_inst',
@@ -87,8 +95,10 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/gridMET_elevation_mask.nc'),
         elevation=lambda nc: nc['elevation'][:, :],
         start_time=datetime.strptime('1979-01-01', '%Y-%m-%d'),
-        ind_j=lambda lat: round((lat - 49.4) / (-1.0 / 24.0)),
-        ind_i=lambda lon: round((lon - (-124.76667)) / (1.0 / 24.0)),
+        la1=49.4,
+        lo1=-124.76667,
+        di=1.0/24.0,
+        dj=-1.0/24.0,
         netcdf_variables={
             'pr': 'precipitation_amount',
             'tmmx': 'air_temperature',
@@ -120,8 +130,10 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
         elevation_file=os.path.join(pt, '../data/NLDAS_elevation.nc4'),
         elevation=lambda nc: nc['NLDAS_elev'][0],
         start_time=datetime.strptime('1979-01-01 13:00', '%Y-%m-%d %H:%M'),
-        ind_j=lambda lat: round((lat - 25.0625) / 0.125),
-        ind_i=lambda lon: round((lon - (-124.9375)) / 0.125),
+        la1=25.0625,
+        lo1=-124.9375,
+        di=0.125,
+        dj=0.125,
         netcdf_variables={
             'precipitation': 'Rainf',
             'air temperature': 'Tair',
@@ -143,7 +155,6 @@ class REANALYSIS(ReanalysisDataMixin, Enum):
             'WIND': lambda nc_data, resolution: _wind_speed(nc_data) if resolution is Resolution.HOURLY else _wind_speed(nc_data).mean(axis=0, keepdims=True),
         }
     ))
-
 
 @dataclass
 class WeatherFileDataMixin:
@@ -198,39 +209,30 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
-        df = pd.DataFrame({'grid_index': list(mask_df[mask_df['mask'] > 0].index)})
+        coordinates = None
+        sites = None
+        indices = list(mask_df[mask_df['mask'] > 0].index)
     else:
-        indices = []
-        sites = []
+        if isinstance(locations, Mapping):
+            coordinates = list(locations.values())
+            sites = list(locations.keys())
+        elif isinstance(locations, Sequence):
+            coordinates = locations
+            sites = None
 
-        for loc in locations:
-            if isinstance(locations, list):
-                (lat, lon) = loc
-            elif isinstance(locations, dict):
-                (lat, lon) = locations[loc] # type: ignore
+        for coordinate in coordinates:
+            if isinstance(coordinate, tuple) and len(coordinate) == 2:
+                continue
             else:
-                raise TypeError('Location input must be a dict or list of coordinates.')
+                raise TypeError('Each location should be in the format of (latitude, longitude).')
 
-            sites.append(loc)
+        indices = [_calculate_grid_index(reanalysis, coordinate, mask_df) for coordinate in coordinates]
 
-            ind = np.ravel_multi_index((reanalysis.ind_j(lat), reanalysis.ind_i(lon)), reanalysis.netcdf_shape)
-
-            if mask_df.loc[ind]['mask'] == 0:   # type: ignore
-                mask_df['distance'] = mask_df.apply(
-                    lambda x: np.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
-                    axis=1,
-                )
-                mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
-                ind = mask_df['distance'].idxmin()
-
-            indices.append(ind)
-
-        df = pd.DataFrame({
-            'grid_index': indices,
-            'input_coordinate': locations if isinstance(locations, list) else locations.values(),   # type: ignore
-        })
-
-        if sites: df['site'] = sites
+    df = pd.DataFrame({
+        'grid_index': indices,
+        'input_coordinate': coordinates if coordinates else [None] * len(indices),
+        'site': sites if sites else [None] * len(indices),
+    })
 
     df[['grid_latitude', 'weather_file', 'elevation']] = df.apply(
         lambda x: _get_grid_info(reanalysis, x['grid_index'], mask_df),
@@ -239,25 +241,42 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
     )
 
     if locations is not None:
-        if any(df.duplicated(subset=['grid_index'])):
-            indices = df['grid_index']
-            if screen_output is True:
-                print(f"The following input coordinates share {reanalysis.name} grids:")
-                print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
-                print()
+        df = _remove_duplicated_locations(reanalysis, df, screen_output)
 
-        if screen_output is True:
-            print(f"{reanalysis.name} weather files:")
-            if not sites:
-                print(df[['input_coordinate', 'weather_file']].to_string(index=False))
-            else:
-                print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
-            print()
-
-    df = df.drop_duplicates(subset=['grid_index'], keep='first')
     df.set_index('grid_index', inplace=True)
 
     return df
+
+
+def _calculate_grid_index(reanalysis: REANALYSIS, coordinate: tuple[float, float], mask_df: pd.DataFrame) -> int:
+    lat, lon = coordinate
+    ind = reanalysis.nearest_grid_index(lat, lon)
+
+    if mask_df.loc[ind]['mask'] == 0:   # type: ignore
+        mask_df['distance'] = mask_df.apply(
+            lambda x: np.sqrt((x['latitude'] - lat) ** 2 + (x['longitude'] - lon) ** 2),
+            axis=1,
+        )
+        mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
+        ind = mask_df['distance'].idxmin()
+
+    return ind
+
+
+def _remove_duplicated_locations(reanalysis: REANALYSIS, df: pd.DataFrame, screen_output: bool) -> pd.DataFrame:
+    if any(df.duplicated(subset=['grid_index'])):
+        indices = df['grid_index']
+        if screen_output is True:
+            print(f"The following input coordinates share {reanalysis.name} grids:")
+            print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
+            print()
+
+    if screen_output is True:
+        print(f"{reanalysis.name} weather files:")
+        print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
+        print()
+
+    return df.drop_duplicates(subset=['grid_index'], keep='first')
 
 
 def generate_weather_files(data_path: Path | str, weather_path: Path | str, forcing: str, date_start: datetime, date_end: datetime, *,
