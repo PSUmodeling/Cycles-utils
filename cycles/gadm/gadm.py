@@ -17,7 +17,9 @@ COUNTY_CSV = os.path.join(pt, '../data/fips_gid_conversion.csv')
 def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool=True) -> gpd.GeoDataFrame:
     level: int = GADM_LEVELS[level_str.lower()]
     gdf: gpd.GeoDataFrame = gpd.read_file(GADM(Path(path), country, level))
-    gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
+    # The global GADM file already has the GID column
+    if country != 'global':
+        gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
     gdf.set_index('GID', inplace=True)
 
     return gdf[~gdf['NAME_1'].isin(['Alaska', 'Hawaii'])] if country == 'USA' and conus else gdf
