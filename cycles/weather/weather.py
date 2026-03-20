@@ -198,14 +198,16 @@ def download_forcing(data_path: Path | str, forcing: str, date_start: datetime |
         _download_xldas(data_path, reanalysis, date_start, date_end)
 
 
-def find_grids(forcing: str, *, locations: LocationInput=None, screen_output=True) -> None:
+def find_grids(forcing: str, *, locations: LocationInput=None, screen_output: bool=True, remove_duplicates: bool=True) -> str | list[str]:
     """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information
     and corresponding weather file names.
     """
-    _find_grids(REANALYSIS[forcing], locations, screen_output)
+    df = _find_grids(REANALYSIS[forcing], locations, screen_output, remove_duplicates)
+
+    return df['weather_file'].iloc[0] if len(df) == 1 else df['weather_file'].tolist()
 
 
-def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output: bool) -> pd.DataFrame:
+def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output: bool, remove_duplicates: bool) -> pd.DataFrame:
     mask_df = _read_land_mask(reanalysis)
 
     if locations is None:
@@ -240,8 +242,13 @@ def _find_grids(reanalysis: REANALYSIS, locations: LocationInput, screen_output:
         result_type='expand',
     )
 
-    if locations is not None:
+    if locations is not None and remove_duplicates is True:
         df = _remove_duplicated_locations(reanalysis, df, screen_output)
+
+    if screen_output is True:
+        print(f"{reanalysis.name} weather files:")
+        print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
+        print()
 
     df.set_index('grid_index', inplace=True)
 
@@ -270,11 +277,6 @@ def _remove_duplicated_locations(reanalysis: REANALYSIS, df: pd.DataFrame, scree
             print(f"The following input coordinates share {reanalysis.name} grids:")
             print(df[indices.isin(indices[indices.duplicated()])].sort_values('grid_index')[['input_coordinate', 'weather_file']].to_string(index=False))
             print()
-
-    if screen_output is True:
-        print(f"{reanalysis.name} weather files:")
-        print(df[['site', 'input_coordinate', 'weather_file']].to_string(index=False))
-        print()
 
     return df.drop_duplicates(subset=['grid_index'], keep='first')
 
