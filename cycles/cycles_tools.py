@@ -2,9 +2,6 @@ import cartopy.crs as ccrs
 import cartopy.feature as feature
 import geopandas as gpd
 import io
-import matplotlib.axes
-import matplotlib.colors
-import matplotlib.figure
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
@@ -13,6 +10,8 @@ import warnings
 from cartopy.mpl.geoaxes import GeoAxes
 from dataclasses import dataclass
 from matplotlib.axes import Axes
+from matplotlib.colors import Colormap
+from matplotlib.figure import Figure
 from pathlib import Path
 
 SOIL_PARAMETERS = ['clay', 'sand', 'soc', 'bulk_density', 'coarse_fragments', 'pH']
@@ -531,20 +530,24 @@ def plot_operations(operation_df: pd.DataFrame, rotation_size: int, *, axes: Axe
     return axes
 
 
-def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection =ccrs.PlateCarree(), cmap: matplotlib.colors.Colormap | str='viridis',
-        fig: matplotlib.figure.Figure | None=None, axes: tuple[float, float, float, float] | None=None,
-        colorbar: bool=True, cb_axes: tuple[float, float, float, float] | None=None,
-        title: str | None=None, vmin: float | None=None, vmax: float | None=None, extend: str='neither', cb_orientation: str='horizontal',
-        fontsize: int | None=None, frameon: bool=False) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
+def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=ccrs.PlateCarree(), ax: tuple[float, float, float, float] | GeoAxes | None=None,
+    cmap: Colormap | str='viridis', vmin: float | None=None, vmax: float | None=None,
+    colorbar: bool=True, cb_axes: tuple[float, float, float, float] | None=None, extend: str='neither', cb_orientation: str='horizontal',
+    label: str | None=None, title: str | None=None,
+    fontsize: float | None=None,
+    frameon: bool=False) -> tuple[Figure, GeoAxes]:
+
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
 
-    fig = plt.figure(figsize=(9, 6)) if fig is None else fig
+    if ax is None:
+        fig = plt.figure(figsize=(9, 6))
+        ax = fig.add_axes((0.025, 0.09, 0.95, 0.93), projection=projection, frameon=frameon)
+    elif isinstance(ax, tuple):
+        fig = plt.figure(figsize=(9, 6))
+        ax = fig.add_axes(ax, projection=projection, frameon=frameon)
+    elif isinstance(ax, GeoAxes):
+        fig = ax.get_figure()
 
-    ax: GeoAxes = fig.add_axes(
-        (0.025, 0.09, 0.95, 0.93) if axes is None else axes,
-        projection=projection,
-        frameon=frameon,
-    )   # type: ignore
     if colorbar is True:
         cax = fig.add_axes((0.3, 0.07, 0.4, 0.02) if cb_axes is None else cb_axes)
 
@@ -579,8 +582,10 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection 
             orientation=cb_orientation,
             extend=extend,
         )
-        if title is not None: cbar.set_label(title)
+        if label is not None: cbar.set_label(label)
         cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')  # type: ignore
+    if title is not None:
+        ax.set_title(title)
 
     return fig, ax
 
