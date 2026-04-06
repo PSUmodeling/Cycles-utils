@@ -1,14 +1,15 @@
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
 from matplotlib.axes import Axes
-from .cycles_tools import read_soil as _read_soil
-from .cycles_tools import read_weather as _read_weather
+from .cycles_tools import SoilLayer, ControlConfig
+from .cycles_tools import read_control_file as _read_control_file
+from .cycles_tools import read_soil_file as _read_soil_file
+from .cycles_tools import read_weather_file as _read_weather_file
 from .cycles_tools import read_output as _read_output
-from .cycles_tools import read_operations as _read_operations
+from .cycles_tools import read_operation_file as _read_operation_file
 from .cycles_tools import plot_yield as _plot_yield
 from .cycles_tools import plot_operations as _plot_operations
 
@@ -17,18 +18,21 @@ class Output:
     data: pd.DataFrame
     units: dict[str, str]
 
-
+@dataclass
 class Cycles:
-    def __init__(self, path: str | Path, simulation: str):
-        self.path: Path = Path(path)
-        self.simulation: str = simulation
-        self.output: dict[str, Output] = {}
-        self.control: dict[str, Any] = {}
-        self.operations: pd.DataFrame = pd.DataFrame()
-        self.soil_profile: pd.DataFrame = pd.DataFrame()
-        self.curve_number: int | None = None
-        self.slope: float | None = None
-        self.weather: pd.DataFrame = pd.DataFrame()
+    path: Path | str
+    simulation: str
+    output: dict[str, Output] = field(default_factory=dict[str, Output])
+    control: ControlConfig | None = None
+    operations: list | None = None
+    soil_profile: list[SoilLayer] | None = None
+    curve_number: int | None = None
+    slope: float | None = None
+    weather: pd.DataFrame | None = None
+
+    def __post_init__(self):
+        self.path = Path(self.path)
+        self.control = _read_control_file(self.path / 'input' / f'{self.simulation}.ctrl')
 
 
     def read_output(self, output_type: str) -> None:
@@ -36,48 +40,18 @@ class Cycles:
         self.output[output_type] = Output(data=df, units=units)
 
 
-    def read_control(self) -> None:
-        with open(self.path / 'input' / f'{self.simulation}.ctrl') as f:
-            lines = f.read().splitlines()
-
-        lines = [line for line in lines if (not line.strip().startswith('#')) and len(line.strip()) > 0]
-
-        control: dict[str, Any] = {line.strip().split()[0].lower(): line.strip().split()[1] for line in lines}
-
-        if len(control['simulation_start_date']) > 4:
-            control['simulation_start_date'] = datetime.strptime(control['simulation_start_date'], '%Y-%m-%d')
-        else:
-            control['simulation_start_date'] = datetime.strptime(control['simulation_start_date'] + '-01-01', '%Y-%m-%d')
-        if len(control['simulation_end_date']) > 4:
-            control['simulation_end_date'] = datetime.strptime(control['simulation_end_date'], '%Y-%m-%d')
-        else:
-            control['simulation_end_date'] = datetime.strptime(control['simulation_end_date'] + '-12-31', '%Y-%m-%d')
-        control['rotation_size'] = int(control['rotation_size'])
-
-        self.control = control
+    def read_operation_file(self) -> None:
+        self.operations = _read_operation_file(self.path / 'input' / self.control.input_files.operation_file)
 
 
-    def read_operations(self) -> None:
-        if not self.control:
-            self.read_control()
-
-        self.operations = _read_operations(self.path / 'input' / self.control["operation_file"])
-
-
-    def read_soil(self) -> None:
-        if not self.control:
-            self.read_control()
-        soil = self.control['soil_file']
-
-        self.soil_profile, self.curve_number, self.slope = _read_soil(self.path / 'input' / soil)
+    def read_soil_file(self) -> None:
+        self.soil_profile, meta = _read_soil_file(self.path / 'input' / self.control.input_files.soil_file)
+        self.curve_number = meta['curve_number']
+        self.slope = meta['slope']
 
 
-    def read_weather(self, *, start_year: int=0, end_year: int=9999, subdaily: bool=False) -> None:
-        if not self.control:
-            self.read_control()
-        weather = self.control['weather_file']
-
-        self.weather = _read_weather(self.path / 'input' / weather, start_year=start_year, end_year=end_year, subdaily=subdaily)
+    def read_weather_file(self, *, start_year: int=0, end_year: int=9999, subdaily: bool=False) -> None:
+        self.weather = _read_weather_file(self.path / 'input' / self.control.input_files.weather_file, start_year=start_year, end_year=end_year, subdaily=subdaily)
 
 
     def plot_yield(self, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
@@ -88,12 +62,10 @@ class Cycles:
 
 
     def plot_operations(self, rotation_size: int | None=None, *, axes: Axes | np.ndarray | None=None, fontsize: int | None=None):
-        if self.operations.empty:
-            self.read_operations()
+        if self.operations is None:
+            self.read_operation_file()
 
         if rotation_size is None:
-            if not self.control:
-                self.read_control()
-            rotation_size = int(self.control['rotation_size'])
+            rotation_size = self.control.simulation_years.rotation_size
 
         return _plot_operations(self.operations, rotation_size, axes=axes, fontsize=fontsize)
