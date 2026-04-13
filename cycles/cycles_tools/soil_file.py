@@ -146,12 +146,12 @@ def _unit_line() -> str:
     return ('%-7s\t' * (len(VARIABLES) - 1) + '%s') % tuple(v.unit for v in VARIABLES)
 
 
-def _render_soil_file(layers: list[SoilLayer], desc: str, slope: float, curve_number: float | None, hsg: str) -> list[str]:
+def _render_soil_file(layers: list[SoilLayer], desc: str, slope: float | None, curve_number: float | None, hsg: str) -> list[str]:
     lines = []
     if desc:
         lines.append(desc)
     lines.append("%-15s\t%d"   % ("CURVE_NUMBER", _resolve_curve_number(curve_number, hsg)))
-    lines.append("%-15s\t%.2f" % ("SLOPE", slope))
+    lines.append("%-15s\t%.2f" % ("SLOPE", slope) if slope is not None else "%-15s\t%s" % ("SLOPE", '-999'))
     lines.append(_header_line())
     lines.append(_unit_line())
     lines.extend(layer.format_row(ind + 1) for ind, layer in enumerate(layers))
@@ -244,7 +244,7 @@ def map_to_dataframe(layers: list[SoilLayer]) -> pd.DataFrame:
 
 def generate_soil_file(fn: str | Path, measured: list[SoilLayer], *,
     target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
-    desc: str = '', slope: float=0.0, curve_number: float | None=None, hsg: str = '') -> list[SoilLayer]:
+    desc: str = '', slope: float | None=None, curve_number: float | None=None, hsg: str = '') -> list[SoilLayer]:
     """Map measured soil layers onto the target profile and write a Cycles soil file.
     Returns the mapped layers for further use.
     """

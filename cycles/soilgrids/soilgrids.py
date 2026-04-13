@@ -103,7 +103,7 @@ class SoilGrids:
         ) for key, layer in SOILGRIDS_LAYERS.items()]
 
 
-    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float=0.0) -> None:
+    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None) -> None:
         profile: list[SoilLayer] = self.get_soil_profile(lat_lon)
         desc = desc if desc is not None else _build_desc(lat_lon, hsg)
 

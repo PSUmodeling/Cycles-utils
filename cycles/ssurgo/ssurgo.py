@@ -237,11 +237,11 @@ class Ssurgo:
     def _average_slope_hsg(self) -> None:
         assert self._mapunits is not None
 
-        gdf        = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
+        gdf = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
         gdf['area'] = gdf.area
 
         self.slope = _weighted_average(gdf, 'slopegradwta')
-        self.hsg   = _dominant_hsg(gdf)
+        self.hsg = _dominant_hsg(gdf)
 
 
 # ---------------------------------------------------------------------------
@@ -270,10 +270,10 @@ def _build_desc(muname: str, mukey: int, hsg: str) -> str:
     return '\n'.join(lines) + '\n'
 
 
-def _weighted_average(gdf: gpd.GeoDataFrame, col: str) -> float:
+def _weighted_average(gdf: gpd.GeoDataFrame, col: str) -> float | None:
     df = gdf[['area', col]].dropna()
     if df.empty:
-        return 0.0
+        return None
     if len(df) == 1:
         return float(df[col].iloc[0])
     return float((df[col] * df['area']).sum() / df['area'].sum())
