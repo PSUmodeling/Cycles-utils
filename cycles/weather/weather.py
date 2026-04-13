@@ -202,7 +202,7 @@ def find_grids(forcing: str, *, locations: LocationInput=None, screen_output: bo
     """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information
     and corresponding weather file names.
     """
-    df = _find_grids(REANALYSIS[forcing], locations, screen_output, remove_duplicates)
+    df = _find_grids(REANALYSIS[forcing], locations, screen_output=screen_output, remove_duplicates=remove_duplicates)
 
     return df['weather_file'].iloc[0] if len(df) == 1 else df['weather_file'].tolist()
 
@@ -291,7 +291,7 @@ def generate_weather_files(data_path: Path | str, weather_path: Path | str, forc
 
     Path(weather_path).mkdir(parents=True, exist_ok=True)
 
-    grid_df = _find_grids(reanalysis, locations, False)
+    grid_df = _find_grids(reanalysis, locations, screen_output=False, remove_duplicates=True)
 
     if reanalysis is REANALYSIS.gridMET:
         weather_data = _process_gridmet(Path(data_path), date_start, date_end, grid_df)
