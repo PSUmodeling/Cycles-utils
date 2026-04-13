@@ -460,14 +460,6 @@ def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[s
         )
 
 
-def _initialize_weather_files(weather_path: Path, reanalysis: REANALYSIS, locations: LocationInput):
-    weather_path.mkdir(parents=True, exist_ok=True)
-
-    grid_df = _find_grids(reanalysis, locations, False)
-
-    return grid_df
-
-
 def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame, resolution: Resolution) -> dict[str, np.ndarray]:
     # Arrays to store daily values
     weather_data = {var: [] for var in reanalysis.weather_file_variables if resolution in WEATHER_FILE_VARIABLES[var].resolution}
