@@ -11,6 +11,7 @@ from .soil_file import read_soil_file
 from .soil_file import map_to_dataframe
 from .soil_file import from_dataframe
 from .weather_file import read_weather_file
+from .reinit_file import generate_reinit_file
 from .plot_tools import plot_yield
 from .plot_tools import plot_operations
 from .plot_tools import plot_map

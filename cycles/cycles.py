@@ -10,6 +10,7 @@ from .cycles_tools import read_soil_file as _read_soil_file
 from .cycles_tools import read_weather_file as _read_weather_file
 from .cycles_tools import read_output as _read_output
 from .cycles_tools import read_operation_file as _read_operation_file
+from .cycles_tools import generate_reinit_file as _generate_reinit_file
 from .cycles_tools import plot_yield as _plot_yield
 from .cycles_tools import plot_operations as _plot_operations
 
@@ -52,6 +53,10 @@ class Cycles:
 
     def read_weather_file(self, *, start_year: int=0, end_year: int=9999, subdaily: bool=False) -> None:
         self.weather = _read_weather_file(self.path / 'input' / self.control.input_files.weather_file, start_year=start_year, end_year=end_year, subdaily=subdaily)
+
+
+    def generate_reinit_file(self, doy: int) -> None:
+        _generate_reinit_file(self.path / 'input' / f'{self.simulation}.reinit', self.path / 'output' / self.simulation, doy)
 
 
     def plot_yield(self, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
