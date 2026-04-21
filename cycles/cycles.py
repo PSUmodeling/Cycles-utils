@@ -55,8 +55,8 @@ class Cycles:
         self.weather = _read_weather_file(self.path / 'input' / self.control.input_files.weather_file, start_year=start_year, end_year=end_year, subdaily=subdaily)
 
 
-    def generate_reinit_file(self, doy: int) -> None:
-        _generate_reinit_file(self.path / 'input' / f'{self.simulation}.reinit', self.path / 'output' / self.simulation, doy)
+    def generate_reinit_file(self, doy: int, *, reinit: str | None=None) -> None:
+        _generate_reinit_file(self.path / 'input' / f'{self.simulation if reinit is None else reinit}.reinit', self.path / 'output' / self.simulation, doy)
 
 
     def plot_yield(self, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
