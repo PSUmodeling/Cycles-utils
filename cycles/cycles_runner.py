@@ -121,7 +121,7 @@ class CyclesRunner:
     # -----------------------------------------------------------------------
 
     def _run_cycles(self, simulation: str, options: str, silence: bool) -> bool:
-        cmd = [self.executable, *([options] if options else []), simulation]
+        cmd = [self.executable, *(options.split() if options else []), simulation]
         result = subprocess.run(
             cmd,
             shell=os.name == 'nt',
