@@ -12,4 +12,6 @@ from .cycles_tools import SoilLayer
 from .cycles_tools import plot_yield
 from .cycles_tools import plot_operations
 from .cycles_tools import plot_map
+from .cycles_tools import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .cycles_runner import CyclesRunner
+from .rotation_builder import CyclesRotationBuilder, Crop, CropGroup

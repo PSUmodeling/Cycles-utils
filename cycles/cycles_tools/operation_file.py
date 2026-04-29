@@ -1,95 +1,79 @@
 from __future__ import annotations
 from pathlib import Path
 from dataclasses import dataclass, fields
-from typing import get_type_hints
+from typing import get_type_hints, Protocol, Any
 from ._base_file import parse_value
 
-@dataclass
-class Planting:
-    year: int
-    doy: int
-    end_doy: int
-    max_smc: float
-    min_smc: float
-    max_soil_temp: float
-    min_soil_temp: float
-    crop: str
-    use_auto_irr: int
-    use_auto_fert: int
-    density: float
-    clipping_start: int
-    clipping_end: int
+class Operation(Protocol):
+    year: int | None
+    doy: int | None
 
-@dataclass
-class Tillage:
-    year: int
-    doy: int
+@dataclass(kw_only=True)
+class Planting(Operation):
+    year: int | None = None
+    doy: int | None = None
+    end_doy: int = -999
+    max_smc: float = -999
+    min_smc: float = -999
+    max_soil_temp: float = -999
+    min_soil_temp: float = -999
+    crop: str | None = None
+    use_auto_irr: int = 0
+    use_auto_fert: int = 0
+    density: float = 1.0
+    clipping_start: int = 1
+    clipping_end: int = 366
+
+@dataclass(kw_only=True)
+class Tillage(Operation):
+    year: int | None = None
+    doy: int | None = None
     tool: str
-    depth: float
-    soil_disturb_ratio: float
-    mixing_efficiency: float
-    crop_name: str
-    frac_thermal_time: float
-    kill_efficiency: float
+    crop_name: str = 'N/A'
+    frac_thermal_time: float = 0.0
+    kill_efficiency: float = 0.0
 
-@dataclass
-class Harvest:
-    year: int
-    doy: int
-    tool: str
-    depth: float
-    soil_disturb_ratio: float
-    mixing_efficiency: float
-    crop_name: str
-    frac_thermal_time: float
-    kill_efficiency: float
+@dataclass(kw_only=True)
+class Harvest(Operation):
+    year: int | None = None
+    doy: int | None = None
+    tool: str | None = None
+    crop_name: str = 'N/A'
+    frac_thermal_time: float = 0.0
+    kill_efficiency: float = 0.0
 
-@dataclass
-class Kill:
-    year: int
-    doy: int
-    tool: str
-    depth: float
-    soil_disturb_ratio: float
-    mixing_efficiency: float
-    crop_name: str
-    frac_thermal_time: float
-    kill_efficiency: float
+@dataclass(kw_only=True)
+class Kill(Operation):
+    year: int | None = None
+    doy: int | None = None
+    tool: str = 'Kill_Crop'
+    crop_name: str = 'N/A'
+    frac_thermal_time: float = 0.0
+    kill_efficiency: float = 0.0
 
-@dataclass
-class FixedFertilization:
-    year: int
-    doy: int
-    source: str
-    mass: float
-    form: str
-    method: str
-    depth: float
-    c_organic: float
-    c_charcoal: float
-    n_organic: float
-    n_charcoal: float
-    n_nh4: float
-    n_no3: float
-    p_organic: float
-    p_charcoal: float
-    p_inorganic: float
-    k: float
-    s: float
+@dataclass(kw_only=True)
+class FixedFertilization(Operation):
+    year: int | None = None
+    doy: int | None = None
+    source: str | None = None
+    mass: float | None = None
+    form: str = 'Liquid'
+    method: str = 'Broadcast'
+    depth: float = 0.0
 
-@dataclass
-class FixedIrrigation:
-    year: int
-    doy: int
-    volume: float
+@dataclass(kw_only=True)
+class FixedIrrigation(Operation):
+    year: int | None = None
+    doy: int | None = None
+    volume: float | None = None
 
-@dataclass
+@dataclass(kw_only=True)
 class AutoIrrigation:
-    crop: str
-    start_day: int
-    end_day: int
-    water_depletion: float
-    last_soil_layer: int
+    crop: str | None = None
+    start_day: int = 1
+    end_day: int = 366
+    water_depletion: float | None = None
+    depth: float | None = None
 
 OPERATION_PARAMETERS = {
     'planting': Planting,
@@ -113,7 +97,7 @@ def read_operation_file(operation: str | Path) -> list:
                 raise ValueError(f"Unknown operation keyword found: {operation}")
             target_class = OPERATION_PARAMETERS[operation]
             hints = get_type_hints(target_class)
-            operation_dict = {field.name: parse_value(next(lines), field.name, hints[field.name]) for field in fields(target_class)}
+            operation_dict: dict[str, Any] = {field.name: parse_value(next(lines), field.name, hints[field.name]) for field in fields(target_class)}
             if operation == 'tillage':
                 if operation_dict['tool'].lower().replace('_', '') in ['grainharvest', 'harvestgrain']:
                     operation_dict['tool'] = 'grain_harvest'
