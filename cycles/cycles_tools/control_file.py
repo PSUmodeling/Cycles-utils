@@ -98,7 +98,7 @@ def generate_control_file(fn: str | Path, user_dict: dict, *, row: pd.Series | N
     return config
 
 
-def read_control_file(control: str | Path, *, rotation_builder: bool=False) -> list:
+def read_control_file(control: str | Path, *, rotation_builder: bool=False) -> ControlConfig:
     with open(Path(control)) as f:
         lines = f.read().splitlines()
 

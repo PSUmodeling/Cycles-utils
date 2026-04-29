@@ -27,7 +27,7 @@ class SimulationContext:
 
 @dataclass
 class CyclesRunner:
-    executable: Path | str
+    executable: str
     rotation_builder: bool = False
 
     def __post_init__(self):
@@ -60,11 +60,15 @@ class CyclesRunner:
 
             self._write_inputs(cxt, operation_template)
 
-            if self._run_cycles(cxt.name, options, silence):
-                self._write_summary(cxt.name, summary, header=first_run, comment=comment)
+            cycles = Cycles(path='.', simulation=cxt.name, executable=self.executable)
+
+            code, _ = cycles.run(options=options, silence=silence)
+
+            if code == 0:
+                self._write_summary(cycles, summary, header=first_run, comment=comment)
                 first_run = False
                 print('Success')
-            else:
+            elif code == 1:
                 print('Fail')
 
             if rm_input:
@@ -105,31 +109,15 @@ class CyclesRunner:
             cxt.operation_fn.unlink(missing_ok=True)
 
 
-    def _write_summary(self, name: str, summary: str, *, header: bool, comment: str) -> None:
-        cycles = Cycles(path='.', simulation=name)
+    def _write_summary(self, cycles: Cycles, summary: str, *, header: bool, comment: str) -> None:
         cycles.read_output('harvest')
-        cycles.output['harvest'].data.insert(0, 'simulation', name)
+        cycles.output['harvest'].data.insert(0, 'simulation', cycles.simulation)
 
         mode = 'w' if header else 'a'
         with open(SUMMARY_DIR / summary, mode) as f:
             if header:
                 f.write(comment)
             cycles.output['harvest'].data.to_csv(f, header=header, index=False)
-
-    # -----------------------------------------------------------------------
-    # Private — subprocess helpers
-    # -----------------------------------------------------------------------
-
-    def _run_cycles(self, simulation: str, options: str, silence: bool) -> bool:
-        cmd = [self.executable, *(options.split() if options else []), simulation]
-        result = subprocess.run(
-            cmd,
-            shell=os.name == 'nt',
-            stdout=subprocess.DEVNULL if silence else None,
-            stderr=subprocess.DEVNULL if silence else None,
-        )
-        return result.returncode == 0
-
 
 # ---------------------------------------------------------------------------
 # Module-level helpers — pure functions with no dependency on CyclesRunner
@@ -150,7 +138,7 @@ def _generate_comment(executable: str, options: str) -> str:
     parts = [
         f'# {version}',
         'with spin-up' if 's' in options else 'without spin-up',
-        'with calibration' if 'c' in options else None,
+        'with calibration' if 'n' in options else None,
         'grain model turned on' if 'g' in options else None,
     ]
     return ', '.join(p for p in parts if p) + '\n'
