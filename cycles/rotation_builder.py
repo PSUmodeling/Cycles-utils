@@ -2,13 +2,13 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import re
-from dataclasses import dataclass, InitVar, field, replace
+from dataclasses import dataclass, field, replace
 from itertools import product
 from pathlib import Path
 from typing import NamedTuple
 from .cycles_runner import CyclesRunner
 from .cycles import Cycles
-from .cycles_tools import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
+from .cycles_tools import Operation, Planting, Tillage, FixedFertilization, AutoIrrigation
 from .cycles_tools import generate_control_file
 
 MIN_PLANTING_INTERVAL = 7
@@ -31,7 +31,6 @@ class Crop:
     name: str
     symbol: str
     operations: list[Operation]
-    times_planted: int = field(init=False, default=0)
 
     def __post_init__(self) -> None:
         for op in self.operations:
@@ -60,7 +59,6 @@ class EconomicParameters:
             penalty_factors=penalty_factors,
             yield_matrix=builder.yield_matrix,
         )
-
 
 class RotationResult(NamedTuple):
     crop: Crop
@@ -112,7 +110,7 @@ class CyclesRotationBuilder:
         cycles = Cycles(path='.', simulation=self.simulation, executable=self.executable)
         options = '-b'
 
-        while (True):
+        while True:
             status, screen_output = cycles.run(options=options, silence=False)
             if status != 10:
                 break
@@ -185,7 +183,7 @@ class CyclesRotationBuilder:
         planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2
 
         for op in result.crop.operations:
-            assert(op.doy is not None)
+            assert op.doy is not None
             if isinstance(op, Planting):
                 operations.append(replace(op, year=planting_year, doy=result.doy))
             elif isinstance(op, (Tillage, FixedFertilization)):
@@ -324,7 +322,7 @@ def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[li
     operation_dict: dict = {}
     simulations: list[dict] = []
 
-    assert(planting.doy is not None)
+    assert planting.doy is not None
 
     for ind, op in enumerate(operations):
         key = f'DOY{ind + 1}'
@@ -333,7 +331,7 @@ def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[li
     for doy in range(planting.doy, planting.end_doy + 1):
         sim: dict = {'simulation_name': f'{planting.crop}_{doy}'}
         for ind, op in enumerate(operations):
-            assert(op.doy is not None)
+            assert op.doy is not None
             sim[f'DOY{ind + 1}'] = (
                 doy if isinstance(op, Planting)
                 else _day_of_year(doy + op.doy) if op.doy < 0
