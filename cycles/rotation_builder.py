@@ -2,16 +2,36 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import re
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field, fields, replace
 from itertools import product
 from pathlib import Path
-from typing import NamedTuple
-from .cycles_runner import CyclesRunner
+from typing import NamedTuple, Any
 from .cycles import Cycles
-from .cycles_tools import Operation, Planting, Tillage, FixedFertilization, AutoIrrigation
+from .cycles_runner import CyclesRunner
+from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file
 
+FERTILIZER_FILE = 'input/fertilizers.txt'
 MIN_PLANTING_INTERVAL = 7
+
+@dataclass
+class Fertilizer:
+    name: str
+    c_organic: float
+    c_charcoal: float
+    n_organic: float
+    n_charcoal: float
+    n_nh4: float
+    n_no3: float
+    p_organic: float
+    p_charcoal: float
+    p_inorganic: float
+    k: float
+    s: float
+
+    @property
+    def n_fraction(self) -> float:
+        return self.n_organic + self.n_charcoal + self.n_nh4 + self.n_no3
 
 @dataclass(frozen=True)
 class CropGroup:
@@ -73,6 +93,7 @@ class CyclesRotationBuilder:
     executable: str
     crops: list[Crop]
     control_dict: dict
+    fertilizers: dict[str, Fertilizer] = field(init=False, default_factory=dict)
     yield_matrix: dict[str, pd.DataFrame] = field(init=False)
     build_yield_matrix: bool = field(default=True, kw_only=True)
     crop_price_data: pd.DataFrame | None = field(init=False, default=None)
@@ -83,6 +104,7 @@ class CyclesRotationBuilder:
 
     def __post_init__(self) -> None:
         self.executable = str(Path(self.executable).resolve())
+        self.fertilizers = read_fertilizer_file(Path('./') / FERTILIZER_FILE)
         self._times_planted = {crop.symbol: 0 for crop in self.crops}
 
         if self.build_yield_matrix:
@@ -101,7 +123,7 @@ class CyclesRotationBuilder:
             raise ValueError('Crop price data is required to run the rotation builder.')
 
         operations: list[Operation] = []
-        self.control_dict['rotation_size'] = int(self.control_dict['simulation_end_date']) - int(self.control_dict['simulation_start_date']) + 1
+        self.control_dict['rotation_size'] = self.control_dict['simulation_end_year'] - self.control_dict['simulation_start_year'] + 1
         self.control_dict['operation_file'] = f'{self.simulation}.operation'
 
         generate_control_file(f'./input/{self.simulation}.ctrl', self.control_dict)
@@ -165,7 +187,7 @@ class CyclesRotationBuilder:
             result = _calculate_economic_return(year, doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)  # type: ignore
 
             if self.rotation_frequency is not None:
-                rotation_year = year - int(self.control_dict['simulation_start_date']) + 1
+                rotation_year = year - self.control_dict['simulation_start_year'] + 1
                 result = RotationResult(
                     crop=result.crop,
                     doy=result.doy,
@@ -179,10 +201,12 @@ class CyclesRotationBuilder:
         return best
 
     def _append_operations(self, result: RotationResult, year: int, doy: int, operations: list[Operation]) -> None:
-        start_year = int(self.control_dict['simulation_start_date'])
+        start_year = self.control_dict['simulation_start_year']
         planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2
+        total_fertilization = sum(op.mass * self.fertilizers[op.source].n_fraction for op in result.crop.operations if isinstance(op, FixedFertilization))
 
         for op in result.crop.operations:
+            relative_doy = False
             assert op.doy is not None
             if isinstance(op, Planting):
                 operations.append(replace(op, year=planting_year, doy=result.doy))
@@ -191,13 +215,14 @@ class CyclesRotationBuilder:
                     op_doy = result.doy + op.doy
                     op_year = planting_year
                 else:
-                    op_doy = (result.doy + op.doy) % 366
-                    op_year = planting_year + (result.doy + op.doy) // 366
+                    op_doy = op.doy
+                    op_year = planting_year
+                    relative_doy = True
 
                 if isinstance(op, FixedFertilization) and result.n_rate is not None:
-                    operations.append(replace(op, year=op_year, doy=op_doy, mass=result.n_rate))
+                    operations.append(replace(op, year=op_year, doy=op_doy, mass=result.n_rate / total_fertilization * op.mass  if total_fertilization > 0 else 0.0, relative_doy=relative_doy))
                 else:
-                    operations.append(replace(op, year=op_year, doy=op_doy))
+                    operations.append(replace(op, year=op_year, doy=op_doy, relative_doy=relative_doy))
             else:
                 operations.append(op)
 
@@ -211,8 +236,8 @@ class CyclesRotationBuilder:
         df['growing_window'] = (df['date'] - df['planting_date']).dt.days
         df.drop(columns=['date', 'planting_date'], inplace=True)
 
-        start_year = self.control_dict['simulation_start_date']
-        end_year = self.control_dict['simulation_end_date']
+        start_year = self.control_dict['simulation_start_year']
+        end_year = self.control_dict['simulation_end_year']
         df = df[(df['year'] != start_year) & (df['year'] != end_year)].copy()
 
         planting = _last_planting(crop.operations)
@@ -286,13 +311,18 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
     )
 
 
-def _format_operation(operation: Operation, doy_override: dict[str, str] | None = None) -> list[str]:
+def _format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
     """Serialise a single operation to lines, with optional DOY substitutions."""
     lines = [_camel_to_snake(type(operation).__name__).upper()]
-    for key, val in operation.__dict__.items():
-        if doy_override and key in doy_override:
-            val = doy_override[key]
-        lines.append(f'{key.upper():<20}{val}')
+    for f in fields(operation):
+        if not f.metadata.get('readable', True):
+            continue
+        val = doy_override.get(f.name) if doy_override else None
+        if val is None:
+            val = getattr(operation, f.name)
+            if f.name == 'doy' and operation.relative_doy:
+                val = f'+{val}'
+        lines.append(f'{f.name.upper():<36}{val}')
     lines.append('')
     return lines
 
@@ -409,3 +439,36 @@ def _day_of_year(day: int) -> int:
 
 def _optional_csv(path: Path | str | None) -> pd.DataFrame | None:
     return pd.read_csv(path, index_col=0) if path is not None else None
+
+
+def _parse_value(line: str) -> tuple[str, float]:
+    """Strip comment, then return (key, value) from a data line."""
+    content = line.split('#')[0].split()
+    return content[0].lower(), float(content[1])
+
+
+def read_fertilizer_file(path: str | Path) -> dict[str, Fertilizer]:
+    fertilizers: dict[str, Fertilizer] = {}
+    current_name: str | None = None
+    current_data: dict[str, float] = {}
+
+    for line in Path(path).read_text().splitlines():
+        line = line.strip()
+        if not line:
+            continue
+
+        tokens = line.split()
+        if tokens[0].upper() == 'FERTILIZER':
+            if current_name is not None:
+                fertilizers[current_name] = Fertilizer(name=current_name, **current_data)
+            current_name = tokens[1]
+            current_data = {}
+        else:
+            key, value = _parse_value(line)
+            current_data[key] = value
+
+    # Flush the last block
+    if current_name is not None:
+        fertilizers[current_name] = Fertilizer(name=current_name, **current_data)
+
+    return fertilizers

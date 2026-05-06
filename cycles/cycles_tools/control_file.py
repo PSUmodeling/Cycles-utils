@@ -3,13 +3,13 @@ import pandas as pd
 import warnings
 from dataclasses import dataclass, fields
 from pathlib import Path
-from typing import get_type_hints
+from typing import Any, get_type_hints
 from ._base_file import write_file, resolve_dict_values, extract, parse_value, unwrap_optional
 
 @dataclass(kw_only=True)
 class SimulationYears:
-    simulation_start_date: str
-    simulation_end_date: str
+    simulation_start_year: int
+    simulation_end_year: int
     rotation_size: int
 
 @dataclass(kw_only=True)
@@ -19,15 +19,6 @@ class InputFiles:
     soil_file: str
     weather_file: str
     reinit_file: str='N/A'
-
-@dataclass(kw_only=True)
-class RotationBuilderInputFiles:
-    yield_file: str='N/A'
-    grain_price_file: str='N/A'
-    forage_price_file: str='N/A'
-    production_cost_file: str='N/A'
-    fertilizer_cost_file: str='N/A'
-    rotation_frequency_file: str='N/A'
 
 @dataclass(kw_only=True)
 class SimulationOptions:
@@ -57,12 +48,11 @@ class OutputControl:
 class ControlConfig:
     simulation_years: SimulationYears
     input_files: InputFiles
-    rotation_builder_input_files: RotationBuilderInputFiles | None
     simulation_options: SimulationOptions
     output_control: OutputControl
 
 
-def _build_control_config(control_dict: dict, row: pd.Series | None, input_dir: Path, rotation_builder: bool) -> ControlConfig:
+def _build_control_config(control_dict: dict, row: dict[str, Any] | None, input_dir: Path) -> ControlConfig:
     resolved = resolve_dict_values(control_dict, row)
 
     if 'soil_layers' not in resolved:
@@ -73,7 +63,6 @@ def _build_control_config(control_dict: dict, row: pd.Series | None, input_dir: 
         input_files=InputFiles(**extract(InputFiles, resolved)),
         simulation_options=SimulationOptions(**extract(SimulationOptions, resolved)),
         output_control=OutputControl(**extract(OutputControl, resolved)),
-        rotation_builder_input_files=RotationBuilderInputFiles(**extract(RotationBuilderInputFiles, resolved)) if rotation_builder else None
     )
 
 
@@ -90,15 +79,15 @@ def _get_soil_layers(fn: Path) -> int:
         return -999
 
 
-def generate_control_file(fn: str | Path, user_dict: dict, *, row: pd.Series | None = None, rotation_builder: bool = False) -> ControlConfig:
+def generate_control_file(fn: str | Path, user_dict: dict, *, row: dict[str, Any] | None = None) -> ControlConfig:
     fn = Path(fn)
-    config = _build_control_config(user_dict, row, fn.parent, rotation_builder)
+    config = _build_control_config(user_dict, row, fn.parent)
     write_file(fn, config)
 
     return config
 
 
-def read_control_file(control: str | Path, *, rotation_builder: bool=False) -> ControlConfig:
+def read_control_file(control: str | Path) -> ControlConfig:
     with open(Path(control)) as f:
         lines = f.read().splitlines()
 
@@ -108,9 +97,6 @@ def read_control_file(control: str | Path, *, rotation_builder: bool=False) -> C
 
     control_dict = {}
     for f in fields(ControlConfig):
-        if f.name == 'rotation_builder_input_files' and not rotation_builder:
-            control_dict[f.name] = None
-            continue
         target_class = unwrap_optional(hints[f.name])
 
         sub_hints = get_type_hints(target_class)

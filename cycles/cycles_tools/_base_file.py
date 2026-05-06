@@ -2,7 +2,7 @@ from __future__ import annotations
 import types
 from dataclasses import fields
 from pathlib import Path
-from typing import Union
+from typing import Union, Any
 
 def _format_block(label: str, block) -> str:
     lines = [f'## {label.replace("_", " ").upper()} ##']
