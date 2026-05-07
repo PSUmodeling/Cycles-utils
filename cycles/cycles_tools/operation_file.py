@@ -14,7 +14,7 @@ class Planting(Operation):
     year: int | None = None
     doy: int
     end_doy: int = -999
-    crop: str
+    crop: str = ''
     max_smc: float = -999
     min_smc: float = -999
     max_soil_temp: float = -999

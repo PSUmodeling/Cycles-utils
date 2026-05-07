@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from cartopy.mpl.geoaxes import GeoAxes
+from collections.abc import Sequence
 from dataclasses import dataclass
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap
@@ -169,7 +170,7 @@ def plot_operations(operations: list, rotation_size: int, *, axes: Axes | np.nda
     return axes
 
 
-def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=ccrs.PlateCarree(), ax: tuple[float, float, float, float] | GeoAxes | None=None,
+def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=ccrs.PlateCarree(), ax: Sequence[float] | GeoAxes | None=None,
     cmap: Colormap | str='viridis', vmin: float | None=None, vmax: float | None=None,
     colorbar: bool=True, cb_axes: tuple[float, float, float, float] | None=None, extend: str='neither', cb_orientation: str='horizontal',
     label: str | None=None, title: str | None=None,
@@ -181,7 +182,7 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
     if ax is None:
         fig = plt.figure(figsize=(9, 6))
         ax = fig.add_axes((0.025, 0.09, 0.95, 0.93), projection=projection, frameon=frameon)    # type: ignore
-    elif isinstance(ax, tuple):
+    elif isinstance(ax, Sequence):
         fig = plt.figure(figsize=(9, 6))
         ax = fig.add_axes(ax, projection=projection, frameon=frameon)   # type: ignore
     elif isinstance(ax, GeoAxes):
