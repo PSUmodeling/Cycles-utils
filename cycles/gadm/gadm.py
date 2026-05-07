@@ -33,7 +33,7 @@ def _find_representation(csv: Path, dtypes: dict, representation: str, **kwargs)
             continue
         df = _read_csv(csv, dtypes, index_col=col)
         try:
-            return df.loc[value, representation]
+            return df.loc[value, representation]    # type: ignore
         except KeyError:
             continue
     raise KeyError(f'{representation.capitalize()} not found for: ' + ', '.join(f'{k}={v}' for k, v in kwargs.items() if v is not None))

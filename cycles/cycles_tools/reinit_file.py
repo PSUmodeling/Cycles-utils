@@ -1,3 +1,5 @@
+from __future__ import annotations
+import pandas as pd
 from dataclasses import dataclass
 from pathlib import Path
 from .output_file import read_output
@@ -46,7 +48,6 @@ PROFILE_VARS: tuple[ReinitVar, ...] = (
 _PLACEHOLDER = -999
 _SURFACE_WIDTH = 20
 _PROFILE_WIDTH = 16
-
 
 def _surface_value(row: pd.Series, var: ReinitVar) -> float | int:
     return _PLACEHOLDER if var.column is None else row[var.column]

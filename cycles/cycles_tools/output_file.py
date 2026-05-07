@@ -1,9 +1,9 @@
+from __future__ import annotations
 import io
 import pandas as pd
 from pathlib import Path
 
 DATE_COLUMNS: frozenset[str] = frozenset({'date', 'plant_date'})
-
 
 def _parse_units(lines: list[str], columns) -> dict[str, str]:
     """Find the unit comment line and map column names to units."""

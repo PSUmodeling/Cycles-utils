@@ -14,10 +14,10 @@ MAPPABLE_PARAMETERS: list[str] = ['clay', 'sand', 'soc', 'bulk_density', 'coarse
 
 @dataclass
 class SoilParameter:
-    name:     str
-    header:   str
-    unit:     str
-    fmt:      str
+    name: str
+    header: str
+    unit: str
+    fmt: str
     sentinel: str | None=None
 
     def format(self, value: float | None, *, last: bool=False) -> str:
@@ -120,7 +120,7 @@ def _map_layer(target: SoilLayer, measured: list[SoilLayer], parameters: list[st
         bottom = target.bottom,
         no3 = target.no3,
         nh4 = target.nh4,
-        **{p: _weighted_average(p, target, measured) for p in parameters},
+        **{p: _weighted_average(p, target, measured) for p in parameters},  # type: ignore
     )
 
 
@@ -203,13 +203,14 @@ def _parse_layer_row(col_names: list[str], tokens: list[str], param_by_header: d
 
     # Reconstruct top/bottom from layer index and cumulative thickness
     # These are not stored in the file — we rebuild them from VARIABLES defaults
+    assert isinstance(thickness, float)
     kwargs['top'] = cumulative_depth
     kwargs['bottom'] = cumulative_depth + thickness
 
     return SoilLayer(**kwargs)
 
 
-def _parse_token(token: str, param: SoilParameter) -> float | None:
+def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
     """Cast a token string to the appropriate type, returning None for sentinels."""
     if (param.sentinel and token.strip() == param.sentinel) or (token.strip() == '-999'):
         return None
@@ -223,12 +224,8 @@ def _parse_token(token: str, param: SoilParameter) -> float | None:
 def _row_to_layer(row: pd.Series) -> SoilLayer:
     """Convert a single DataFrame row to a SoilLayer."""
     valid_fields = {f.name for f in fields(SoilLayer)}
-    kwargs = {
-        col: (None if pd.isna(val) else val)
-        for col, val in row.items()
-        if col in valid_fields
-    }
-    return SoilLayer(**kwargs)
+    kwargs = {col: (None if pd.isna(val) else val) for col, val in row.items() if col in valid_fields}
+    return SoilLayer(**kwargs)  # type: ignore
 
 
 def map_layers(measured: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:

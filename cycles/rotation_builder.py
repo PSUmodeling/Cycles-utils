@@ -13,6 +13,7 @@ from .cycles_tools import generate_control_file
 
 FERTILIZER_FILE = 'input/fertilizers.txt'
 MIN_PLANTING_INTERVAL = 7
+BREAK_POINT_REACHED = 10
 
 @dataclass
 class Fertilizer:
@@ -71,9 +72,9 @@ class EconomicParameters:
     @classmethod
     def from_builder(cls, builder: CyclesRotationBuilder, year: int) -> EconomicParameters:
         penalty_factors = {(crop1.name, crop2.name): _calculate_penalty_factor(crop1, crop2) for crop1 in builder.crops for crop2 in builder.crops}
-
+        assert builder.crop_price_data is not None
         return cls(
-            crop_price=builder.crop_price_data.loc[year].to_dict(), # type: ignore
+            crop_price=builder.crop_price_data.loc[year].to_dict(),
             fertilizer_price=builder.fertilizer_price_data.loc[year].to_dict() if builder.fertilizer_price_data is not None else None,
             production_cost=builder.production_cost_data.loc[year].to_dict() if builder.production_cost_data is not None else None,
             penalty_factors=penalty_factors,
@@ -134,14 +135,14 @@ class CyclesRotationBuilder:
 
         while True:
             status, screen_output = cycles.run(options=options, silence=False)
-            if status != 10:
+            if status != BREAK_POINT_REACHED:
                 break
 
             options = '-cb'
             year, doy = _find_break_doy(screen_output)
             economic_parameters = EconomicParameters.from_builder(self, year)
 
-            last_crop = _find_crop(self.crops, _last_planting(operations).crop) if operations else None # type: ignore
+            last_crop = _find_crop(self.crops, _last_planting(operations).crop) if operations else None
 
             result = self._find_best_rotation(year, doy, last_crop, economic_parameters)
             self._append_operations(result, year, doy, operations)
@@ -181,10 +182,10 @@ class CyclesRotationBuilder:
             planting1 = _last_planting(crop1.operations)
             planting2 = _last_planting(crop2.operations)
 
-            doys1 = np.arange(planting1.doy, planting1.end_doy + 1) # type: ignore
-            doys2 = np.arange(planting2.doy, planting2.end_doy + 1) # type: ignore
+            doys1 = np.arange(planting1.doy, planting1.end_doy + 1)
+            doys2 = np.arange(planting2.doy, planting2.end_doy + 1)
 
-            result = _calculate_economic_return(year, doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)  # type: ignore
+            result = _calculate_economic_return(year, doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)
 
             if self.rotation_frequency is not None:
                 rotation_year = year - self.control_dict['simulation_start_year'] + 1
@@ -245,7 +246,7 @@ class CyclesRotationBuilder:
         missing_rows = [
             {'year': y, 'doy': d, 'growing_window': 365, 'grain_yield': 0.0, 'forage_yield': 0.0, 'nitrogen_in_harvest': 0.0}
             for y in range(start_year + 1, end_year)
-            for d in range(planting.doy, planting.end_doy + 1)  # type: ignore
+            for d in range(planting.doy, planting.end_doy + 1)
             if (y, d) not in existing
         ]
         if missing_rows:
@@ -258,8 +259,9 @@ class CyclesRotationBuilder:
         if year < 2:
             return 0.0
 
+        assert self.rotation_frequency is not None
         frequency = self._times_planted[crop.symbol] / year
-        lo, hi = self.rotation_frequency[crop.symbol]   # type: ignore
+        lo, hi = self.rotation_frequency[crop.symbol]
 
         if frequency > hi:
             return -1e6
@@ -268,7 +270,7 @@ class CyclesRotationBuilder:
         return 0.0
 
 
-def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np.ndarray, last_crop: Crop, crop1: Crop, crop2: Crop, economic_parameters: EconomicParameters) -> RotationResult:
+def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np.ndarray, last_crop: Crop | None, crop1: Crop, crop2: Crop, economic_parameters: EconomicParameters) -> RotationResult:
     penalty1 = economic_parameters.penalty_factors.get((last_crop.name, crop1.name), 0.0) if last_crop else 0.0
     penalty2 = economic_parameters.penalty_factors.get((crop1.name, crop2.name), 0.0)
 

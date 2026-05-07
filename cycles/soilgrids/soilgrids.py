@@ -3,7 +3,6 @@ from __future__ import annotations
 import geopandas as gpd
 import pandas as pd
 import rioxarray
-import sys
 import xarray
 from dataclasses import dataclass
 from owslib.wcs import WebCoverageService
@@ -153,7 +152,7 @@ def _read_maps(path: Path, maps: list[str], crs: str | None, aggregated: int | N
         agg_suffix = f'_mean_{aggregated}' if aggregated else ''
         fn = path / f'{prop.soilgrids_name}_{layer}{agg_suffix}.tif'
         xds = rioxarray.open_rasterio(fn, masked=True)
-        soilgrids_xds[m] = xds.rio.reproject(crs) if crs is not None else xds
+        soilgrids_xds[m] = xds.rio.reproject(crs) if crs is not None else xds   # type: ignore
 
     return soilgrids_xds
 
@@ -170,10 +169,10 @@ def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[flo
     ).to_crs(HOMOLOSINE)
 
     return (
-        corners.loc['NW', 'geometry'].xy[0][0],
-        corners.loc['SE', 'geometry'].xy[1][0],
-        corners.loc['SE', 'geometry'].xy[0][0],
-        corners.loc['NW', 'geometry'].xy[1][0],
+        corners.loc['NW', 'geometry'].xy[0][0], # type: ignore
+        corners.loc['SE', 'geometry'].xy[1][0], # type: ignore
+        corners.loc['SE', 'geometry'].xy[0][0], # type: ignore
+        corners.loc['NW', 'geometry'].xy[1][0], # type: ignore
     )
 
 
@@ -205,7 +204,7 @@ def download_soilgrids_data(path: str | Path, *,
 
         while True:
             try:
-                response = wcs.getCoverage(
+                response = wcs.getCoverage(     # type: ignore
                     identifier=f'{v}_{layer}_mean',
                     crs='urn:ogc:def:crs:EPSG::152160',
                     bbox=bbox,

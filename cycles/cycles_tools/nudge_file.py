@@ -2,6 +2,7 @@ from __future__ import annotations
 import pandas as pd
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 from ._base_file import write_file, resolve_dict_values, extract
 
 @dataclass(kw_only=True)
@@ -33,8 +34,8 @@ class NudgeConfig:
     parameter_values: ParameterValues
 
 
-def _build_nudge_config(user_dict: dict, row: pd.Series | None) -> NudgeConfig:
-    resolved = resolve_dict_values(user_dict, row)
+def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None) -> NudgeConfig:
+    resolved = resolve_dict_values(user_dict, simulation_dict)
 
     return NudgeConfig(
         calibration_multipliers=CalibrationMultipliers(**extract(CalibrationMultipliers, resolved)),
@@ -42,7 +43,7 @@ def _build_nudge_config(user_dict: dict, row: pd.Series | None) -> NudgeConfig:
     )
 
 
-def generate_nudge_file(fn: str | Path, user_dict: dict, *, row: pd.Series | None = None) -> None:
+def generate_nudge_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None = None) -> None:
     fn = Path(fn)
-    config = _build_nudge_config(user_dict, row)
+    config = _build_nudge_config(user_dict, simulation_dict)
     write_file(fn, config)

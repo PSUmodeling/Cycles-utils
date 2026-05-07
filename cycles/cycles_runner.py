@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import pandas as pd
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -10,6 +11,8 @@ from typing import Any
 
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file, resolve_dict_values
+
+SimulationConfig = list[dict] | pd.DataFrame
 
 INPUT_DIR: Path = Path('input')
 OUTPUT_DIR: Path = Path('output')
@@ -34,9 +37,12 @@ class CyclesRunner:
         self.executable = str(Path(self.executable).resolve())
 
 
-    def run(self, simulations: list[dict], control_dict: dict[str, Any], *,
+    def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
         summary: str='summary.csv', operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None, calibration_dict: dict[str, Any] | None=None,
         options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='') -> None:
+        if isinstance(simulations, pd.DataFrame):
+            simulations = simulations.to_dict(orient='records')
+        assert isinstance(simulations, list)
 
         if (operation_template is None) != (operation_dict is None):
             raise ValueError(
@@ -78,9 +84,6 @@ class CyclesRunner:
             if rm_steady_state_soil:
                 (INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
 
-    # -----------------------------------------------------------------------
-    # Private — simulation lifecycle
-    # -----------------------------------------------------------------------
 
     def _resolve(self, simulation: dict[str, Any], control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
         """Call control_dict once per row and resolve all derived values."""
@@ -96,10 +99,11 @@ class CyclesRunner:
 
     def _write_inputs(self, cxt: SimulationContext, operation_template: Path | None) -> None:
         if operation_template is not None:
+            assert cxt.operation_dict is not None
             _render_template(operation_template, cxt.operation_fn, cxt.operation_dict)
         if cxt.calibration_dict is not None:
             generate_nudge_file(INPUT_DIR / f'{cxt.name}.nudge', cxt.calibration_dict)
-        generate_control_file(INPUT_DIR / f'{cxt.name}.ctrl', cxt.control_dict, rotation_builder=self.rotation_builder)
+        generate_control_file(INPUT_DIR / f'{cxt.name}.ctrl', cxt.control_dict)
 
 
     def _remove_inputs(self, cxt: SimulationContext) -> None:
@@ -119,9 +123,6 @@ class CyclesRunner:
                 f.write(comment)
             cycles.output['harvest'].data.to_csv(f, header=header, index=False)
 
-# ---------------------------------------------------------------------------
-# Module-level helpers — pure functions with no dependency on CyclesRunner
-# ---------------------------------------------------------------------------
 
 def _render_template(template_fn: Path, dest_fn: Path, substitutions: dict) -> None:
     dest_fn.write_text(Template(template_fn.read_text()).substitute(substitutions) + '\n')

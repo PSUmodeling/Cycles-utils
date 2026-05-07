@@ -1,3 +1,4 @@
+from __future__ import annotations
 import pandas as pd
 from pathlib import Path
 
@@ -29,8 +30,8 @@ WEATHER_HEADER_LINES: int = 4
 def _build_date_index(df: pd.DataFrame, *, subdaily: bool) -> pd.DatetimeIndex:
     base = df['YEAR'].astype(str) + '-' + df['DOY'].astype(str)
     if subdaily:
-        return pd.to_datetime(base + ' ' + df['HOUR'].astype(str), format='%Y-%j %H')
-    return pd.to_datetime(base, format='%Y-%j')
+        return pd.to_datetime(base + ' ' + df['HOUR'].astype(str), format='%Y-%j %H')   # type: ignore
+    return pd.to_datetime(base, format='%Y-%j') # type: ignore
 
 
 def read_weather_file(fn: str | Path, *, start_year: int = 0, end_year: int = 9999, subdaily: bool = False) -> pd.DataFrame:

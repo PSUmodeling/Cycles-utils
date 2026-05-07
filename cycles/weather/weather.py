@@ -1,3 +1,4 @@
+from __future__ import annotations
 import numpy as np
 import os
 import pandas as pd
@@ -42,7 +43,7 @@ class ReanalysisDataMixin:
     weather_file_variables: dict[str, Callable]
 
     def nearest_grid_index(self, lat, lon) -> int:
-        return np.ravel_multi_index((round((lat - self.la1) / self.dj), round((lon - self.lo1) / self.di)), self.netcdf_shape)
+        return np.ravel_multi_index((round((lat - self.la1) / self.dj), round((lon - self.lo1) / self.di)), self.netcdf_shape)  # type: ignore
 
 
 class REANALYSIS(ReanalysisDataMixin, Enum):
@@ -267,7 +268,7 @@ def _calculate_grid_index(reanalysis: REANALYSIS, coordinate: tuple[float, float
         mask_df.loc[mask_df['mask'] == 0, 'distance'] = 1E6
         ind = mask_df['distance'].idxmin()
 
-    return ind
+    return ind  # type: ignore
 
 
 def _remove_duplicated_locations(reanalysis: REANALYSIS, df: pd.DataFrame, screen_output: bool) -> pd.DataFrame:
@@ -434,11 +435,11 @@ def _wind_speed(nc_data: dict[str, np.ndarray]) -> np.ndarray:
 def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[str, np.ndarray], grid_df: pd.DataFrame, header: bool, resolution: Resolution) -> None:
     # Add time columns
     time_df = pd.DataFrame({
-        'YEAR': time_ts.year,   # type: ignore
-        'DOY': time_ts.map(lambda x: x.timetuple().tm_yday),   # type: ignore
+        'YEAR': time_ts.year,
+        'DOY': time_ts.map(lambda x: x.timetuple().tm_yday),
     })
     if resolution is Resolution.HOURLY:
-        time_df['HOUR'] = time_ts.hour   # type: ignore
+        time_df['HOUR'] = time_ts.hour
 
     for ind, grid in enumerate(grid_df.index):
         # Choose variables for output

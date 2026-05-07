@@ -6,7 +6,7 @@ from ._base_file import parse_value
 
 class Operation(Protocol):
     year: int | None
-    doy: int | None
+    doy: int
     relative_doy: bool
 
 @dataclass(kw_only=True)
@@ -33,7 +33,6 @@ class Planting(Operation):
     harvest_timing: float = -999
     kill_after_harvest: int = 1
     relative_doy: bool = field(default=False, metadata={'readable': False})
-
 
 @dataclass(kw_only=True)
 class Tillage(Operation):
@@ -70,7 +69,7 @@ class FixedFertilization(Operation):
     year: int | None = None
     doy: int
     source: str
-    mass: float  = 0.0
+    mass: float = 0.0
     form: str = 'Liquid'
     method: str = 'Broadcast'
     depth: float = 0.0
@@ -153,7 +152,6 @@ def read_operation_file(operation: str | Path) -> list:
                     target_class = Kill
 
             operations.append(target_class(**operation_dict))
-
         except StopIteration:
             break
 

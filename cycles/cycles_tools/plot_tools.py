@@ -1,3 +1,4 @@
+from __future__ import annotations
 import cartopy.crs as ccrs
 import cartopy.feature as feature
 import geopandas as gpd
@@ -6,7 +7,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from cartopy.mpl.geoaxes import GeoAxes
-from collections.abc import Callable
 from dataclasses import dataclass
 from matplotlib.axes import Axes
 from matplotlib.colors import Colormap
@@ -48,14 +48,7 @@ def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
     return colors
 
 
-def _plot_harvest_type(
-    ax: Axes,
-    df: pd.DataFrame,
-    crop: str,
-    harvest: str,
-    marker: str,
-    color: str,
-) -> None:
+def _plot_harvest_type(ax: Axes, df: pd.DataFrame, crop: str, harvest: str, marker: str, color: str) -> None:
     sub = df[(df['crop'] == crop) & (df[f'{harvest}_yield'] > 0)]
     ax.plot(
         sub['date'], sub[f'{harvest}_yield'],
@@ -92,13 +85,13 @@ def _build_legend_handles(crops: list[str], crop_colors: dict[str, str]) -> list
     return marker_handles + crop_handles
 
 
-def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None = None, fontsize: int | None = None) -> Axes:
+def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
     if ax is None:
         _, ax = plt.subplots()
     if fontsize is not None:
         plt.rcParams.update({'font.size': fontsize})
 
-    crops       = harvest_df['crop'].unique().tolist()
+    crops = harvest_df['crop'].unique().tolist()
     crop_colors = _assign_crop_colors(crops, ax)
 
     for crop in crops:
@@ -187,30 +180,30 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
 
     if ax is None:
         fig = plt.figure(figsize=(9, 6))
-        ax = fig.add_axes((0.025, 0.09, 0.95, 0.93), projection=projection, frameon=frameon)
+        ax = fig.add_axes((0.025, 0.09, 0.95, 0.93), projection=projection, frameon=frameon)    # type: ignore
     elif isinstance(ax, tuple):
         fig = plt.figure(figsize=(9, 6))
-        ax = fig.add_axes(ax, projection=projection, frameon=frameon)
+        ax = fig.add_axes(ax, projection=projection, frameon=frameon)   # type: ignore
     elif isinstance(ax, GeoAxes):
         fig = ax.get_figure()
 
     if colorbar is True:
-        cax = fig.add_axes((0.3, 0.07, 0.4, 0.02) if cb_axes is None else cb_axes)
+        cax = fig.add_axes((0.3, 0.07, 0.4, 0.02) if cb_axes is None else cb_axes)  # type: ignore
 
     gdf.plot(
         column=column,
         cmap=cmap,
-        ax=ax,
+        ax=ax,  # type: ignore
         vmin=vmin,
         vmax=vmax,
     )
-    ax.add_feature(feature.STATES, edgecolor=[0.7, 0.7, 0.7], linewidth=0.5)
-    ax.add_feature(feature.LAND, facecolor=[0.8, 0.8, 0.8])
-    ax.add_feature(feature.LAKES)
-    ax.add_feature(feature.OCEAN)
+    ax.add_feature(feature.STATES, edgecolor=[0.7, 0.7, 0.7], linewidth=0.5)    # type: ignore
+    ax.add_feature(feature.LAND, facecolor=[0.8, 0.8, 0.8])     # type: ignore
+    ax.add_feature(feature.LAKES)   # type: ignore
+    ax.add_feature(feature.OCEAN)   # type: ignore
 
     if frameon:
-        gl = ax.gridlines(
+        gl = ax.gridlines(      # type: ignore
             draw_labels=True,
             color='gray',
             dms=True,
@@ -223,7 +216,7 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
 
     if colorbar is True:
         cbar = plt.colorbar(
-            ax.collections[0],
+            ax.collections[0],  # type: ignore
             cax=cax,
             orientation=cb_orientation,
             extend=extend,
@@ -231,6 +224,6 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
         if label is not None: cbar.set_label(label)
         cbar.ax.xaxis.set_label_position('top' if cb_orientation == 'horizontal' else 'right')  # type: ignore
     if title is not None:
-        ax.set_title(title)
+        ax.set_title(title) # type: ignore
 
-    return fig, ax
+    return fig, ax  # type: ignore

@@ -34,7 +34,7 @@ def extract(dc_class, resolved: dict) -> dict:
 def parse_value(raw: str, name: str, hint: type) -> int | float | str:
     """Cast a raw string token to the field's annotated type."""
     if raw.split()[0].lower() == name.lower():
-        if hint is int:   return int(raw.split()[1])
+        if hint is int: return int(raw.split()[1])
         if hint is float: return float(raw.split()[1])
         return raw.split()[1]
     else:
