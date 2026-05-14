@@ -40,7 +40,7 @@ VARIABLES: list[SoilParameter] = [
     SoilParameter('son', 'SON', 'kg/ha', '%-7d'),
     SoilParameter('no3', 'NO3', 'kg/ha', '%-7.1f'),
     SoilParameter('nh4', 'NH4', 'kg/ha', '%-7.1f'),
-    SoilParameter('coarse_fragments', 'ROCK', 'm3/m3', '%-7.2f'),
+    SoilParameter('coarse_fragments', 'ROCK', 'm3/m3', '%-7.2f', '0.0'),
     SoilParameter('byp_h', 'BYP_H', '-', '%-7.1f', '0.0'),
     SoilParameter('byp_v', 'BYP_V', '-', '%-7.1f', '0.0'),
     SoilParameter('pH', 'pH', '-', '%.1f'),
