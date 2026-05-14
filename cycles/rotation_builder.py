@@ -52,6 +52,7 @@ class Crop:
     name: str
     symbol: str
     operations: list[Operation]
+    prescribed_n_rate: float = field(init=False, default=0.0)
 
     def __post_init__(self) -> None:
         for op in self.operations:
@@ -107,6 +108,9 @@ class CyclesRotationBuilder:
         self.executable = str(Path(self.executable).resolve())
         self.fertilizers = read_fertilizer_file(Path('./') / FERTILIZER_FILE)
         self._times_planted = {crop.symbol: 0 for crop in self.crops}
+
+        for crop in self.crops:
+            crop.prescribed_n_rate = sum(op.mass * self.fertilizers[op.source].n_fraction for op in crop.operations if isinstance(op, FixedFertilization))
 
         if self.build_yield_matrix:
             self._build_yield_matrix()
@@ -204,7 +208,6 @@ class CyclesRotationBuilder:
     def _append_operations(self, result: RotationResult, year: int, doy: int, operations: list[Operation]) -> None:
         start_year = self.control_dict['simulation_start_year']
         planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2
-        total_fertilization = sum(op.mass * self.fertilizers[op.source].n_fraction for op in result.crop.operations if isinstance(op, FixedFertilization))
 
         for op in result.crop.operations:
             relative_doy = False
@@ -221,7 +224,7 @@ class CyclesRotationBuilder:
                     relative_doy = True
 
                 if isinstance(op, FixedFertilization) and result.n_rate is not None:
-                    operations.append(replace(op, year=op_year, doy=op_doy, mass=result.n_rate / total_fertilization * op.mass  if total_fertilization > 0 else 0.0, relative_doy=relative_doy))
+                    operations.append(replace(op, year=op_year, doy=op_doy, mass=result.n_rate / result.crop.prescribed_n_rate * op.mass if result.crop.prescribed_n_rate > 0 else 0.0, relative_doy=relative_doy))
                 else:
                     operations.append(replace(op, year=op_year, doy=op_doy, relative_doy=relative_doy))
             else:
@@ -300,7 +303,9 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
         total_income -= economic_parameters.production_cost[crop1.symbol] + economic_parameters.production_cost[crop2.symbol]
 
     if economic_parameters.fertilizer_price is not None:
-        total_income -= (n_rate1 + n_rate2) * economic_parameters.fertilizer_price['urea']
+        fertilizer_cost1 = sum(n_rate1 / crop1.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop1.operations if isinstance(op, FixedFertilization))
+        fertilizer_cost2 = sum(n_rate2 / crop2.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop2.operations if isinstance(op, FixedFertilization))
+        total_income -= fertilizer_cost1 + fertilizer_cost2
 
     daily_incomes = total_income / total_days
     idx = np.unravel_index(np.argmax(daily_incomes), daily_incomes.shape)
