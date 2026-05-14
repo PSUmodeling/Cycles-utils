@@ -1,19 +1,12 @@
 from __future__ import annotations
-
 import geopandas as gpd
 import pandas as pd
 import shapely
 from dataclasses import dataclass
 from pathlib import Path
 from shapely.geometry import Point
-
 from cycles.cycles_tools import generate_soil_file as _generate_soil_file
 from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS
-
-
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
 
 NAD83: str = 'epsg:5070'    # NAD83 / Conus Albers, CRS of SSURGO
 
@@ -51,17 +44,12 @@ LUT_TABLES: dict[str, dict[str, list[str]]] = {
 }
 
 
-# ---------------------------------------------------------------------------
-# SSURGO parameter spec
-# ---------------------------------------------------------------------------
-
 @dataclass(frozen=True)
 class SsurgoParameter:
     ssurgo_name: str
     multiplier:  float
     table:       str
     unit:        str
-
 
 SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
     'clay': SsurgoParameter('claytotal_r', 1.0, 'horizon', '%'),
@@ -78,13 +66,9 @@ SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
 
 LatLon = tuple[float, float]
 
-# ---------------------------------------------------------------------------
-# Ssurgo
-# ---------------------------------------------------------------------------
-
 class Ssurgo:
-    def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None, lut_only: bool=False) -> None:
-        _validate_geographic_input(lat_lon, boundary, lut_only)
+    def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
+        _validate_geographic_input(lat_lon, boundary)
 
         self.state: str = state
         self._mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
@@ -92,50 +76,44 @@ class Ssurgo:
         self.components: pd.DataFrame | None = None
         self.horizons: pd.DataFrame | None = None
         self.mukey: int | None = None
-        self.slope: float = 0.0
+        self.slope: float | None = None
         self.hsg: str = ''
 
         path = Path(path)
         luts = _read_all_luts(path, state)
-
-        if not lut_only:
-            if lat_lon is not None:
-                boundary = gpd.GeoDataFrame(
-                    {'name': ['point']},
-                    geometry=[Point(lat_lon[1], lat_lon[0])],
-                    crs='epsg:4326',
-                )
-            gdf = _read_mupolygon(path, state, boundary)
-            self._mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
-        else:
-            self._mapunits = luts['mapunit']
-
         self.components = luts['component']
         self.horizons   = luts['horizon']
 
-        if boundary is not None:
-            self.components = self.components[
-                self.components['mukey'].isin(self._mapunits['mukey'].unique())
-            ]
-            self.horizons = self.horizons[
-                self.horizons['cokey'].isin(self.components['cokey'].unique())
-            ]
+        if lat_lon is None and boundary is None:
+            self._mapunits = luts['mapunit']
+            return
 
-        if not lut_only:
-            self._average_slope_hsg()
+        if lat_lon is not None:
+            boundary = gpd.GeoDataFrame(
+                {'name': ['point']},
+                geometry=[Point(lat_lon[1], lat_lon[0])],
+                crs='epsg:4326',
+            )
+        gdf = _read_mupolygon(path, state, boundary)
+        self._mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
 
-    # -----------------------------------------------------------------------
-    # Properties
-    # -----------------------------------------------------------------------
+        self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
+        self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
+
+        self._average_slope_hsg()
+
 
     @property
     def mapunits(self) -> gpd.GeoDataFrame | pd.DataFrame | None:
         return self._mapunits
 
+
     @property
     def muname(self) -> str:
         self._ensure_mukey()
+        assert self.mukey is not None
         return self._get_muname(self.mukey)
+
 
     @property
     def musym(self) -> str:
@@ -143,13 +121,9 @@ class Ssurgo:
         assert self._mapunits is not None
         return self._mapunits[self._mapunits['mukey'] == self.mukey]['musym'].iloc[0]
 
-    # -----------------------------------------------------------------------
-    # Public
-    # -----------------------------------------------------------------------
 
     def group_map_units(self, *, geometry: bool = False) -> None:
         """Group SSURGO map units by soil series name.
-
         Many map units share the same soil texture but differ in slope or other
         attributes. Grouping by the base name (before the first comma) aggregates
         these into a single representative series.
@@ -159,7 +133,7 @@ class Ssurgo:
         assert self._mapunits is not None
 
         gmu = self._mapunits.copy()
-        gmu['muname'] = gmu['muname'].map(lambda name: name.split(',')[0])
+        gmu['muname'] = gmu['muname'].map(lambda name: name.split(',')[0])  # type: ignore
         gmu['musym']  = gmu['musym'].map(_strip_slope_suffix)
 
         mask = self.non_soil_mask(gmu)
@@ -171,9 +145,10 @@ class Ssurgo:
             gmu = gmu.dissolve(
                 by='muname',
                 aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
-            ).reset_index()
+            ).reset_index() # type: ignore
 
         self.grouped_mapunits = gmu
+
 
     def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
         return (
@@ -181,6 +156,7 @@ class Ssurgo:
             | mapunits['muname'].isin(SSURGO_NON_SOIL_TYPES)
             | mapunits['muname'].str.contains('|'.join(SSURGO_URBAN_TYPES), na=False)
         )
+
 
     def select_major_mapunit(self) -> None:
         if self.mukey is not None:
@@ -191,7 +167,8 @@ class Ssurgo:
 
         gdf = self.grouped_mapunits[~self.non_soil_mask(self.grouped_mapunits)].copy()
         gdf['area'] = gdf.area
-        self.mukey  = int(gdf.loc[gdf['area'].idxmax(), 'mukey'])
+        self.mukey  = int(gdf.loc[gdf['area'].idxmax(), 'mukey'])   # type: ignore
+
 
     def get_soil_profile(self, *, mukey: int | None=None, major_only: bool=True) -> list[SoilLayer]:
         mukey = mukey or self._ensure_mukey()
@@ -204,25 +181,31 @@ class Ssurgo:
         df = pd.merge(df, self.horizons, on='cokey').query("hzname != 'R'").sort_values(by=['cokey', 'top'], ignore_index=True)
 
         return [SoilLayer(
-                top    = row['top'],
+                top = row['top'],
                 bottom = row['bottom'],
-                **{p: row[p] for p in MAPPABLE_PARAMETERS},
+                **{p: None if pd.isna(row[p]) else row[p] for p in MAPPABLE_PARAMETERS},    # type: ignore
             ) for _, row in df.iterrows()]
 
-    def generate_soil_file(self, fn: Path | str, *, mukey: int | None=None, desc: str | None=None, soil_depth: float | None=None) -> None:
+
+    def generate_soil_file(self, fn: Path | str, *, mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, soil_depth: float | None=None) -> None:
         if mukey is None:
             self.group_map_units(geometry=True)
             self.select_major_mapunit()
             mukey = self.mukey
+
         assert mukey is not None
+        assert self._mapunits is not None
+
+        if hsg is None:
+            hsg = self._mapunits[self._mapunits['mukey'] == mukey]['hydgrpdcd'].iloc[0] if not self.hsg else self.hsg
+            assert hsg is not None
+        if slope is None:
+            slope = self._mapunits[self._mapunits['mukey'] == mukey]['slopegradwta'].iloc[0] if not self.slope else self.slope
 
         profile = self.get_soil_profile(mukey=mukey)
-        desc = desc if desc is not None else _build_desc(self._get_muname(mukey), mukey, self.hsg)
-        _generate_soil_file(fn, profile, desc=desc, hsg=self.hsg, slope=self.slope, soil_depth=soil_depth)
+        desc = desc if desc is not None else _build_desc(self._get_muname(mukey), mukey, hsg)
+        _generate_soil_file(fn, profile, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
 
-    # -----------------------------------------------------------------------
-    # Private
-    # -----------------------------------------------------------------------
 
     def _ensure_mukey(self) -> int:
         if self.mukey is None:
@@ -230,9 +213,11 @@ class Ssurgo:
         assert self.mukey is not None
         return self.mukey
 
+
     def _get_muname(self, mukey: int) -> str:
         assert self._mapunits is not None
         return self._mapunits[self._mapunits['mukey'] == mukey]['muname'].iloc[0]
+
 
     def _average_slope_hsg(self) -> None:
         assert self._mapunits is not None
@@ -240,19 +225,11 @@ class Ssurgo:
         gdf = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
         gdf['area'] = gdf.area
 
-        self.slope = _weighted_average(gdf, 'slopegradwta')
-        self.hsg = _dominant_hsg(gdf)
+        self.slope = _weighted_average(gdf, 'slopegradwta') # type: ignore
+        self.hsg = _dominant_hsg(gdf)   # type: ignore
 
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
-
-def _validate_geographic_input(lat_lon: LatLon | None, boundary: gpd.GeoDataFrame | None, lut_only: bool) -> None:
-    if lut_only:
-        return
-    if lat_lon is None and boundary is None:
-        raise ValueError("lat_lon or boundary must be provided when lut_only=False.")
+def _validate_geographic_input(lat_lon: LatLon | None, boundary: gpd.GeoDataFrame | None) -> None:
     if lat_lon is not None and boundary is not None:
         raise ValueError("lat_lon and boundary are mutually exclusive — provide only one.")
 
@@ -337,7 +314,7 @@ def _read_mupolygon(
     gdf = gpd.read_file(
         _ssurgo_path(path, state),
         layer='MUPOLYGON',
-        mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None,
+        mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None,  # type: ignore
     )
     if boundary is not None:
         gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
