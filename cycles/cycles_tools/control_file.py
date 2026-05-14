@@ -25,7 +25,7 @@ class SimulationOptions:
     co2_level: float=-999
     use_reinitialization: int=0
     adjusted_yields: int=0
-    hourly_infiltration: int=1
+    hydrology_option: int=1
     automatic_nitrogen: int=0
     automatic_phosphorus: int=0
     automatic_sulfur: int=0
