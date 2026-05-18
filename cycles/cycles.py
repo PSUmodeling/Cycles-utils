@@ -3,6 +3,7 @@ import numpy as np
 import os
 import pandas as pd
 import subprocess
+from collections.abc import Collection
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
@@ -58,10 +59,14 @@ class Cycles:
         return result.returncode, result.stdout
 
 
-    def read_output(self, output_type: str) -> None:
+    def read_output(self, output_types: Collection) -> None:
         assert isinstance(self.path, Path)
-        df, units = _read_output(self.path / 'output' / self.simulation, output_type)
-        self.output[output_type] = Output(data=df, units=units)
+        if isinstance(output_types, str):
+            output_types = output_types,
+
+        for output_type in output_types:
+            df, units = _read_output(self.path / 'output' / self.simulation, output_type)
+            self.output[output_type] = Output(data=df, units=units)
 
 
     def read_operation_file(self) -> None:
