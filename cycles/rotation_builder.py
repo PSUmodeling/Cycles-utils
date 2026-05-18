@@ -142,7 +142,7 @@ class CyclesRotationBuilder:
             if status != BREAK_POINT_REACHED:
                 break
 
-            options = '-cb'
+            options = '-rb'
             year, doy = _find_break_doy(screen_output)
             economic_parameters = EconomicParameters.from_builder(self, year)
 
