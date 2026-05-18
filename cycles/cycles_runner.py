@@ -141,5 +141,6 @@ def _generate_comment(executable: str, options: str) -> str:
         'with spin-up' if 's' in options else 'without spin-up',
         'with calibration' if 'n' in options else None,
         'grain model turned on' if 'g' in options else None,
+        'dynamically reduced fertilization rates' if 'x' in options else None,
     ]
     return ', '.join(p for p in parts if p) + '\n'
