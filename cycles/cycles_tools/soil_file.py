@@ -27,7 +27,6 @@ class SoilParameter:
             return ('%-7s' + sep) % placeholder
         return (self.fmt + sep) % value
 
-
 VARIABLES: list[SoilParameter] = [
     SoilParameter('layer', 'LAYER', '#', '%-7d'),
     SoilParameter('thickness', 'THICK', 'm', '%-7.2f'),
@@ -106,7 +105,6 @@ DEFAULT_PROFILE: list[SoilLayer] = [
     SoilLayer(top=1.6,  bottom=1.8,  no3=1.0,  nh4=1.0),
     SoilLayer(top=1.8,  bottom=2.0,  no3=1.0,  nh4=1.0),
 ]
-
 
 def _trim(target: list[SoilLayer], measured_bottom: float, soil_depth: float | None=None) -> list[SoilLayer]:
     """Keep target layers with more than 50% overlap with the effective depth."""

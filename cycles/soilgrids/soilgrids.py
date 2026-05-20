@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import geopandas as gpd
 import pandas as pd
 import rioxarray
@@ -67,7 +66,6 @@ ALL_MAPS: list[str] = [f'{p}@{l}' for p in MAPPABLE_PARAMETERS for l in SOILGRID
 
 LatLon = tuple[float, float]
 
-
 class SoilGrids:
     def __init__(self, path: str | Path, *, maps: list[str]=ALL_MAPS, crs: str | None=None, aggregated: int | None=None) -> None:
         if aggregated is not None and aggregated not in [1000, 5000]:
@@ -105,15 +103,6 @@ class SoilGrids:
     def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None) -> None:
         profile: list[SoilLayer] = self.get_soil_profile(lat_lon)
         desc = desc if desc is not None else _build_desc(lat_lon, hsg)
-
-        #if desc is None:
-        #    desc = f"# Soil file sampled at Latitude {lat_lon[0]:.3f}, Longitude {lat_lon[1]:.3f}.\n" if lat_lon is not None else ""
-        #    desc += "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.\n"
-        #    if hsg == '':
-        #        desc += "# Hydrologic soil group MISSING DATA.\n"
-        #    else:
-        #        desc += f"# Hydrologic soil group {hsg}.\n"
-        #        desc += "# The curve number for row crops with straight row treatment is used.\n"
 
         _generate_soil_file(Path(fn), profile, desc=desc, hsg=hsg, slope=slope)
 
@@ -199,7 +188,7 @@ def download_soilgrids_data(path: str | Path, *,
 
     for m in maps:
         parameter, layer = m.split('@')
-        v   = SOILGRIDS_PROPERTIES[parameter].soilgrids_name
+        v = SOILGRIDS_PROPERTIES[parameter].soilgrids_name
         wcs = WebCoverageService(f'http://maps.isric.org/mapserv?map=/map/{v}.map', version='1.0.0')
 
         while True:

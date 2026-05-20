@@ -180,7 +180,6 @@ WEATHER_FILE_VARIABLES = {
 
 COOKIE_FILE = './.urs_cookies'
 
-
 def download_forcing(data_path: Path | str, forcing: str, date_start: datetime | int, date_end: datetime | int) -> None:
     # Create data directory if it doesn't exist
     data_path = Path(data_path)
@@ -486,8 +485,7 @@ def _process_daily_xldas(data_path: Path, reanalysis: REANALYSIS, t: datetime, g
     nc_data = {key: np.array(value) for key, value in nc_data.items()}
 
     for weather_var, func in reanalysis.weather_file_variables.items():
-        if resolution not in WEATHER_FILE_VARIABLES[weather_var].resolution:
-            continue
+        if resolution not in WEATHER_FILE_VARIABLES[weather_var].resolution: continue
         weather_data[weather_var] += func(nc_data, resolution).tolist()
 
 

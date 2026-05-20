@@ -205,6 +205,7 @@ class CyclesRotationBuilder:
 
         return best
 
+
     def _append_operations(self, result: RotationResult, year: int, doy: int, operations: list[Operation]) -> None:
         start_year = self.control_dict['simulation_start_year']
         planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2

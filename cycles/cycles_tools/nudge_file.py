@@ -33,7 +33,6 @@ class NudgeConfig:
     calibration_multipliers: CalibrationMultipliers
     parameter_values: ParameterValues
 
-
 def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None) -> NudgeConfig:
     resolved = resolve_dict_values(user_dict, simulation_dict)
 

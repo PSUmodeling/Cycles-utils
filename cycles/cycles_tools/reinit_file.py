@@ -9,7 +9,6 @@ class ReinitVar:
     header: str
     column: str | None       # None → write placeholder value
 
-
 SURFACE_VARS: tuple[ReinitVar, ...] = (
     ReinitVar('STANRESIDUEC', 'standing_residue_carbon'),
     ReinitVar('FLATRESIDUEC', 'flat_residue_carbon'),

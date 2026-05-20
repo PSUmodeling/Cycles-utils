@@ -47,9 +47,9 @@ LUT_TABLES: dict[str, dict[str, list[str]]] = {
 @dataclass(frozen=True)
 class SsurgoParameter:
     ssurgo_name: str
-    multiplier:  float
-    table:       str
-    unit:        str
+    multiplier: float
+    table: str
+    unit: str
 
 SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
     'clay': SsurgoParameter('claytotal_r', 1.0, 'horizon', '%'),
@@ -82,7 +82,7 @@ class Ssurgo:
         path = Path(path)
         luts = _read_all_luts(path, state)
         self.components = luts['component']
-        self.horizons   = luts['horizon']
+        self.horizons = luts['horizon']
 
         if lat_lon is None and boundary is None:
             self._mapunits = luts['mapunit']
@@ -124,9 +124,8 @@ class Ssurgo:
 
     def group_map_units(self, *, geometry: bool = False) -> None:
         """Group SSURGO map units by soil series name.
-        Many map units share the same soil texture but differ in slope or other
-        attributes. Grouping by the base name (before the first comma) aggregates
-        these into a single representative series.
+        Many map units share the same soil texture but differ in slope or other attributes. Grouping by the base name
+        (before the first comma) aggregates these into a single representative series.
         """
         if self.grouped_mapunits is not None:
             return
@@ -138,8 +137,8 @@ class Ssurgo:
 
         mask = self.non_soil_mask(gmu)
         gmu.loc[mask, 'muname'] = 'Water, urban, etc.'
-        gmu.loc[mask, 'mukey']  = -999
-        gmu.loc[mask, 'musym']  = 'N/A'
+        gmu.loc[mask, 'mukey'] = -999
+        gmu.loc[mask, 'musym'] = 'N/A'
 
         if geometry:
             gmu = gmu.dissolve(
@@ -152,9 +151,9 @@ class Ssurgo:
 
     def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
         return (
-            mapunits['mukey'].isna()
-            | mapunits['muname'].isin(SSURGO_NON_SOIL_TYPES)
-            | mapunits['muname'].str.contains('|'.join(SSURGO_URBAN_TYPES), na=False)
+            mapunits['mukey'].isna() |
+            mapunits['muname'].isin(SSURGO_NON_SOIL_TYPES) |
+            mapunits['muname'].str.contains('|'.join(SSURGO_URBAN_TYPES), na=False)
         )
 
 
@@ -303,11 +302,7 @@ def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
     return luts
 
 
-def _read_mupolygon(
-    path:     Path,
-    state:    str,
-    boundary: gpd.GeoDataFrame | None = None,
-) -> gpd.GeoDataFrame:
+def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame | None = None) -> gpd.GeoDataFrame:
     if boundary is not None:
         boundary = boundary.to_crs(NAD83)
 

@@ -50,7 +50,6 @@ class ControlConfig:
     simulation_options: SimulationOptions
     output_control: OutputControl
 
-
 def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | None, input_dir: Path) -> ControlConfig:
     resolved = resolve_dict_values(control_dict, simulation_dict)
 

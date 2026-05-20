@@ -1,6 +1,7 @@
 from __future__ import annotations
 import geopandas as gpd
 import pandas as pd
+from enum import Enum
 from pathlib import Path
 
 _HERE = Path(__file__).parent.resolve()
@@ -8,18 +9,16 @@ _HERE = Path(__file__).parent.resolve()
 STATE_CSV: Path = _HERE / '../data/us_states.csv'
 COUNTY_CSV: Path = _HERE / '../data/fips_gid_conversion.csv'
 
-GADM_LEVELS: dict[str, int] = {
-    'country': 0,
-    'state': 1,
-    'county': 2,
-}
+class GADMLevel(Enum):
+    COUNTRY = 0
+    STATE = 1
+    COUNTY = 2
 
 STATE_DTYPES: dict[str, type] = {'state': str, 'gid': str, 'abbreviation': str, 'fips': int}
 COUNTY_DTYPES: dict[str, type] = {'fips': int}
 
-
-def _gadm_path(path: Path, country: str, level: int) -> Path:
-    return path / f'gadm41_{country}_{level}.shp'
+def _gadm_path(path: Path, country: str, level: GADMLevel) -> Path:
+    return path / f'gadm41_{country}_{level.value}.shp'
 
 
 def _read_csv(fn: Path, dtypes: dict, index_col: str) -> pd.DataFrame:
@@ -56,11 +55,11 @@ def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
 
 
 def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool = True) -> gpd.GeoDataFrame:
-    level = GADM_LEVELS[level_str.lower()]
-    gdf   = gpd.read_file(_gadm_path(Path(path), country, level))
+    level = GADMLevel[level_str.upper()]
+    gdf = gpd.read_file(_gadm_path(Path(path), country, level))
 
     if country != 'global':
-        gdf.rename(columns={f'GID_{level}': 'GID'}, inplace=True)
+        gdf.rename(columns={f'GID_{level.value}': 'GID'}, inplace=True)
     gdf.set_index('GID', inplace=True)
 
     if country == 'USA' and conus:

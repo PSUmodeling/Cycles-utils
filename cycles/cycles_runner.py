@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 import os
 import pandas as pd
 import shutil
@@ -8,7 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from string import Template
 from typing import Any
-
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file, resolve_dict_values
 
