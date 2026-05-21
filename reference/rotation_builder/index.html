@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Rotation Builder class - Cycles-utils</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Rotation Builder class";
+        var mkdocs_page_input_path = "reference/rotation_builder.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Cycles-utils
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">API Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../cycles_tools/">I/O Tools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cycles/">Cycles class</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../cycles_runner/">Cycles Runner class</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Rotation Builder class</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#cycles.CyclesRotationBuilder.run">run</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../gadm/">GADM tools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../soil_grids/">SoilGrids tools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../ssurgo/">SSURGO tools</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../weather/">Weather tools</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Cycles-utils</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">API Reference</li>
+      <li class="breadcrumb-item active">Rotation Builder class</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <p>Cycles rotation builder class</p>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="cycles.CyclesRotationBuilder" class="doc doc-heading">
+              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">CyclesRotationBuilder</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">crops</span><span class="p">,</span> <span class="n">control_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">build_yield_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
+  </span>
+
+</h2>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Run Cycles iteratively and append economically optimal operations.</p>
+<p>Executes Cycles simulations for candidate crop-operation combinations,
+selects the highest-return option at each break-point, and iteratively
+builds a multi-year rotation. Integrates economic scoring with agronomic
+constraints (e.g., minimum planting interval, crop group penalties).</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>simulation</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Base simulation name for generated input/output directories.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>executable</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Absolute path to the Cycles executable binary.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>crops</code></b>
+                  (<code><span title="list">list</span>[<span title="cycles.rotation_builder.Crop">Crop</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>List of Crop objects with available operations for rotation.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>control_dict</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Base control file parameters (simulation years, options, etc.).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fertilizers</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="cycles.rotation_builder.Fertilizer">Fertilizer</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary mapping fertilizer names to Fertilizer objects.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>yield_matrix</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="pandas.DataFrame">DataFrame</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary mapping crop names to yield prediction DataFrames.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>build_yield_matrix</code></b>
+                  (<code><span title="bool">bool</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>If True, run simulations to build yield matrix; else read from disk.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>crop_price_data</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>DataFrame of crop prices indexed by calendar year.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fertilizer_price_data</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>DataFrame of fertilizer prices indexed by year, or None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>production_cost_data</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>DataFrame of production costs indexed by year, or None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rotation_frequency</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>]] | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary mapping crop names to (min, max) frequency tuples.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_times_planted</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="int">int</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Internal tracker of how many times each crop has been planted.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="cycles.CyclesRotationBuilder.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">crop_price</span><span class="p">,</span> <span class="n">fertilizer_price</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">production_cost</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rotation_frequency</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run the dynamic rotation-building loop.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>crop_price</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>CSV file of crop prices indexed by year.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fertilizer_price</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional fertilizer price table indexed by year.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>production_cost</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional crop production cost table indexed by year.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>rotation_frequency</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>]] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional min/max frequency constraints per crop symbol.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+            <details class="mkdocstrings-source">
+              <summary>Source code in <code>cycles/rotation_builder.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">crop_price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">fertilizer_price</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">production_cost</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rotation_frequency</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]]</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the dynamic rotation-building loop.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        crop_price: CSV file of crop prices indexed by year.</span>
+<span class="sd">        fertilizer_price: Optional fertilizer price table indexed by year.</span>
+<span class="sd">        production_cost: Optional crop production cost table indexed by year.</span>
+<span class="sd">        rotation_frequency: Optional min/max frequency constraints per crop symbol.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">crop_price_data</span> <span class="o">=</span> <span class="n">_optional_csv</span><span class="p">(</span><span class="n">crop_price</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">fertilizer_price_data</span> <span class="o">=</span> <span class="n">_optional_csv</span><span class="p">(</span><span class="n">fertilizer_price</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">production_cost_data</span> <span class="o">=</span> <span class="n">_optional_csv</span><span class="p">(</span><span class="n">production_cost</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">rotation_frequency</span> <span class="o">=</span> <span class="n">rotation_frequency</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">crop_price_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Crop price data is required to run the rotation builder.&#39;</span><span class="p">)</span>
+
+    <span class="n">operations</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Operation</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">control_dict</span><span class="p">[</span><span class="s1">&#39;rotation_size&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_dict</span><span class="p">[</span><span class="s1">&#39;simulation_end_year&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_dict</span><span class="p">[</span><span class="s1">&#39;simulation_start_year&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">control_dict</span><span class="p">[</span><span class="s1">&#39;operation_file&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="si">}</span><span class="s1">.operation&#39;</span>
+
+    <span class="n">generate_control_file</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;./input/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="si">}</span><span class="s1">.ctrl&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">control_dict</span><span class="p">)</span>
+    <span class="n">_write_operation_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./input&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="si">}</span><span class="s1">.operation&#39;</span><span class="p">,</span> <span class="n">operations</span><span class="p">)</span>
+
+    <span class="n">cycles</span> <span class="o">=</span> <span class="n">Cycles</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">simulation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="p">)</span>
+    <span class="n">options</span> <span class="o">=</span> <span class="s1">&#39;-b&#39;</span>
+
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">status</span><span class="p">,</span> <span class="n">screen_output</span> <span class="o">=</span> <span class="n">cycles</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span> <span class="n">silence</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="n">BREAK_POINT_REACHED</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="s1">&#39;-rb&#39;</span>
+        <span class="n">year</span><span class="p">,</span> <span class="n">doy</span> <span class="o">=</span> <span class="n">_find_break_doy</span><span class="p">(</span><span class="n">screen_output</span><span class="p">)</span>
+        <span class="n">economic_parameters</span> <span class="o">=</span> <span class="n">EconomicParameters</span><span class="o">.</span><span class="n">from_builder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">year</span><span class="p">)</span>
+
+        <span class="n">last_crop</span> <span class="o">=</span> <span class="n">_find_crop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">crops</span><span class="p">,</span> <span class="n">_last_planting</span><span class="p">(</span><span class="n">operations</span><span class="p">)</span><span class="o">.</span><span class="n">crop</span><span class="p">)</span> <span class="k">if</span> <span class="n">operations</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_find_best_rotation</span><span class="p">(</span><span class="n">year</span><span class="p">,</span> <span class="n">doy</span><span class="p">,</span> <span class="n">last_crop</span><span class="p">,</span> <span class="n">economic_parameters</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_append_operations</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">doy</span><span class="p">,</span> <span class="n">operations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_times_planted</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">crop</span><span class="o">.</span><span class="n">symbol</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="n">_write_operation_file</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;./input&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="si">}</span><span class="s1">.operation&#39;</span><span class="p">,</span> <span class="n">operations</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../cycles_runner/" class="btn btn-neutral float-left" title="Cycles Runner class"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../gadm/" class="btn btn-neutral float-right" title="GADM tools">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../cycles_runner/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../gadm/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
