@@ -1,3 +1,5 @@
+"""Build crop rotations dynamically from simulated economic returns."""
+
 from __future__ import annotations
 import numpy as np
 import pandas as pd
@@ -91,6 +93,28 @@ class RotationResult(NamedTuple):
 
 @dataclass
 class CyclesRotationBuilder:
+    """Run Cycles iteratively and append economically optimal operations.
+
+    Executes Cycles simulations for candidate crop-operation combinations,
+    selects the highest-return option at each break-point, and iteratively
+    builds a multi-year rotation. Integrates economic scoring with agronomic
+    constraints (e.g., minimum planting interval, crop group penalties).
+
+    Attributes:
+        simulation: Base simulation name for generated input/output directories.
+        executable: Absolute path to the Cycles executable binary.
+        crops: List of Crop objects with available operations for rotation.
+        control_dict: Base control file parameters (simulation years, options, etc.).
+        fertilizers: Dictionary mapping fertilizer names to Fertilizer objects.
+        yield_matrix: Dictionary mapping crop names to yield prediction DataFrames.
+        build_yield_matrix: If True, run simulations to build yield matrix; else read from disk.
+        crop_price_data: DataFrame of crop prices indexed by calendar year.
+        fertilizer_price_data: DataFrame of fertilizer prices indexed by year, or None.
+        production_cost_data: DataFrame of production costs indexed by year, or None.
+        rotation_frequency: Dictionary mapping crop names to (min, max) frequency tuples.
+        _times_planted: Internal tracker of how many times each crop has been planted.
+    """
+
     simulation: str
     executable: str
     crops: list[Crop]
@@ -106,7 +130,7 @@ class CyclesRotationBuilder:
 
     def __post_init__(self) -> None:
         self.executable = str(Path(self.executable).resolve())
-        self.fertilizers = read_fertilizer_file(Path('./') / FERTILIZER_FILE)
+        self.fertilizers = _read_fertilizer_file(Path('./') / FERTILIZER_FILE)
         self._times_planted = {crop.symbol: 0 for crop in self.crops}
 
         for crop in self.crops:
@@ -119,6 +143,14 @@ class CyclesRotationBuilder:
 
 
     def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: dict[str, tuple[float, float]] | None=None) -> None:
+        """Run the dynamic rotation-building loop.
+
+        Args:
+            crop_price: CSV file of crop prices indexed by year.
+            fertilizer_price: Optional fertilizer price table indexed by year.
+            production_cost: Optional crop production cost table indexed by year.
+            rotation_frequency: Optional min/max frequency constraints per crop symbol.
+        """
         self.crop_price_data = _optional_csv(crop_price)
         self.fertilizer_price_data = _optional_csv(fertilizer_price)
         self.production_cost_data = _optional_csv(production_cost)
@@ -320,7 +352,6 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
 
 
 def _format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
-    """Serialise a single operation to lines, with optional DOY substitutions."""
     lines = [_camel_to_snake(type(operation).__name__).upper()]
     for f in fields(operation):
         if not f.metadata.get('readable', True):
@@ -388,7 +419,6 @@ def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[li
 
 
 def _sample_yield_matrix(yield_df: pd.DataFrame, doys: np.ndarray) -> dict[str, np.ndarray]:
-    """For each DOY in doys, sample one row from yield_df. Returns arrays indexed by DOY position."""
     sampled = yield_df.groupby('doy').sample(1).set_index('doy')
     return {col: sampled.loc[doys, col].to_numpy()
         for col in ('grain_yield', 'forage_yield', 'nitrogen_in_harvest', 'growing_window')}
@@ -416,7 +446,6 @@ def _find_crop_group(symbol: str) -> CropGroup:
 
 
 def _find_break_doy(output: str) -> tuple[int, int]:
-    """Return (year, doy) of the first break point, or None if not found."""
     match = re.search(r'Break point reached.*?Year (\d+) DOY (\d+)', output)
     if match is None:
         raise ValueError('No break point found in output.')
@@ -450,12 +479,11 @@ def _optional_csv(path: Path | str | None) -> pd.DataFrame | None:
 
 
 def _parse_value(line: str) -> tuple[str, float]:
-    """Strip comment, then return (key, value) from a data line."""
     content = line.split('#')[0].split()
     return content[0].lower(), float(content[1])
 
 
-def read_fertilizer_file(path: str | Path) -> dict[str, Fertilizer]:
+def _read_fertilizer_file(path: str | Path) -> dict[str, Fertilizer]:
     fertilizers: dict[str, Fertilizer] = {}
     current_name: str | None = None
     current_data: dict[str, float] = {}

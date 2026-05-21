@@ -67,7 +67,17 @@ ALL_MAPS: list[str] = [f'{p}@{l}' for p in MAPPABLE_PARAMETERS for l in SOILGRID
 LatLon = tuple[float, float]
 
 class SoilGrids:
+    """Read SoilGrids rasters and build Cycles-compatible soil profiles."""
+
     def __init__(self, path: str | Path, *, maps: list[str]=ALL_MAPS, crs: str | None=None, aggregated: int | None=None) -> None:
+        """Load SoilGrids rasters for selected maps.
+
+        Args:
+            path: Directory containing downloaded SoilGrids rasters.
+            maps: Map identifiers in ``property@layer`` format.
+            crs: Optional target CRS for reprojection.
+            aggregated: Optional aggregated resolution (1000 or 5000 m).
+        """
         if aggregated is not None and aggregated not in [1000, 5000]:
             raise ValueError(f'Invalid value for aggregated: {aggregated}. Supported values are 1000, and 5000.')
         self.crs: str = crs if crs is not None else HOMOLOSINE
@@ -77,6 +87,18 @@ class SoilGrids:
 
 
     def reproject_match(self, *, reference_xds: xarray.DataArray, reference_name: str, boundary: gpd.GeoDataFrame) -> None:
+        """Reproject loaded maps to a reference raster grid.
+
+        Args:
+            reference_xds: Reference raster whose CRS, transform, and resolution
+                are used for reprojection.
+            reference_name: Column name used for the reference raster values in
+                the generated matched table.
+            boundary: Boundary geometry used to clip all rasters after reprojection.
+
+        Returns:
+            None.
+        """
         reference_xds = reference_xds.rio.clip([boundary], from_disk=True)
         df = pd.DataFrame(reference_xds[0].to_series().rename(reference_name))
 
@@ -91,6 +113,14 @@ class SoilGrids:
 
 
     def get_soil_profile(self, lat_lon: LatLon) -> list[SoilLayer]:
+        """Sample loaded maps at a coordinate and build a soil profile.
+
+        Args:
+            lat_lon: Latitude and longitude pair in EPSG:4326.
+
+        Returns:
+            Soil layers populated from SoilGrids values at the nearest grid cell.
+        """
         values = self._extract_values(lat_lon)
 
         return [SoilLayer(
@@ -101,6 +131,18 @@ class SoilGrids:
 
 
     def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None) -> None:
+        """Generate a Cycles soil file from SoilGrids values.
+
+        Args:
+            fn: Output soil file path.
+            lat_lon: Latitude and longitude pair in EPSG:4326.
+            desc: Optional custom header text for the output file.
+            hsg: Optional hydrologic soil group code used for curve-number mapping.
+            slope: Optional slope value written to the soil file header.
+
+        Returns:
+            None.
+        """
         profile: list[SoilLayer] = self.get_soil_profile(lat_lon)
         desc = desc if desc is not None else _build_desc(lat_lon, hsg)
 
@@ -116,7 +158,6 @@ class SoilGrids:
 
 
 def _build_desc(lat_lon: LatLon, hsg: str) -> str:
-    """Build the default soil file description header."""
     lines = [
         f"# Soil file sampled at Latitude {lat_lon[0]:.3f}, Longitude {lat_lon[1]:.3f}.",
         "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.",
@@ -130,10 +171,7 @@ def _build_desc(lat_lon: LatLon, hsg: str) -> str:
 
 
 def _read_maps(path: Path, maps: list[str], crs: str | None, aggregated: int | None) -> dict[str, xarray.DataArray]:
-    """Read SoilGrids data
-    Map names follow the convention 'variable@layer', e.g. 'bulk_density@0-5cm'.
-    map name for 0-5 cm bulk density should be "bulk_density@0-5cm".
-    """
+    # Map names follow the convention 'variable@layer', e.g. 'bulk_density@0-5cm'.
     soilgrids_xds = {}
     for m in maps:
         v, layer = m.split('@')
@@ -147,10 +185,7 @@ def _read_maps(path: Path, maps: list[str], crs: str | None, aggregated: int | N
 
 
 def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[float, float, float, float]:
-    """Convert bounding boxes to SoilGrids CRS
-
-    bbox should be in the order of [west, south, east, north]
-    """
+    # bbox should be in the order of [west, south, east, north]
     corners = gpd.GeoDataFrame(
         {'geometry': [Point(bbox[0], bbox[3]), Point(bbox[2], bbox[1])]},
         index=['NW', 'SE'],
@@ -166,7 +201,6 @@ def _get_bounding_box(bbox: tuple[float, float, float, float], crs) -> tuple[flo
 
 
 def _bbox_from_boundary(boundary: Polygon) -> tuple[float, float, float, float]:
-    """Derive a buffered bounding box from a boundary polygon."""
     w, s, e, n = boundary.bounds
     buf_x = min(BBOX_BUFFER, 0.5 * (e - w))
     buf_y = min(BBOX_BUFFER, 0.5 * (n - s))
@@ -174,10 +208,24 @@ def _bbox_from_boundary(boundary: Polygon) -> tuple[float, float, float, float]:
 
 
 def download_soilgrids_data(path: str | Path, *,
-    maps: list[str]=ALL_MAPS, boundary: Polygon | None=None, bbox: tuple[float, float, float, float] | None = None, crs: str='epsg:4326') -> None:
-    """Download SoilGrids data via WCS for a given bounding box or boundary polygon.
-    bbox should be ordered [west, south, east, north].
-    Map names follow the convention 'variable@layer', e.g. 'bulk_density@0-5cm'.
+    maps: list[str]=ALL_MAPS, boundary: Polygon | None=None, bbox: tuple[float, float, float, float] | None=None, crs: str='epsg:4326') -> None:
+    """Download SoilGrids raster layers via WCS.
+
+    You can provide either a boundary polygon or an explicit bounding box.
+    Bounding boxes are expected in ``(west, south, east, north)`` order.
+
+    Args:
+        path: Directory where downloaded GeoTIFF files are written.
+        maps: Map identifiers in ``property@layer`` format.
+        boundary: Optional polygon used to derive a buffered bounding box.
+        bbox: Optional explicit bounding box as ``(west, south, east, north)``.
+        crs: CRS of the provided ``bbox`` coordinates.
+
+    Returns:
+        None.
+
+    Raises:
+        ValueError: If neither ``boundary`` nor ``bbox`` is provided.
     """
     if boundary is not None and bbox is None:
         bbox = _bbox_from_boundary(boundary)

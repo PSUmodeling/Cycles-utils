@@ -6,7 +6,6 @@ from pathlib import Path
 DATE_COLUMNS: frozenset[str] = frozenset({'date', 'plant_date'})
 
 def _parse_units(lines: list[str], columns) -> dict[str, str]:
-    """Find the unit comment line and map column names to units."""
     try:
         unit_line = next(line.strip().lstrip('#') for line in lines if line.strip().startswith('#') and ',' in line)
     except StopIteration:
@@ -15,6 +14,15 @@ def _parse_units(lines: list[str], columns) -> dict[str, str]:
 
 
 def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[str, str]]:
+    """Read one Cycles output table and associated unit strings.
+
+    Args:
+        path: Directory containing output CSV files.
+        output_type: Output file type, such as ``harvest``.
+
+    Returns:
+        Parsed DataFrame and a column-to-unit mapping.
+    """
     fn = Path(path) / f'{output_type}.csv'
     text = fn.read_text()
     lines = text.splitlines()

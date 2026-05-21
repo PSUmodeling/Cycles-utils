@@ -67,7 +67,23 @@ SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
 LatLon = tuple[float, float]
 
 class Ssurgo:
+    """Load SSURGO lookup tables and extract soil profiles for locations."""
+
     def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
+        """Initialize SSURGO lookup tables and optional spatial subset.
+
+        Args:
+            path: Directory containing SSURGO geodatabase and lookup CSV files.
+            state: State identifier used in SSURGO file naming.
+            lat_lon: Optional latitude/longitude for point-based spatial filtering.
+            boundary: Optional boundary GeoDataFrame for polygon-based filtering.
+
+        Returns:
+            None.
+
+        Raises:
+            ValueError: If both ``lat_lon`` and ``boundary`` are provided.
+        """
         _validate_geographic_input(lat_lon, boundary)
 
         self.state: str = state
@@ -105,11 +121,21 @@ class Ssurgo:
 
     @property
     def mapunits(self) -> gpd.GeoDataFrame | pd.DataFrame | None:
+        """Return loaded map-unit table.
+
+        Returns:
+            Map-unit table as GeoDataFrame/DataFrame, or None if not loaded.
+        """
         return self._mapunits
 
 
     @property
     def muname(self) -> str:
+        """Return map-unit name for the currently selected MUKEY.
+
+        Returns:
+            Map-unit name string.
+        """
         self._ensure_mukey()
         assert self.mukey is not None
         return self._get_muname(self.mukey)
@@ -117,15 +143,28 @@ class Ssurgo:
 
     @property
     def musym(self) -> str:
+        """Return map-unit symbol for the currently selected MUKEY.
+
+        Returns:
+            Map-unit symbol string.
+        """
         self._ensure_mukey()
         assert self._mapunits is not None
         return self._mapunits[self._mapunits['mukey'] == self.mukey]['musym'].iloc[0]
 
 
     def group_map_units(self, *, geometry: bool = False) -> None:
-        """Group SSURGO map units by soil series name.
-        Many map units share the same soil texture but differ in slope or other attributes. Grouping by the base name
-        (before the first comma) aggregates these into a single representative series.
+        """Group map units by base soil-series name.
+
+        Many map units share a base soil texture but differ in slope class or
+        minor qualifiers. This method groups by the base ``muname`` text before
+        the first comma and optionally dissolves geometries.
+
+        Args:
+            geometry: If True, dissolve polygons by grouped map-unit name.
+
+        Returns:
+            None.
         """
         if self.grouped_mapunits is not None:
             return
@@ -150,6 +189,14 @@ class Ssurgo:
 
 
     def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
+        """Build a mask for non-soil or urban map units.
+
+        Args:
+            mapunits: Map-unit table to evaluate.
+
+        Returns:
+            Boolean Series where True indicates non-soil or urban classes.
+        """
         return (
             mapunits['mukey'].isna() |
             mapunits['muname'].isin(SSURGO_NON_SOIL_TYPES) |
@@ -158,6 +205,11 @@ class Ssurgo:
 
 
     def select_major_mapunit(self) -> None:
+        """Select the dominant map unit by area.
+
+        Returns:
+            None.
+        """
         if self.mukey is not None:
             return
         if self.grouped_mapunits is None:
@@ -170,6 +222,15 @@ class Ssurgo:
 
 
     def get_soil_profile(self, *, mukey: int | None=None, major_only: bool=True) -> list[SoilLayer]:
+        """Build a soil profile from SSURGO components and horizons.
+
+        Args:
+            mukey: Optional map-unit key. If omitted, the selected major MUKEY is used.
+            major_only: If True, include only components marked as major.
+
+        Returns:
+            Soil profile as a list of ``SoilLayer`` records.
+        """
         mukey = mukey or self._ensure_mukey()
         assert self.components is not None and self.horizons is not None
 
@@ -186,7 +247,21 @@ class Ssurgo:
             ) for _, row in df.iterrows()]
 
 
-    def generate_soil_file(self, fn: Path | str, *, mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, soil_depth: float | None=None) -> None:
+    def generate_soil_file(self, fn: Path | str, *,
+        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, soil_depth: float | None=None) -> None:
+        """Generate a Cycles soil file from SSURGO profile data.
+
+        Args:
+            fn: Output soil file path.
+            mukey: Optional map-unit key. If omitted, dominant MUKEY is used.
+            desc: Optional custom header text for the output file.
+            hsg: Optional hydrologic soil group; inferred from map unit if omitted.
+            slope: Optional slope value; inferred from map unit if omitted.
+            soil_depth: Optional maximum depth (m) used during profile mapping.
+
+        Returns:
+            None.
+        """
         if mukey is None:
             self.group_map_units(geometry=True)
             self.select_major_mapunit()
@@ -264,7 +339,6 @@ def _dominant_hsg(gdf: gpd.GeoDataFrame) -> str:
 
 
 def _strip_slope_suffix(s: str) -> str:
-    """Strip trailing slope class letter or letter+digit from a map unit symbol."""
     if s == 'N/A' or len(s) < 2:
         return s
     if s[-1].isupper() and (s[-2].isnumeric() or s[-2].islower()):

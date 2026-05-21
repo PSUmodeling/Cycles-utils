@@ -107,23 +107,22 @@ DEFAULT_PROFILE: list[SoilLayer] = [
 ]
 
 def _trim(target: list[SoilLayer], measured_bottom: float, soil_depth: float | None=None) -> list[SoilLayer]:
-    """Keep target layers with more than 50% overlap with the effective depth."""
     cutoff = min(measured_bottom, soil_depth) if soil_depth is not None else measured_bottom
     return [l for l in target if l.overlap_with(l.top, cutoff) > 0.5]
 
 
-def _map_layer(target: SoilLayer, measured: list[SoilLayer], parameters: list[str]) -> SoilLayer:
+def _map_layer(target: SoilLayer, profile: list[SoilLayer], parameters: list[str]) -> SoilLayer:
     return SoilLayer(
         top = target.top,
         bottom = target.bottom,
         no3 = target.no3,
         nh4 = target.nh4,
-        **{p: _weighted_average(p, target, measured) for p in parameters},  # type: ignore
+        **{p: _weighted_average(p, target, profile) for p in parameters},  # type: ignore
     )
 
 
-def _weighted_average(parameter: str, target: SoilLayer, measured: list[SoilLayer]) -> float | None:
-    valid = [(w, v) for m in measured if (w := m.overlap_with(target.top, target.bottom)) > 0 and (v := getattr(m, parameter)) is not None]
+def _weighted_average(parameter: str, target: SoilLayer, profile: list[SoilLayer]) -> float | None:
+    valid = [(w, v) for m in profile if (w := m.overlap_with(target.top, target.bottom)) > 0 and (v := getattr(m, parameter)) is not None]
     if not valid:
         return None
     total = sum(w for w, _ in valid)
@@ -157,7 +156,6 @@ def _render_soil_file(layers: list[SoilLayer], desc: str, slope: float | None, c
 
 
 def _parse_header(lines: list[str]) -> tuple[dict, list[str]]:
-    """Extract curve_number and slope, return remaining lines."""
     meta = {}
     i = 0
     for key, cast in [('curve_number', float), ('slope', float)]:
@@ -167,7 +165,6 @@ def _parse_header(lines: list[str]) -> tuple[dict, list[str]]:
 
 
 def _parse_layers(lines: list[str]) -> list[SoilLayer]:
-    """Parse the column header line and data rows into SoilLayer instances."""
     # First line is the column header — map column names to VARIABLES by header name
     col_names = [col.lower() for col in lines[0].split()]
     param_by_header = {v.header.lower(): v for v in VARIABLES}
@@ -183,7 +180,6 @@ def _parse_layers(lines: list[str]) -> list[SoilLayer]:
 
 
 def _parse_layer_row(col_names: list[str], tokens: list[str], param_by_header: dict[str, SoilParameter], cumulative_depth: float) -> SoilLayer:
-    """Parse a single data row into a SoilLayer."""
     kwargs = {}
     thickness = None
 
@@ -209,7 +205,6 @@ def _parse_layer_row(col_names: list[str], tokens: list[str], param_by_header: d
 
 
 def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
-    """Cast a token string to the appropriate type, returning None for sentinels."""
     if (param.sentinel and token.strip() == param.sentinel) or (token.strip() == '-999'):
         return None
     if param.fmt.endswith('d'):
@@ -220,40 +215,85 @@ def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
 
 
 def _row_to_layer(row: pd.Series) -> SoilLayer:
-    """Convert a single DataFrame row to a SoilLayer."""
     valid_fields = {f.name for f in fields(SoilLayer)}
     kwargs = {col: (None if pd.isna(val) else val) for col, val in row.items() if col in valid_fields}
     return SoilLayer(**kwargs)  # type: ignore
 
 
-def map_layers(measured: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
-    """Map measured soil properties onto a target profile via depth-weighted averaging."""
-    trimmed = _trim(target, measured[-1].bottom, soil_depth)
-    return [_map_layer(layer, measured, parameters) for layer in trimmed]
+def map_layers(profile: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
+    """Map measured soil properties onto a target profile.
+
+    The mapping is performed by overlap-weighted averaging for each requested
+    parameter, after trimming target layers to the effective profile depth.
+
+    Args:
+        profile: Soil profile layers in depth order.
+        target: Target layer structure to map onto.
+        parameters: Soil parameters to map from measured profile to target.
+        soil_depth: Optional maximum depth (m) to include in the mapped profile.
+
+    Returns:
+        A list of mapped soil layers aligned to the target profile.
+    """
+    trimmed = _trim(target, profile[-1].bottom, soil_depth)
+    return [_map_layer(layer, profile, parameters) for layer in trimmed]
 
 
 def map_to_dataframe(layers: list[SoilLayer]) -> pd.DataFrame:
-    """Convert a list of SoilLayer instances to a DataFrame."""
+    """Convert soil layers to a tabular representation.
+
+    Args:
+        layers: Soil layers to convert.
+
+    Returns:
+        A DataFrame with one row per layer, including computed ``thickness``.
+    """
     return pd.DataFrame([{**asdict(layer), 'thickness': layer.thickness} for layer in layers])
 
 
-def generate_soil_file(fn: str | Path, measured: list[SoilLayer], *,
+def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
     target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
     desc: str = '', slope: float | None=None, curve_number: float | None=None, hsg: str = '') -> list[SoilLayer]:
-    """Map measured soil layers onto the target profile and write a Cycles soil file.
-    Returns the mapped layers for further use.
+    """Map layers and write a Cycles-formatted soil file.
+
+    The input profile is first mapped to the target layering scheme, then
+    rendered to Cycles soil-file format and written to ``fn``.
+
+    Args:
+        fn: Output soil file path.
+        profile: Soil profile layers in depth order.
+        target: Target layer structure to map onto.
+        parameters: Soil parameters to map from measured profile.
+        soil_depth: Optional maximum depth (m) to include in mapping.
+        desc: Optional description/comment line written at file top.
+        slope: Optional slope value written to the header.
+        curve_number: Optional explicit curve number value.
+        hsg: Optional hydrologic soil group used to infer curve number.
+
+    Returns:
+        The mapped soil layers written to the output file.
+
+    Raises:
+        ValueError: If both ``curve_number`` and ``hsg`` are provided.
     """
     if curve_number is not None and hsg:
         raise ValueError("Only one of curve_number and hsg can be provided.")
-    layers = map_layers(measured, target, parameters, soil_depth)
+    layers = map_layers(profile, target, parameters, soil_depth)
     Path(fn).write_text('\n'.join(_render_soil_file(layers, desc, slope, curve_number, hsg)) + '\n')
     return layers
 
 
 def read_soil_file(fn: str | Path) -> tuple[list[SoilLayer], dict]:
-    """Read a Cycles soil file and return:
-    - a list of SoilLayer instances
-    - a dict of header metadata (curve_number, slope)
+    """Read a Cycles soil file into structured objects.
+
+    Args:
+        fn: Soil file path to read.
+
+    Returns:
+        A tuple containing:
+            - List of parsed ``SoilLayer`` objects.
+            - Header metadata dictionary with keys such as
+              ``curve_number`` and ``slope``.
     """
     lines = [line for line in Path(fn).read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
 
@@ -263,5 +303,12 @@ def read_soil_file(fn: str | Path) -> tuple[list[SoilLayer], dict]:
 
 
 def from_dataframe(df: pd.DataFrame) -> list[SoilLayer]:
-    """Convert a DataFrame to a list of SoilLayer instances."""
+    """Convert a DataFrame into ``SoilLayer`` objects.
+
+    Args:
+        df: DataFrame containing columns matching ``SoilLayer`` fields.
+
+    Returns:
+        A list of ``SoilLayer`` instances created row-by-row.
+    """
     return [_row_to_layer(row) for _, row in df.iterrows()]

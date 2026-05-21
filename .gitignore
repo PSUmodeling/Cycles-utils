@@ -177,7 +177,6 @@ cython_debug/
 /template
 /temp
 /test
-/Cycles
 /.vscode
 *.out
 *.job
@@ -188,3 +187,4 @@ cython_debug/
 7z*
 .urs_cookies
 Cycles_debian_*.zip
+Cycles

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import pandas as pd
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -43,6 +42,13 @@ def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None)
 
 
 def generate_nudge_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None = None) -> None:
+    """Write a Cycles nudge file from user-provided values.
+
+    Args:
+        fn: Destination nudge file path.
+        user_dict: Values or callables for nudge parameters.
+        simulation_dict: Optional simulation row for callable resolution.
+    """
     fn = Path(fn)
     config = _build_nudge_config(user_dict, simulation_dict)
     write_file(fn, config)

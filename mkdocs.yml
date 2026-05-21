@@ -1,0 +1,33 @@
+site_name: Cycles-utils
+theme:
+  name: readthedocs
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google  # Tells it how to read your docstrings
+            merge_init_into_class: true
+            show_root_heading: true
+            members_order: source
+            show_source: true        # Adds a nice "view source" button
+
+            filters:
+              - "!^_"
+            extensions:
+              - dataclasses
+
+nav:
+  - Home: index.md
+  - API Reference:
+    - I/O Tools: reference/cycles_tools.md
+    - Cycles class: reference/cycles.md
+    - Cycles Runner class: reference/cycles_runner.md
+    - Rotation Builder class: reference/rotation_builder.md
+    - GADM tools: reference/gadm.md
+    - SoilGrids tools: reference/soil_grids.md
+    - SSURGO tools: reference/ssurgo.md
+    - Weather tools: reference/weather.md

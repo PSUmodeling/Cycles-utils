@@ -99,6 +99,14 @@ OPERATION_PARAMETERS = {
 }
 
 def read_operation_file(operation: str | Path) -> list:
+    """Parse a Cycles operation file into operation objects.
+
+    Args:
+        operation: Path to a Cycles operation file.
+
+    Returns:
+        A list of operation dataclass instances.
+    """
     with open(Path(operation)) as f:
         lines = f.read().splitlines()
 

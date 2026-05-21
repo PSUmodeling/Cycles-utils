@@ -18,7 +18,6 @@ SUMMARY_DIR: Path = Path('summary')
 
 @dataclass
 class SimulationContext:
-    """Holds all resolved values for a single simulation row."""
     name: str
     control_dict: dict
     operation_dict: dict | None
@@ -28,6 +27,17 @@ class SimulationContext:
 
 @dataclass
 class CyclesRunner:
+    """Run one or many Cycles simulations with templated inputs.
+
+    Manages batch execution of Cycles simulations by generating control files,
+    operation files, and nudge files from templates and parameter dictionaries.
+    Consolidates results into a summary CSV file.
+
+    Attributes:
+        executable: Absolute path to the Cycles executable binary.
+        rotation_builder: If True, disables spin-up option and enables rotation features.
+    """
+
     executable: str
     rotation_builder: bool = False
 
@@ -38,6 +48,22 @@ class CyclesRunner:
     def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
         summary: str='summary.csv', operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None, calibration_dict: dict[str, Any] | None=None,
         options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='') -> None:
+        """Execute a batch of simulations and write a consolidated summary.
+
+        Args:
+            simulations: Simulation rows as list of dicts or a DataFrame.
+            control_dict: Control-file values or callables evaluated per row.
+            summary: Summary CSV name written under summary directory.
+            operation_template: Template file for generated operation files.
+            operation_dict: Substitutions used with operation template.
+            calibration_dict: Nudge-file values or callables per row.
+            options: Cycles command options.
+            rm_input: Remove generated input files after each run.
+            rm_output: Remove run output directory after each run.
+            rm_steady_state_soil: Remove generated steady-state soil file.
+            silence: If True, suppress simulation screen output.
+            user_comment: Optional text prefixed to summary header comments.
+        """
         if isinstance(simulations, pd.DataFrame):
             simulations = simulations.to_dict(orient='records')
         assert isinstance(simulations, list)

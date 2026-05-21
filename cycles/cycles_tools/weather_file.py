@@ -35,6 +35,17 @@ def _build_date_index(df: pd.DataFrame, *, subdaily: bool) -> pd.DatetimeIndex:
 
 
 def read_weather_file(fn: str | Path, *, start_year: int = 0, end_year: int = 9999, subdaily: bool = False) -> pd.DataFrame:
+    """Read weather file records and filter by year range.
+
+    Args:
+        fn: Weather file path.
+        start_year: Inclusive first year to keep.
+        end_year: Inclusive last year to keep.
+        subdaily: If True, parse hourly weather schema.
+
+    Returns:
+        Weather data indexed by datetime.
+    """
     columns = SUBDAILY_COLUMNS if subdaily else DAILY_COLUMNS
     df = pd.read_csv(
         Path(fn),

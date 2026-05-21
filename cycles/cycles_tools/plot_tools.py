@@ -41,7 +41,6 @@ MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 MDOYS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
 
 def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
-    """Assign a unique color to each crop by cycling through the axes color cycle."""
     colors = {}
     for crop in crops:
         line, = ax.plot([], [])
@@ -61,7 +60,6 @@ def _plot_harvest_type(ax: Axes, df: pd.DataFrame, crop: str, harvest: str, mark
 
 
 def _build_legend_handles(crops: list[str], crop_colors: dict[str, str]) -> list[mlines.Line2D]:
-    """Build legend handles: one per harvest type, one per crop."""
     marker_handles = [
         mlines.Line2D([], [],
             linestyle='',
@@ -87,6 +85,16 @@ def _build_legend_handles(crops: list[str], crop_colors: dict[str, str]) -> list
 
 
 def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
+    """Plot grain and forage yields by crop.
+
+    Args:
+        harvest_df: Harvest output DataFrame.
+        ax: Optional axes to draw on.
+        fontsize: Optional global font size override.
+
+    Returns:
+        Axes containing the yield plot.
+    """
     if ax is None:
         _, ax = plt.subplots()
     if fontsize is not None:
@@ -113,15 +121,26 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int 
     return ax
 
 
-def plot_operations(operations: list, rotation_size: int, *, axes: Axes | np.ndarray | None=None, fontsize: int | None=None):
-    if axes is None:
-        _, axes = plt.subplots(rotation_size, 1, sharex=True)
-    assert axes is not None
+def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None):
+    """Plot operations by day-of-year for each rotation year.
 
-    if isinstance(axes, Axes):
-        axes = np.array(axes).reshape((1,))
+    Args:
+        operations: Sequence of parsed operation objects.
+        rotation_size: Number of years in the rotation.
+        axs: Optional axes object(s) for rendering.
+        fontsize: Optional global font size override.
 
-    if rotation_size != axes.shape[0]:
+    Returns:
+        Axes array used to render timelines.
+    """
+    if axs is None:
+        _, axs = plt.subplots(rotation_size, 1, sharex=True)
+    assert axs is not None
+
+    if isinstance(axs, Axes):
+        axs = np.array(axs).reshape((1,))
+
+    if rotation_size != axs.shape[0]:
         raise ValueError('The number of axes must match the rotation size.')
 
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
@@ -132,7 +151,7 @@ def plot_operations(operations: list, rotation_size: int, *, axes: Axes | np.nda
 
             if len(sub_list) == 0: continue
 
-            axes[y].plot(
+            axs[y].plot(
                 [op.doy for op in sub_list], [value.yloc] * len(sub_list),
                 'o',
                 label=value.title + ':\n' + '\n'.join(f'{op.doy}: {getattr(op, value.label)}' if value.label is not None else f'{op.doy}' for op in sub_list),
@@ -140,34 +159,34 @@ def plot_operations(operations: list, rotation_size: int, *, axes: Axes | np.nda
                 ms=10,
             )
 
-        axes[y].set_xlim(-1, 370)
-        axes[y].grid(False)
-        axes[y].spines['right'].set_color('none')
-        axes[y].spines['left'].set_color('none')
-        axes[y].yaxis.set_ticks_position('none')
-        axes[y].yaxis.set_tick_params(left=False, right=False, which='both', labelleft=False)
-        axes[y].set_ylim(-3, 7)
-        axes[y].text(184, 5, f'Year {y + 1}', ha='center')
+        axs[y].set_xlim(-1, 370)
+        axs[y].grid(False)
+        axs[y].spines['right'].set_color('none')
+        axs[y].spines['left'].set_color('none')
+        axs[y].yaxis.set_ticks_position('none')
+        axs[y].yaxis.set_tick_params(left=False, right=False, which='both', labelleft=False)
+        axs[y].set_ylim(-3, 7)
+        axs[y].text(184, 5, f'Year {y + 1}', ha='center')
 
         # set the y-spine
-        axes[y].spines['bottom'].set_position('zero')
+        axs[y].spines['bottom'].set_position('zero')
 
         # turn off the top spine/ticks
-        axes[y].spines['top'].set_color('none')
-        axes[y].xaxis.tick_bottom()
-        axes[y].set_xticks(MDOYS)
-        axes[y].set_xticklabels(MONTHS)
+        axs[y].spines['top'].set_color('none')
+        axs[y].xaxis.tick_bottom()
+        axs[y].set_xticks(MDOYS)
+        axs[y].set_xticklabels(MONTHS)
 
-        handles, _ = axes[y].get_legend_handles_labels()
+        handles, _ = axs[y].get_legend_handles_labels()
         if handles:
-            axes[y].legend(
+            axs[y].legend(
                 loc='center left',
                 bbox_to_anchor=(1.1, 0.5),
                 ncols=5,
                 frameon=False,
             )
 
-    return axes
+    return axs
 
 
 def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=ccrs.PlateCarree(), ax: Sequence[float] | GeoAxes | None=None,
@@ -176,6 +195,28 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
     label: str | None=None, title: str | None=None,
     fontsize: float | None=None,
     frameon: bool=False) -> tuple[Figure, GeoAxes]:
+    """Render a thematic map from a GeoDataFrame column.
+
+    Args:
+        gdf: GeoDataFrame to visualize.
+        column: Column name to visualize.
+        projection: Map projection for output axes.
+        ax: Existing GeoAxes or add_axes rectangle.
+        cmap: Matplotlib colormap.
+        vmin: Optional lower bound for colormap normalization.
+        vmax: Optional upper bound for colormap normalization.
+        colorbar: Whether to draw a colorbar.
+        cb_axes: Optional colorbar axes rectangle.
+        extend: Colorbar extension mode.
+        cb_orientation: Colorbar orientation.
+        label: Optional colorbar label.
+        title: Optional plot title.
+        fontsize: Optional global font size override.
+        frameon: Whether to draw map frame and grid labels.
+
+    Returns:
+        Tuple of figure and GeoAxes.
+    """
 
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
 

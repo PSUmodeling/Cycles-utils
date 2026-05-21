@@ -74,7 +74,17 @@ def _get_soil_layers(fn: Path) -> int:
         return -999
 
 
-def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None = None) -> ControlConfig:
+def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
+    """Generate and write a Cycles control file.
+
+    Args:
+        fn: Destination control file path.
+        user_dict: Values or callables for control fields.
+        simulation_dict: Optional simulation row for callable resolution.
+
+    Returns:
+        The generated control configuration.
+    """
     fn = Path(fn)
     config = _build_control_config(user_dict, simulation_dict, fn.parent)
     write_file(fn, config)
@@ -83,6 +93,14 @@ def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: d
 
 
 def read_control_file(control: str | Path) -> ControlConfig:
+    """Parse a Cycles control file into a ControlConfig instance.
+
+    Args:
+        control: Path to a Cycles control file path.
+
+    Returns:
+        Control configuration.
+    """
     with open(Path(control)) as f:
         lines = f.read().splitlines()
     lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])

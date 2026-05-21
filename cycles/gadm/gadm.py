@@ -26,7 +26,6 @@ def _read_csv(fn: Path, dtypes: dict, index_col: str) -> pd.DataFrame:
 
 
 def _find_representation(csv: Path, dtypes: dict, representation: str, **kwargs) -> str | int:
-    """Look up a representation value by trying each provided keyword argument."""
     for col, value in kwargs.items():
         if value is None:
             continue
@@ -39,7 +38,7 @@ def _find_representation(csv: Path, dtypes: dict, representation: str, **kwargs)
 
 
 def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
-    """County name is a special case — composed from name_2 and name_1."""
+    # County name is a special case — composed from name_2 and name_1
     for col, value in kwargs.items():
         if value is None:
             continue
@@ -55,6 +54,17 @@ def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
 
 
 def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool = True) -> gpd.GeoDataFrame:
+    """Read a GADM layer and normalize its index.
+
+    Args:
+        path: Directory containing GADM shapefiles.
+        country: Country code used in GADM file names.
+        level_str: Administrative level name (country, state, county).
+        conus: For USA state/county layers, exclude Alaska and Hawaii.
+
+    Returns:
+        GeoDataFrame indexed by GID.
+    """
     level = GADMLevel[level_str.upper()]
     gdf = gpd.read_file(_gadm_path(Path(path), country, level))
 
@@ -69,28 +79,114 @@ def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool = T
 
 
 def state_gid(*, state: str | None = None, abbreviation: str | None = None, fips: int | None = None) -> str:
+    """Look up state GID by name, abbreviation, or FIPS code.
+
+    Args:
+        state: Full state name.
+        abbreviation: Two-letter state abbreviation.
+        fips: Numeric state FIPS code.
+
+    Returns:
+        State GID string.
+
+    Raises:
+        KeyError: If no matching state record is found.
+    """
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'gid', state=state, abbreviation=abbreviation, fips=fips))
 
 
 def state_abbreviation(*, state: str | None = None, gid: str | None = None, fips: int | None = None) -> str:
+    """Look up state abbreviation by name, GID, or FIPS code.
+
+    Args:
+        state: Full state name.
+        gid: State GID string.
+        fips: Numeric state FIPS code.
+
+    Returns:
+        Two-letter state abbreviation.
+
+    Raises:
+        KeyError: If no matching state record is found.
+    """
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'abbreviation', state=state, gid=gid, fips=fips))
 
 
 def state_fips(*, state: str | None = None, abbreviation: str | None = None, gid: str | None = None) -> int:
+    """Look up state FIPS code by name, abbreviation, or GID.
+
+    Args:
+        state: Full state name.
+        abbreviation: Two-letter state abbreviation.
+        gid: State GID string.
+
+    Returns:
+        Numeric state FIPS code.
+
+    Raises:
+        KeyError: If no matching state record is found.
+    """
     return int(_find_representation(STATE_CSV, STATE_DTYPES, 'fips', state=state, abbreviation=abbreviation, gid=gid))
 
 
 def state_name(*, abbreviation: str | None = None, gid: str | None = None, fips: int | None = None) -> str:
+    """Look up state name by abbreviation, GID, or FIPS code.
+
+    Args:
+        abbreviation: Two-letter state abbreviation.
+        gid: State GID string.
+        fips: Numeric state FIPS code.
+
+    Returns:
+        Full state name.
+
+    Raises:
+        KeyError: If no matching state record is found.
+    """
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'state', abbreviation=abbreviation, gid=gid, fips=fips))
 
 
 def county_gid(*, fips: int) -> str:
+    """Look up county GID by county FIPS code.
+
+    Args:
+        fips: Numeric county FIPS code.
+
+    Returns:
+        County GID string.
+
+    Raises:
+        KeyError: If no matching county record is found.
+    """
     return str(_find_representation(COUNTY_CSV, COUNTY_DTYPES, 'gid', fips=fips))
 
 
 def county_fips(*, gid: str) -> int:
+    """Look up county FIPS code by county GID.
+
+    Args:
+        gid: County GID string.
+
+    Returns:
+        Numeric county FIPS code.
+
+    Raises:
+        KeyError: If no matching county record is found.
+    """
     return int(_find_representation(COUNTY_CSV, COUNTY_DTYPES, 'fips', gid=gid))
 
 
 def county_name(*, gid: str | None = None, fips: int | None = None) -> str:
+    """Look up county display name by GID or FIPS code.
+
+    Args:
+        gid: County GID string.
+        fips: Numeric county FIPS code.
+
+    Returns:
+        County display name formatted as "County, State".
+
+    Raises:
+        KeyError: If no matching county record is found.
+    """
     return str(_find_county_name(COUNTY_CSV, COUNTY_DTYPES, gid=gid, fips=fips))

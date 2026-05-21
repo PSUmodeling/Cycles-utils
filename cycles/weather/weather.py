@@ -181,6 +181,14 @@ WEATHER_FILE_VARIABLES = {
 COOKIE_FILE = './.urs_cookies'
 
 def download_forcing(data_path: Path | str, forcing: str, date_start: datetime | int, date_end: datetime | int) -> None:
+    """Download forcing netCDF files for a date range.
+
+    Args:
+        data_path: Directory where forcing files are stored.
+        forcing: Name of reanalysis product.
+        date_start: Start datetime or start year.
+        date_end: End datetime or end year.
+    """
     # Create data directory if it doesn't exist
     data_path = Path(data_path)
     data_path.mkdir(parents=True, exist_ok=True)
@@ -199,8 +207,16 @@ def download_forcing(data_path: Path | str, forcing: str, date_start: datetime |
 
 
 def find_grids(forcing: str, *, locations: LocationInput=None, screen_output: bool=True, remove_duplicates: bool=True) -> str | list[str]:
-    """Find the nearest grid cell with valid data for each input location, and return a DataFrame with grid information
-    and corresponding weather file names.
+    """Find nearest valid weather grids for provided locations.
+
+    Args:
+        forcing: Name of reanalysis product.
+        locations: Optional coordinates or named coordinates.
+        screen_output: If True, print selected grid summary.
+        remove_duplicates: If True, collapse duplicate grid selections.
+
+    Returns:
+        Weather filename for one location or list of filenames.
     """
     df = _find_grids(REANALYSIS[forcing], locations, screen_output=screen_output, remove_duplicates=remove_duplicates)
 
@@ -283,9 +299,18 @@ def _remove_duplicated_locations(reanalysis: REANALYSIS, df: pd.DataFrame, scree
 
 def generate_weather_files(data_path: Path | str, weather_path: Path | str, forcing: str, date_start: datetime, date_end: datetime, *,
     hourly: bool=False, locations: LocationInput=None, header: bool=True) -> None:
-    '''Generate weather files for the specified locations and date range. For each location, the nearest grid cell with
-    valid data will be used.
-    '''
+    """Generate Cycles weather files for selected locations and dates.
+
+    Args:
+        data_path: Directory containing downloaded forcing files.
+        weather_path: Output directory for generated weather files.
+        forcing: Name of reanalysis product.
+        date_start: Start date of generated records.
+        date_end: End date of generated records.
+        hourly: If True, write hourly weather files.
+        locations: Optional coordinates or named coordinates.
+        header: If True, write weather file headers.
+    """
     reanalysis = REANALYSIS[forcing]
     resolution = Resolution.HOURLY if hourly else Resolution.DAILY
 
@@ -318,8 +343,6 @@ def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetim
 
 
 def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, year_end: int) -> None:
-    """Download gridMET forcing files
-    """
     with tqdm(total=(year_end - year_start + 1) * len(gridmet.netcdf_variables), desc='Download gridMET files', unit=' files') as progress_bar:
         for year in range(year_start, year_end + 1):
             for var in gridmet.netcdf_variables:
@@ -404,12 +427,12 @@ def _get_grid_info(reanalysis: REANALYSIS, grid_ind: int, mask_df: pd.DataFrame)
 
 
 def _write_header(f: typing.IO, latitude: float, elevation: float, resolution: Resolution, *, screening_height: float=10.0) -> None:
-        # Open meteorological file and write header lines
-        f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
-        f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
-        f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
-        f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if resolution in var.resolution]) + '\n')
-        f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if resolution in var.resolution]) + '\n')
+    # Open meteorological file and write header lines
+    f.write('%-23s\t%.2f\n' % ('LATITUDE', latitude))
+    f.write('%-23s\t%.2f\n' % ('ALTITUDE', elevation))
+    f.write('%-23s\t%.1f\n' % ('SCREENING_HEIGHT', screening_height))
+    f.write('\t'.join([f'{key:<7s}' for key, var in WEATHER_FILE_VARIABLES.items() if resolution in var.resolution]) + '\n')
+    f.write('\t'.join([f'{var.unit:<7s}' for var in WEATHER_FILE_VARIABLES.values() if resolution in var.resolution]) + '\n')
 
 
 def _relative_humidity(nc_data: dict[str, np.ndarray]) -> np.ndarray:
@@ -490,8 +513,6 @@ def _process_daily_xldas(data_path: Path, reanalysis: REANALYSIS, t: datetime, g
 
 
 def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, grid_df: pd.DataFrame) -> dict[str, np.ndarray]:
-    """Process annual gridMET data and write them to weather files
-    """
     gridmet = REANALYSIS.gridMET
 
     nc_data = {var: [] for var in gridmet.netcdf_variables}
