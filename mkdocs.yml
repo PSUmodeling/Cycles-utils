@@ -1,7 +1,9 @@
 site_name: Cycles-utils
 theme:
   name: readthedocs
-
+  highlightjs: true
+extra_css:
+  - custom.css
 plugins:
   - search
   - mkdocstrings:
@@ -14,7 +16,6 @@ plugins:
             show_root_heading: true
             members_order: source
             show_source: true        # Adds a nice "view source" button
-
             filters:
               - "!^_"
             extensions:

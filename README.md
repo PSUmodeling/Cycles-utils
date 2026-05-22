@@ -15,4 +15,4 @@ pip install Cycles-utils
 
 # API reference
 
-Coming soon
+[psumodeling.github.io/Cycles-utils](https://psumodeling.github.io/Cycles-utils)
