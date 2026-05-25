@@ -8,3 +8,5 @@ To install:
 ```shell
 pip install Cycles-utils
 ```
+
+Developed by: Yuning Shi (yshi.at.psu.edu)
