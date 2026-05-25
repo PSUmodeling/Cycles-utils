@@ -200,7 +200,6 @@ class CyclesRotationBuilder:
                 control_dict=control_dict,
                 operation_dict=operation_dict,
                 operation_template=f'template/{crop.name}.operation',
-                silence=True,
                 rm_input=True,
                 rm_output=True,
             )

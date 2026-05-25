@@ -81,8 +81,8 @@ class Cycles:
         )
         if not silence:
             print(result.stdout)
-            if result.stderr:
-                print(result.stderr)
+        if result.stderr:
+            print(result.stderr)
         return result.returncode, result.stdout
 
 
