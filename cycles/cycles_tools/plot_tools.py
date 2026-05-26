@@ -15,7 +15,7 @@ from matplotlib.figure import Figure
 from pathlib import Path
 
 HARVEST_MARKERS: dict[str, str] = {
-    'grain':  'd',
+    'grain': 'd',
     'forage': 'o',
 }
 
@@ -39,6 +39,7 @@ OPERATION_TYPES = {
 
 MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 MDOYS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+
 
 def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
     colors = {}

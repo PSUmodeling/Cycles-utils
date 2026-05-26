@@ -49,19 +49,19 @@ VARIABLES: list[SoilParameter] = [
 class SoilLayer:
     top: float
     bottom: float
-    clay: float | None=None
-    sand: float | None=None
-    soc: float | None=None
-    bulk_density: float | None=None
-    no3: float | None=None
-    nh4: float | None=None
-    fc: float | None=None
-    pwp: float | None=None
-    son: float | None=None
-    coarse_fragments: float | None=None
-    byp_h: float=0.0
-    byp_v: float=0.0
-    pH: float | None=None
+    clay: float | None = None
+    sand: float | None = None
+    soc: float | None = None
+    bulk_density: float | None = None
+    no3: float | None = None
+    nh4: float | None = None
+    fc: float | None = None
+    pwp: float | None = None
+    son: float | None = None
+    coarse_fragments: float | None = None
+    byp_h: float = 0.0
+    byp_v: float = 0.0
+    pH: float | None = None
 
     @property
     def thickness(self) -> float:
@@ -92,19 +92,20 @@ class SoilLayer:
 
 
 DEFAULT_PROFILE: list[SoilLayer] = [
-    SoilLayer(top=0.0,  bottom=0.05, no3=10.0, nh4=1.0),
-    SoilLayer(top=0.05, bottom=0.1,  no3=10.0, nh4=1.0),
-    SoilLayer(top=0.1,  bottom=0.2,  no3=7.0,  nh4=1.0),
-    SoilLayer(top=0.2,  bottom=0.4,  no3=4.0,  nh4=1.0),
-    SoilLayer(top=0.4,  bottom=0.6,  no3=2.0,  nh4=1.0),
-    SoilLayer(top=0.6,  bottom=0.8,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=0.8,  bottom=1.0,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=1.0,  bottom=1.2,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=1.2,  bottom=1.4,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=1.4,  bottom=1.6,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=1.6,  bottom=1.8,  no3=1.0,  nh4=1.0),
-    SoilLayer(top=1.8,  bottom=2.0,  no3=1.0,  nh4=1.0),
+    SoilLayer(top=0.0, bottom=0.05, no3=10.0, nh4=1.0),
+    SoilLayer(top=0.05,bottom=0.1, no3=10.0, nh4=1.0),
+    SoilLayer(top=0.1, bottom=0.2, no3=7.0, nh4=1.0),
+    SoilLayer(top=0.2, bottom=0.4, no3=4.0, nh4=1.0),
+    SoilLayer(top=0.4, bottom=0.6, no3=2.0, nh4=1.0),
+    SoilLayer(top=0.6, bottom=0.8, no3=1.0, nh4=1.0),
+    SoilLayer(top=0.8, bottom=1.0, no3=1.0, nh4=1.0),
+    SoilLayer(top=1.0, bottom=1.2, no3=1.0, nh4=1.0),
+    SoilLayer(top=1.2, bottom=1.4, no3=1.0, nh4=1.0),
+    SoilLayer(top=1.4, bottom=1.6, no3=1.0, nh4=1.0),
+    SoilLayer(top=1.6, bottom=1.8, no3=1.0, nh4=1.0),
+    SoilLayer(top=1.8, bottom=2.0, no3=1.0, nh4=1.0),
 ]
+
 
 def _trim(target: list[SoilLayer], measured_bottom: float, soil_depth: float | None=None) -> list[SoilLayer]:
     cutoff = min(measured_bottom, soil_depth) if soil_depth is not None else measured_bottom
@@ -147,7 +148,7 @@ def _render_soil_file(layers: list[SoilLayer], desc: str, slope: float | None, c
     lines = []
     if desc:
         lines.append(desc)
-    lines.append("%-15s\t%d"   % ("CURVE_NUMBER", _resolve_curve_number(curve_number, hsg)))
+    lines.append("%-15s\t%d" % ("CURVE_NUMBER", _resolve_curve_number(curve_number, hsg)))
     lines.append("%-15s\t%.2f" % ("SLOPE", slope) if slope is not None else "%-15s\t%s" % ("SLOPE", '-999'))
     lines.append(_header_line())
     lines.append(_unit_line())
@@ -253,7 +254,7 @@ def map_to_dataframe(layers: list[SoilLayer]) -> pd.DataFrame:
 
 def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
     target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
-    desc: str = '', slope: float | None=None, curve_number: float | None=None, hsg: str = '') -> list[SoilLayer]:
+    desc: str='', slope: float | None=None, curve_number: float | None=None, hsg: str='') -> list[SoilLayer]:
     """Map layers and write a Cycles-formatted soil file.
 
     The input profile is first mapped to the target layering scheme, then

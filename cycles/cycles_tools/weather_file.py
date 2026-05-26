@@ -3,29 +3,30 @@ import pandas as pd
 from pathlib import Path
 
 DAILY_COLUMNS: dict[str, type] = {
-    'YEAR':  int,
-    'DOY':   int,
-    'PP':    float,
-    'TX':    float,
-    'TN':    float,
+    'YEAR': int,
+    'DOY': int,
+    'PP': float,
+    'TX': float,
+    'TN': float,
     'SOLAR': float,
-    'RHX':   float,
-    'RHN':   float,
-    'WIND':  float,
+    'RHX': float,
+    'RHN': float,
+    'WIND': float,
 }
 
 SUBDAILY_COLUMNS: dict[str, type] = {
-    'YEAR':  int,
-    'DOY':   int,
-    'HOUR':  int,
-    'PP':    float,
-    'TMP':   float,
+    'YEAR': int,
+    'DOY': int,
+    'HOUR': int,
+    'PP': float,
+    'TMP': float,
     'SOLAR': float,
-    'RH':    float,
-    'WIND':  float,
+    'RH': float,
+    'WIND': float,
 }
 
 WEATHER_HEADER_LINES: int = 4
+
 
 def _build_date_index(df: pd.DataFrame, *, subdaily: bool) -> pd.DatetimeIndex:
     base = df['YEAR'].astype(str) + '-' + df['DOY'].astype(str)
@@ -34,7 +35,7 @@ def _build_date_index(df: pd.DataFrame, *, subdaily: bool) -> pd.DatetimeIndex:
     return pd.to_datetime(base, format='%Y-%j') # type: ignore
 
 
-def read_weather_file(fn: str | Path, *, start_year: int = 0, end_year: int = 9999, subdaily: bool = False) -> pd.DataFrame:
+def read_weather_file(fn: str | Path, *, start_year: int=-9999, end_year: int=9999, subdaily: bool=False) -> pd.DataFrame:
     """Read weather file records and filter by year range.
 
     Args:

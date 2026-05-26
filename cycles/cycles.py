@@ -54,6 +54,7 @@ class Cycles:
     weather: pd.DataFrame | None = None
     executable: Path | str | None = None
 
+
     def __post_init__(self):
         self.path = Path(self.path)
         assert isinstance(self.path, Path)
@@ -62,7 +63,7 @@ class Cycles:
             self.executable = str(Path(self.executable).resolve())
 
 
-    def run(self, options: str, silence: bool) -> tuple[int, str]:
+    def run(self, options: str, silence: bool=False) -> tuple[int, str]:
         """Run the Cycles executable for this simulation.
 
         Args:
@@ -117,7 +118,7 @@ class Cycles:
         self.slope = meta['slope']
 
 
-    def read_weather_file(self, *, start_year: int=0, end_year: int=9999, subdaily: bool=False) -> None:
+    def read_weather_file(self, *, start_year: int=-9999, end_year: int=9999, subdaily: bool=False) -> None:
         """Read weather forcing data for the configured weather file.
 
         Args:

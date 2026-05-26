@@ -43,7 +43,6 @@ LUT_TABLES: dict[str, dict[str, list[str]]] = {
     },
 }
 
-
 @dataclass(frozen=True)
 class SsurgoParameter:
     ssurgo_name: str
@@ -153,7 +152,7 @@ class Ssurgo:
         return self._mapunits[self._mapunits['mukey'] == self.mukey]['musym'].iloc[0]
 
 
-    def group_map_units(self, *, geometry: bool = False) -> None:
+    def group_map_units(self, *, geometry: bool=False) -> None:
         """Group map units by base soil-series name.
 
         Many map units share a base soil texture but differ in slope class or
@@ -376,7 +375,7 @@ def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
     return luts
 
 
-def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame | None = None) -> gpd.GeoDataFrame:
+def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame | None=None) -> gpd.GeoDataFrame:
     if boundary is not None:
         boundary = boundary.to_crs(NAD83)
 

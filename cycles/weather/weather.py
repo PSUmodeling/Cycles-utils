@@ -42,6 +42,7 @@ class ReanalysisDataMixin:
     netcdf_variables: dict[str, str]
     weather_file_variables: dict[str, Callable]
 
+
     def nearest_grid_index(self, lat, lon) -> int:
         return np.ravel_multi_index((round((lat - self.la1) / self.dj), round((lon - self.lo1) / self.di)), self.netcdf_shape)  # type: ignore
 

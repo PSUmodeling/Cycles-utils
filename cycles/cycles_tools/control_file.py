@@ -13,35 +13,35 @@ class SimulationYears:
 
 @dataclass(kw_only=True)
 class InputFiles:
-    crop_file: str='GenericCrops.crop'
+    crop_file: str = 'GenericCrops.crop'
     operation_file: str
     soil_file: str
     weather_file: str
-    reinit_file: str='N/A'
+    reinit_file: str = 'N/A'
 
 @dataclass(kw_only=True)
 class SimulationOptions:
     soil_layers: int
-    co2_level: float=-999
-    use_reinitialization: int=0
-    adjusted_yields: int=0
-    hydrology_option: int=1
-    automatic_nitrogen: int=0
-    automatic_phosphorus: int=0
-    automatic_sulfur: int=0
+    co2_level: float = -999
+    use_reinitialization: int = 0
+    adjusted_yields: int = 0
+    hydrology_option: int = 1
+    automatic_nitrogen: int = 0
+    automatic_phosphorus: int = 0
+    automatic_sulfur: int = 0
 
 @dataclass(kw_only=True)
 class OutputControl:
-    daily_weather_out: int=0
-    daily_crop_out: int=0
-    daily_residue_out: int=0
-    daily_water_out: int=0
-    daily_nitrogen_out: int=0
-    daily_soil_carbon_out: int=0
-    daily_soil_lyr_cn_out: int=0
-    annual_soil_out: int=0
-    annual_profile_out: int=0
-    annual_nflux_out: int=0
+    daily_weather_out: int = 0
+    daily_crop_out: int = 0
+    daily_residue_out: int = 0
+    daily_water_out: int = 0
+    daily_nitrogen_out: int = 0
+    daily_soil_carbon_out: int = 0
+    daily_soil_lyr_cn_out: int = 0
+    annual_soil_out: int = 0
+    annual_profile_out: int = 0
+    annual_nflux_out: int = 0
 
 @dataclass
 class ControlConfig:
@@ -49,6 +49,7 @@ class ControlConfig:
     input_files: InputFiles
     simulation_options: SimulationOptions
     output_control: OutputControl
+
 
 def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | None, input_dir: Path) -> ControlConfig:
     resolved = resolve_dict_values(control_dict, simulation_dict)

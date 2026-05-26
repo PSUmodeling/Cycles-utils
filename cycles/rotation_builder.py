@@ -1,5 +1,3 @@
-"""Build crop rotations dynamically from simulated economic returns."""
-
 from __future__ import annotations
 import numpy as np
 import pandas as pd

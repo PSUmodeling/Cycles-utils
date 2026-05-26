@@ -98,6 +98,7 @@ OPERATION_PARAMETERS = {
     'auto_irrigation': AutoIrrigation,
 }
 
+
 def read_operation_file(operation: str | Path) -> list:
     """Parse a Cycles operation file into operation objects.
 

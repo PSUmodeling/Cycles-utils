@@ -17,6 +17,7 @@ class GADMLevel(Enum):
 STATE_DTYPES: dict[str, type] = {'state': str, 'gid': str, 'abbreviation': str, 'fips': int}
 COUNTY_DTYPES: dict[str, type] = {'fips': int}
 
+
 def _gadm_path(path: Path, country: str, level: GADMLevel) -> Path:
     return path / f'gadm41_{country}_{level.value}.shp'
 
@@ -53,7 +54,7 @@ def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
     )
 
 
-def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool = True) -> gpd.GeoDataFrame:
+def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool=True) -> gpd.GeoDataFrame:
     """Read a GADM layer and normalize its index.
 
     Args:
@@ -78,7 +79,7 @@ def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool = T
     return gdf
 
 
-def state_gid(*, state: str | None = None, abbreviation: str | None = None, fips: int | None = None) -> str:
+def state_gid(*, state: str | None=None, abbreviation: str | None=None, fips: int | None=None) -> str:
     """Look up state GID by name, abbreviation, or FIPS code.
 
     Args:
@@ -95,7 +96,7 @@ def state_gid(*, state: str | None = None, abbreviation: str | None = None, fips
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'gid', state=state, abbreviation=abbreviation, fips=fips))
 
 
-def state_abbreviation(*, state: str | None = None, gid: str | None = None, fips: int | None = None) -> str:
+def state_abbreviation(*, state: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
     """Look up state abbreviation by name, GID, or FIPS code.
 
     Args:
@@ -112,7 +113,7 @@ def state_abbreviation(*, state: str | None = None, gid: str | None = None, fips
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'abbreviation', state=state, gid=gid, fips=fips))
 
 
-def state_fips(*, state: str | None = None, abbreviation: str | None = None, gid: str | None = None) -> int:
+def state_fips(*, state: str | None=None, abbreviation: str | None=None, gid: str | None=None) -> int:
     """Look up state FIPS code by name, abbreviation, or GID.
 
     Args:
@@ -129,7 +130,7 @@ def state_fips(*, state: str | None = None, abbreviation: str | None = None, gid
     return int(_find_representation(STATE_CSV, STATE_DTYPES, 'fips', state=state, abbreviation=abbreviation, gid=gid))
 
 
-def state_name(*, abbreviation: str | None = None, gid: str | None = None, fips: int | None = None) -> str:
+def state_name(*, abbreviation: str | None=None, gid: str | None=None, fips: int | None=None) -> str:
     """Look up state name by abbreviation, GID, or FIPS code.
 
     Args:
@@ -176,7 +177,7 @@ def county_fips(*, gid: str) -> int:
     return int(_find_representation(COUNTY_CSV, COUNTY_DTYPES, 'fips', gid=gid))
 
 
-def county_name(*, gid: str | None = None, fips: int | None = None) -> str:
+def county_name(*, gid: str | None=None, fips: int | None=None) -> str:
     """Look up county display name by GID or FIPS code.
 
     Args:
