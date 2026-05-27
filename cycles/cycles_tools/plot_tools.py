@@ -150,7 +150,7 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
         for key, value in OPERATION_TYPES.items():
             sub_list = [op for op in operations if type(op).__name__.lower() == key and op.year == y + 1]
 
-            if len(sub_list) == 0: continue
+            if not sub_list: continue
 
             axs[y].plot(
                 [op.doy if not op.relative_doy else op.resolved_doy for op in sub_list], [value.yloc] * len(sub_list),
@@ -160,20 +160,24 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
                 ms=10,
             )
 
+            if key == 'planting':
+                for op in sub_list:
+                    if op.end_doy == -999: continue
+                    axs[y].fill_betweenx([value.yloc - 0.5, value.yloc + 0.5], op.doy, op.end_doy, alpha=0.25, color=value.color)
+
         axs[y].set_xlim(-1, 370)
         axs[y].grid(False)
-        axs[y].spines['right'].set_color('none')
-        axs[y].spines['left'].set_color('none')
         axs[y].yaxis.set_ticks_position('none')
         axs[y].yaxis.set_tick_params(left=False, right=False, which='both', labelleft=False)
         axs[y].set_ylim(-3, 7)
         axs[y].text(184, 5, f'Year {y + 1}', ha='center')
+        for spine in ('right', 'left', 'top'):
+            axs[y].spines[spine].set_color('none')
 
         # set the y-spine
         axs[y].spines['bottom'].set_position('zero')
 
         # turn off the top spine/ticks
-        axs[y].spines['top'].set_color('none')
         axs[y].xaxis.tick_bottom()
         axs[y].set_xticks(MDOYS)
         axs[y].set_xticklabels(MONTHS)
