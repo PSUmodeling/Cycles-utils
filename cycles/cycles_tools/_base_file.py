@@ -42,6 +42,6 @@ def parse_value(raw: str, name: str, hint: type) -> int | float | str:
 
 def unwrap_optional(t) -> type:
     origin = getattr(t, '__origin__', None)
-    if origin is Union or origin is types.UnionType:
+    if origin is Union or origin is types.UnionType or isinstance(t, types.UnionType):
         return next(arg for arg in t.__args__ if arg is not type(None))
     return t
