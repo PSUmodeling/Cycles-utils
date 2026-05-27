@@ -150,7 +150,7 @@ class Cycles:
         return _plot_yield(self.output['harvest'].data, ax=ax, fontsize=fontsize)
 
 
-    def plot_operations(self, rotation_size: int | None=None, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None):
+    def plot_operations(self, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None):
         """Plot operation timelines grouped by rotation year.
 
         Args:
@@ -167,7 +167,6 @@ class Cycles:
         assert self.control is not None
         assert self.operations is not None
 
-        if rotation_size is None:
-            rotation_size = self.control.simulation_years.rotation_size
+        rotation_size = self.control.simulation_years.rotation_size
 
         return _plot_operations(self.operations, rotation_size, axs=axs, fontsize=fontsize)
