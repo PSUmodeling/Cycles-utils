@@ -90,6 +90,8 @@ class Ssurgo:
 
     def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
         """Initialize SSURGO lookup tables and optional spatial subset.
+        When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only those map units that intersect the location or polygon;
+        the map-units are also grouped by name and symbol, and the major map unit is selected for profile extraction.
 
         Args:
             path: Directory containing SSURGO geodatabase and lookup CSV files.
@@ -109,7 +111,7 @@ class Ssurgo:
         self._mapunits: gpd.GeoDataFrame | pd.DataFrame
         self.components: pd.DataFrame
         self.horizons: pd.DataFrame
-        self.grouped_mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
+        self.grouped_mapunits: MapUnitGeoDataFrame | None = None
         self.mukey: int | None = None
         self.slope: float | None = None
         self.hsg: str = ''
@@ -134,11 +136,13 @@ class Ssurgo:
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
         self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
+        self._group_map_units()
+        self._select_major_mapunit()
         self._average_slope_hsg()
 
 
     @property
-    def mapunits(self) -> MapUnitGeoDataFrame | pd.DataFrame | None:
+    def mapunits(self) -> MapUnitGeoDataFrame | pd.DataFrame:
         """Return loaded map-unit table.
 
         Returns:
@@ -174,39 +178,22 @@ class Ssurgo:
         return self._mapunits[self._mapunits['mukey'] == self.mukey]['musym'].iloc[0]
 
 
-    def group_map_units(self, *, geometry: bool=False) -> None:
-        """Group map units by base soil-series name.
-
-        Many map units share a base soil texture but differ in slope class or
-        minor qualifiers. This method groups by the base ``muname`` text before
-        the first comma and optionally dissolves geometries.
-
-        Args:
-            geometry: If True, dissolve polygons by grouped map-unit name.
-
-        Returns:
-            None.
-        """
-        if self.grouped_mapunits is not None:
-            return
-        assert self._mapunits is not None
-
+    def _group_map_units(self) -> None:
         gmu = self._mapunits.copy()
         gmu['muname'] = gmu['muname'].map(lambda name: name.split(',')[0])  # type: ignore
-        gmu['musym']  = gmu['musym'].map(_strip_slope_suffix)
+        gmu['musym'] = gmu['musym'].map(_strip_slope_suffix)
 
         mask = self.non_soil_mask(gmu)
         gmu.loc[mask, 'muname'] = 'Water, urban, etc.'
         gmu.loc[mask, 'mukey'] = -999
         gmu.loc[mask, 'musym'] = 'N/A'
 
-        if geometry:
-            gmu = gmu.dissolve(
-                by='muname',
-                aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
-            ).reset_index() # type: ignore
+        gmu = gmu.dissolve(
+            by='muname',
+            aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
+        ).reset_index() # type: ignore
 
-        self.grouped_mapunits = MapUnitGeoDataFrame(gmu, geometry=gmu.geometry.name, crs=gmu.crs) if geometry else gmu  # type: ignore
+        self.grouped_mapunits = MapUnitGeoDataFrame(gmu, geometry=gmu.geometry.name, crs=gmu.crs)
 
 
     def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
@@ -225,18 +212,8 @@ class Ssurgo:
         )
 
 
-    def select_major_mapunit(self) -> None:
-        """Select the dominant map unit by area.
-
-        Returns:
-            None.
-        """
-        if self.mukey is not None:
-            return
-        if self.grouped_mapunits is None:
-            self.group_map_units(geometry=True)
+    def _select_major_mapunit(self) -> None:
         assert self.grouped_mapunits is not None
-
         gdf = self.grouped_mapunits[~self.non_soil_mask(self.grouped_mapunits)].copy()
         gdf['area'] = gdf.area
         self.mukey  = int(gdf.loc[gdf['area'].idxmax(), 'mukey'])   # type: ignore
@@ -253,7 +230,6 @@ class Ssurgo:
             Soil profile as a list of ``SoilLayer`` records.
         """
         mukey = mukey or self._ensure_mukey()
-        assert self.components is not None and self.horizons is not None
 
         df = self.components[self.components['mukey'] == int(mukey)].copy()
         if major_only:
@@ -283,19 +259,15 @@ class Ssurgo:
         Returns:
             None.
         """
-        if mukey is None:
-            self.group_map_units(geometry=True)
-            self.select_major_mapunit()
-            mukey = self.mukey
+        if mukey is not None:
+            hsg = self._mapunits[self._mapunits['mukey'] == mukey]['hydgrpdcd'].iloc[0] if hsg is None else hsg
+            slope = self._mapunits[self._mapunits['mukey'] == mukey]['slopegradwta'].iloc[0] if slope is None else slope
+        else:
+            mukey = self._ensure_mukey()
+            hsg = self.hsg if hsg is None else hsg
+            slope = self.slope if slope is None else slope
 
-        assert mukey is not None
-        assert self._mapunits is not None
-
-        if hsg is None:
-            hsg = self._mapunits[self._mapunits['mukey'] == mukey]['hydgrpdcd'].iloc[0] if not self.hsg else self.hsg
-            assert hsg is not None
-        if slope is None:
-            slope = self._mapunits[self._mapunits['mukey'] == mukey]['slopegradwta'].iloc[0] if not self.slope else self.slope
+        assert mukey is not None and hsg is not None and slope is not None
 
         profile = self.get_soil_profile(mukey=mukey)
         desc = desc if desc is not None else _build_desc(self._get_muname(mukey), mukey, hsg)
@@ -303,20 +275,15 @@ class Ssurgo:
 
 
     def _ensure_mukey(self) -> int:
-        if self.mukey is None:
-            self.select_major_mapunit()
-        assert self.mukey is not None
+        assert self.mukey is not None, "A major soil map unit has not been selected, because a location or boundary has not been provided."
         return self.mukey
 
 
     def _get_muname(self, mukey: int) -> str:
-        assert self._mapunits is not None
         return self._mapunits[self._mapunits['mukey'] == mukey]['muname'].iloc[0]
 
 
     def _average_slope_hsg(self) -> None:
-        assert self._mapunits is not None
-
         gdf = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
         gdf['area'] = gdf.area
 
