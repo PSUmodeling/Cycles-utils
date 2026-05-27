@@ -1,8 +1,12 @@
 from __future__ import annotations
 import geopandas as gpd
+import matplotlib.colors as colors
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import shapely
 from dataclasses import dataclass
+from matplotlib.axes import Axes
 from pathlib import Path
 from shapely.geometry import Point
 from cycles.cycles_tools import generate_soil_file as _generate_soil_file
@@ -65,6 +69,22 @@ SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
 
 LatLon = tuple[float, float]
 
+
+class MapUnitGeoDataFrame(gpd.GeoDataFrame):
+    def plot(self, **kwargs) -> Axes:
+        n = len(self)
+        kwargs.setdefault('column', 'musym')
+        kwargs.setdefault('legend', True)
+        kwargs.setdefault(
+            'cmap',
+            'tab20' if n > 20 else _truncate_colormap(plt.get_cmap('tab20'), 0, n / 20),
+        )
+        ax = super().plot(**kwargs)
+        ax.axis('off')
+        ax.set_aspect('equal')
+        return ax
+
+
 class Ssurgo:
     """Load SSURGO lookup tables and extract soil profiles for locations."""
 
@@ -86,10 +106,10 @@ class Ssurgo:
         _validate_geographic_input(lat_lon, boundary)
 
         self.state: str = state
-        self._mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
+        self._mapunits: gpd.GeoDataFrame | pd.DataFrame
+        self.components: pd.DataFrame
+        self.horizons: pd.DataFrame
         self.grouped_mapunits: gpd.GeoDataFrame | pd.DataFrame | None = None
-        self.components: pd.DataFrame | None = None
-        self.horizons: pd.DataFrame | None = None
         self.mukey: int | None = None
         self.slope: float | None = None
         self.hsg: str = ''
@@ -111,7 +131,6 @@ class Ssurgo:
             )
         gdf = _read_mupolygon(path, state, boundary)
         self._mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
-
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
         self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
@@ -119,13 +138,16 @@ class Ssurgo:
 
 
     @property
-    def mapunits(self) -> gpd.GeoDataFrame | pd.DataFrame | None:
+    def mapunits(self) -> MapUnitGeoDataFrame | pd.DataFrame | None:
         """Return loaded map-unit table.
 
         Returns:
             Map-unit table as GeoDataFrame/DataFrame, or None if not loaded.
         """
-        return self._mapunits
+        if isinstance(self._mapunits, gpd.GeoDataFrame):
+            return MapUnitGeoDataFrame(self._mapunits, geometry=self._mapunits.geometry.name, crs=self._mapunits.crs)
+        else:
+            return self._mapunits
 
 
     @property
@@ -184,7 +206,7 @@ class Ssurgo:
                 aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
             ).reset_index() # type: ignore
 
-        self.grouped_mapunits = gmu
+        self.grouped_mapunits = MapUnitGeoDataFrame(gmu, geometry=gmu.geometry.name, crs=gmu.crs) if geometry else gmu  # type: ignore
 
 
     def non_soil_mask(self, mapunits: pd.DataFrame | gpd.GeoDataFrame) -> pd.Series:
@@ -300,6 +322,13 @@ class Ssurgo:
 
         self.slope = _weighted_average(gdf, 'slopegradwta') # type: ignore
         self.hsg = _dominant_hsg(gdf)   # type: ignore
+
+
+def _truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
+    return colors.LinearSegmentedColormap.from_list(
+        'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
+        cmap(np.linspace(minval, maxval, n))
+    )
 
 
 def _validate_geographic_input(lat_lon: LatLon | None, boundary: gpd.GeoDataFrame | None) -> None:
