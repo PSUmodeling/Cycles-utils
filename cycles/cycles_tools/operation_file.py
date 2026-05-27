@@ -8,6 +8,7 @@ class Operation(Protocol):
     year: int | None
     doy: int
     relative_doy: bool
+    resolved_doy: int | None
 
 @dataclass(kw_only=True)
 class Planting(Operation):
@@ -33,6 +34,7 @@ class Planting(Operation):
     harvest_timing: float = -999
     kill_after_harvest: int = 1
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class Tillage(Operation):
@@ -43,6 +45,7 @@ class Tillage(Operation):
     frac_thermal_time: float = 0.0
     kill_efficiency: float = 0.0
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class Harvest(Operation):
@@ -53,6 +56,7 @@ class Harvest(Operation):
     frac_thermal_time: float = 0.0
     kill_efficiency: float = 0.0
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class Kill(Operation):
@@ -63,6 +67,7 @@ class Kill(Operation):
     frac_thermal_time: float = 0.0
     kill_efficiency: float = 0.0
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class FixedFertilization(Operation):
@@ -74,6 +79,7 @@ class FixedFertilization(Operation):
     method: str = 'Broadcast'
     depth: float = 0.0
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class FixedIrrigation(Operation):
@@ -81,6 +87,7 @@ class FixedIrrigation(Operation):
     doy: int
     volume: float = 0.0
     relative_doy: bool = field(default=False, metadata={'readable': False})
+    resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
 @dataclass(kw_only=True)
 class AutoIrrigation:
@@ -97,6 +104,13 @@ OPERATION_PARAMETERS = {
     'fixed_irrigation': FixedIrrigation,
     'auto_irrigation': AutoIrrigation,
 }
+
+
+def _resolve_reference_doy(operations: list[Operation], relative_doy: int) -> int:
+    planting = next((op for op in reversed(operations) if isinstance(op, Planting)), None)
+    if planting is None:
+        raise ValueError("Relative DOY specified but no planting operation found.")
+    return planting.doy + relative_doy
 
 
 def read_operation_file(operation: str | Path) -> list:
@@ -137,6 +151,7 @@ def read_operation_file(operation: str | Path) -> list:
             if isinstance(raw_doy, str) and raw_doy.split()[1].strip().startswith('+'):
                 operation_dict['doy'] = int(raw_doy.split()[1].strip()[1:])
                 operation_dict['relative_doy'] = True
+                operation_dict['resolved_doy'] = _resolve_reference_doy(operations, operation_dict['doy'])
             else:
                 operation_dict['doy'] = parse_value(raw_doy, 'doy', hints['doy'])
                 operation_dict['relative_doy'] = False

@@ -153,9 +153,9 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
             if len(sub_list) == 0: continue
 
             axs[y].plot(
-                [op.doy for op in sub_list], [value.yloc] * len(sub_list),
+                [op.doy if not op.relative_doy else op.resolved_doy for op in sub_list], [value.yloc] * len(sub_list),
                 'o',
-                label=value.title + ':\n' + '\n'.join(f'{op.doy}: {getattr(op, value.label)}' if value.label is not None else f'{op.doy}' for op in sub_list),
+                label=value.title + ':\n' + '\n'.join(f'{op.doy if not op.relative_doy else op.resolved_doy}: {getattr(op, value.label)}' if value.label is not None else f'{op.doy}' for op in sub_list),
                 color=value.color,
                 ms=10,
             )
