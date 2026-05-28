@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../custom.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -127,8 +128,8 @@
 
 
         <p>Interface for executing one Cycles simulation and reading its files.</p>
-<p>Provides methods to run simulations, read outputs, and inspect soil/weather/operation
-configurations. Automatically loads the control file upon initialization.</p>
+<p>Provides methods to run simulations, read outputs, and inspect soil/weather/operation configurations. Automatically
+loads the control file upon initialization.</p>
 
 
 <table class="field-list">
@@ -250,7 +251,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 
 
 <h3 id="cycles.Cycles.run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">silence</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">options</span><span class="p">,</span> <span class="n">silence</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
@@ -280,7 +281,9 @@ configurations. Automatically loads the control file upon initialization.</p>
             </li>
             <li>
               <b><code>silence</code></b>
-                  (<code><span title="bool">bool</span></code>)
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>False</code>
+)
               –
               <div class="doc-md-description">
                 <p>If True, suppress stdout and stderr printing.</p>
@@ -338,7 +341,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 <span class="normal">83</span>
 <span class="normal">84</span>
 <span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silence</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silence</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the Cycles executable for this simulation.</span>
 
 <span class="sd">    Args:</span>
@@ -357,8 +360,8 @@ configurations. Automatically loads the control file upon initialization.</p>
     <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">silence</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -507,7 +510,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 
 
 <h3 id="cycles.Cycles.read_weather_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_weather_file</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_weather_file</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h3>
 
@@ -530,7 +533,7 @@ configurations. Automatically loads the control file upon initialization.</p>
             <li>
               <b><code>start_year</code></b>
                   (<code><span title="int">int</span></code>, default:
-                      <code>0</code>
+                      <code>-9999</code>
 )
               –
               <div class="doc-md-description">
@@ -575,7 +578,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 <span class="normal">127</span>
 <span class="normal">128</span>
 <span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_weather_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_weather_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">end_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Read weather forcing data for the configured weather file.</span>
 
 <span class="sd">    Args:</span>
@@ -702,7 +705,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 
 
 <h3 id="cycles.Cycles.plot_operations" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_operations</span><span class="p">(</span><span class="n">rotation_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_operations</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -724,9 +727,6 @@ configurations. Automatically loads the control file upon initialization.</p>
         <ul class="first simple">
             <li>
               <b><code>rotation_size</code></b>
-                  (<code><span title="int">int</span> | None</code>, default:
-                      <code>None</code>
-)
               –
               <div class="doc-md-description">
                 <p>Number of years in the plotted rotation.</p>
@@ -801,8 +801,7 @@ configurations. Automatically loads the control file upon initialization.</p>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot operation timelines grouped by rotation year.</span>
 
 <span class="sd">    Args:</span>
@@ -819,8 +818,7 @@ configurations. Automatically loads the control file upon initialization.</p>
     <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">rotation_size</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">rotation_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">simulation_years</span><span class="o">.</span><span class="n">rotation_size</span>
+    <span class="n">rotation_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">simulation_years</span><span class="o">.</span><span class="n">rotation_size</span>
 
     <span class="k">return</span> <span class="n">_plot_operations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="n">axs</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>

@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+        <link href="../../custom.css" rel="stylesheet" />
     
       <script>
         // Current page data
@@ -289,8 +290,7 @@
                   (<code><span title="xarray.DataArray">DataArray</span></code>)
               –
               <div class="doc-md-description">
-                <p>Reference raster whose CRS, transform, and resolution
-are used for reprojection.</p>
+                <p>Reference raster whose CRS, transform, and resolution are used for reprojection.</p>
               </div>
             </li>
             <li>
@@ -298,8 +298,7 @@ are used for reprojection.</p>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>Column name used for the reference raster values in
-the generated matched table.</p>
+                <p>Column name used for the reference raster values in the generated matched table.</p>
               </div>
             </li>
             <li>
@@ -362,16 +361,12 @@ the generated matched table.</p>
 <span class="normal">107</span>
 <span class="normal">108</span>
 <span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reproject_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reference_xds</span><span class="p">:</span> <span class="n">xarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span> <span class="n">reference_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">boundary</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">110</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">reproject_match</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reference_xds</span><span class="p">:</span> <span class="n">xarray</span><span class="o">.</span><span class="n">DataArray</span><span class="p">,</span> <span class="n">reference_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">boundary</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Reproject loaded maps to a reference raster grid.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        reference_xds: Reference raster whose CRS, transform, and resolution</span>
-<span class="sd">            are used for reprojection.</span>
-<span class="sd">        reference_name: Column name used for the reference raster values in</span>
-<span class="sd">            the generated matched table.</span>
+<span class="sd">        reference_xds: Reference raster whose CRS, transform, and resolution are used for reprojection.</span>
+<span class="sd">        reference_name: Column name used for the reference raster values in the generated matched table.</span>
 <span class="sd">        boundary: Boundary geometry used to clip all rasters after reprojection.</span>
 
 <span class="sd">    Returns:</span>
@@ -457,7 +452,9 @@ the generated matched table.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>cycles/soilgrids/soilgrids.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">115</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
 <span class="normal">116</span>
 <span class="normal">117</span>
 <span class="normal">118</span>
@@ -470,9 +467,7 @@ the generated matched table.</p>
 <span class="normal">125</span>
 <span class="normal">126</span>
 <span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_soil_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">:</span> <span class="n">LatLon</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SoilLayer</span><span class="p">]:</span>
+<span class="normal">128</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_soil_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">:</span> <span class="n">LatLon</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SoilLayer</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Sample loaded maps at a coordinate and build a soil profile.</span>
 
 <span class="sd">    Args:</span>
@@ -595,7 +590,9 @@ the generated matched table.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>cycles/soilgrids/soilgrids.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
 <span class="normal">136</span>
@@ -609,9 +606,7 @@ the generated matched table.</p>
 <span class="normal">144</span>
 <span class="normal">145</span>
 <span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_soil_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">:</span> <span class="n">LatLon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_soil_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">:</span> <span class="n">LatLon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a Cycles soil file from SoilGrids values.</span>
 
 <span class="sd">    Args:</span>
@@ -656,8 +651,8 @@ the generated matched table.</p>
     <div class="doc doc-contents ">
 
         <p>Download SoilGrids raster layers via WCS.</p>
-<p>You can provide either a boundary polygon or an explicit bounding box.
-Bounding boxes are expected in <code>(west, south, east, north)</code> order.</p>
+<p>You can provide either a boundary polygon or an explicit bounding box.  Bounding boxes are expected in
+<code>(west, south, east, north)</code> order.</p>
 
 
 <table class="field-list">
@@ -772,7 +767,9 @@ Bounding boxes are expected in <code>(west, south, east, north)</code> order.</p
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>cycles/soilgrids/soilgrids.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">210</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">208</span>
+<span class="normal">209</span>
+<span class="normal">210</span>
 <span class="normal">211</span>
 <span class="normal">212</span>
 <span class="normal">213</span>
@@ -815,14 +812,12 @@ Bounding boxes are expected in <code>(west, south, east, north)</code> order.</p
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_soilgrids_data</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<span class="normal">253</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">download_soilgrids_data</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
     <span class="n">maps</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span><span class="o">=</span><span class="n">ALL_MAPS</span><span class="p">,</span> <span class="n">boundary</span><span class="p">:</span> <span class="n">Polygon</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bbox</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crs</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">&#39;epsg:4326&#39;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Download SoilGrids raster layers via WCS.</span>
 
-<span class="sd">    You can provide either a boundary polygon or an explicit bounding box.</span>
-<span class="sd">    Bounding boxes are expected in ``(west, south, east, north)`` order.</span>
+<span class="sd">    You can provide either a boundary polygon or an explicit bounding box.  Bounding boxes are expected in</span>
+<span class="sd">    ``(west, south, east, north)`` order.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        path: Directory where downloaded GeoTIFF files are written.</span>
