@@ -7,7 +7,7 @@ from .gadm import county_fips
 from .gadm import county_gid
 from .gadm import county_name
 
-_all__ = [
+__all__ = [
     "read_gadm",
     "state_abbreviation",
     "state_fips",
