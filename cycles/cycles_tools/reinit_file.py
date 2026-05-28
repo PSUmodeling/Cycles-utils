@@ -74,12 +74,12 @@ def _format_reinit_block(row: pd.Series, doy: int, n_layers: int) -> list[str]:
 
 
 def generate_reinit_file(out_path: str | Path, in_path: str | Path, doy: int) -> None:
-    """Write a reinit file for all years at a selected day-of-year.
+    """Write a re-initialization file from Cycles output for all years at a selected day-of-year.
 
     Args:
-        out_path: Destination reinit file path.
-        in_path: Simulation output directory or stem used by ``read_output``.
-        doy: Day-of-year extracted from reinit output.
+        out_path: Destination re-initialization file path.
+        in_path: Simulation output directory that contains Cycles output files.
+        doy: Day-of-year extracted from re-initialization.
     """
     out_path = Path(out_path)
     in_path  = Path(in_path)

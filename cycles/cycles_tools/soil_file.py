@@ -215,50 +215,18 @@ def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
     return token
 
 
-def _row_to_layer(row: pd.Series) -> SoilLayer:
-    valid_fields = {f.name for f in fields(SoilLayer)}
-    kwargs = {col: (None if pd.isna(val) else val) for col, val in row.items() if col in valid_fields}
-    return SoilLayer(**kwargs)  # type: ignore
-
-
-def map_layers(profile: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
-    """Map measured soil properties onto a target profile.
-
-    The mapping is performed by overlap-weighted averaging for each requested
-    parameter, after trimming target layers to the effective profile depth.
-
-    Args:
-        profile: Soil profile layers in depth order.
-        target: Target layer structure to map onto.
-        parameters: Soil parameters to map from measured profile to target.
-        soil_depth: Optional maximum depth (m) to include in the mapped profile.
-
-    Returns:
-        A list of mapped soil layers aligned to the target profile.
-    """
+def _map_layers(profile: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
     trimmed = _trim(target, profile[-1].bottom, soil_depth)
     return [_map_layer(layer, profile, parameters) for layer in trimmed]
-
-
-def map_to_dataframe(layers: list[SoilLayer]) -> pd.DataFrame:
-    """Convert soil layers to a tabular representation.
-
-    Args:
-        layers: Soil layers to convert.
-
-    Returns:
-        A DataFrame with one row per layer, including computed ``thickness``.
-    """
-    return pd.DataFrame([{**asdict(layer), 'thickness': layer.thickness} for layer in layers])
 
 
 def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
     target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
     desc: str='', slope: float | None=None, curve_number: float | None=None, hsg: str='') -> list[SoilLayer]:
-    """Map layers and write a Cycles-formatted soil file.
+    """Generate a Cycles-formatted soil file from a list of soil layers.
 
-    The input profile is first mapped to the target layering scheme, then
-    rendered to Cycles soil-file format and written to ``fn``.
+    The input profile is first mapped to the target layering scheme, then rendered to Cycles soil-file format and
+    written to ``fn``.
 
     Args:
         fn: Output soil file path.
@@ -279,7 +247,7 @@ def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
     """
     if curve_number is not None and hsg:
         raise ValueError("Only one of curve_number and hsg can be provided.")
-    layers = map_layers(profile, target, parameters, soil_depth)
+    layers = _map_layers(profile, target, parameters, soil_depth)
     Path(fn).write_text('\n'.join(_render_soil_file(layers, desc, slope, curve_number, hsg)) + '\n')
     return layers
 
@@ -301,15 +269,3 @@ def read_soil_file(fn: str | Path) -> tuple[list[SoilLayer], dict]:
     meta, data_lines = _parse_header(lines)
     layers = _parse_layers(data_lines)
     return layers, meta
-
-
-def from_dataframe(df: pd.DataFrame) -> list[SoilLayer]:
-    """Convert a DataFrame into ``SoilLayer`` objects.
-
-    Args:
-        df: DataFrame containing columns matching ``SoilLayer`` fields.
-
-    Returns:
-        A list of ``SoilLayer`` instances created row-by-row.
-    """
-    return [_row_to_layer(row) for _, row in df.iterrows()]

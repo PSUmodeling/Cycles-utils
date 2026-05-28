@@ -78,6 +78,35 @@ def _get_soil_layers(fn: Path) -> int:
 def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
     """Generate and write a Cycles control file.
 
+    Provide either direct values or callables that accept a simulation row and return a value in `user_dict`. The
+    parameter names should be in lowercase and correspond to the fields in Cycles simulation control files. If a field
+    is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
+    the `simulation_dict` to resolve its value.
+
+    The following fields are required in `user_dict`:
+
+      - `simulation_start_year`
+      - `simulation_end_year`
+      - `rotation_size`
+      - `operation_file`
+      - `soil_file`
+      - `weather_file`
+
+    The default values for other fields are:
+
+      - `crop_file`: `GenericCrops.crop`
+      - `reinit_file`: `N/A`
+      - `soil_layers`: inferred from the soil file (if not provided)
+      - `co2_level`: `-999`
+      - `use_reinitialization`: `0`
+      - `adjusted_yields`: `0`
+      - `hydrology_option`: `1`
+      - `automatic_nitrogen`: `0`
+      - `automatic_phosphorus`: `0`
+      - `automatic_sulfur`: `0`
+
+    All output control fields default to `0`.
+
     Args:
         fn: Destination control file path.
         user_dict: Values or callables for control fields.

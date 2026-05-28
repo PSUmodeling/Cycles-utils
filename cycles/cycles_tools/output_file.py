@@ -15,7 +15,7 @@ def _parse_units(lines: list[str], columns) -> dict[str, str]:
 
 
 def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[str, str]]:
-    """Read one Cycles output table and associated unit strings.
+    """Read one Cycles output file and associated unit strings.
 
     Args:
         path: Directory containing output CSV files.

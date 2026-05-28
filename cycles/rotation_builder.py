@@ -93,10 +93,9 @@ class RotationResult(NamedTuple):
 class CyclesRotationBuilder:
     """Run Cycles iteratively and append economically optimal operations.
 
-    Executes Cycles simulations for candidate crop-operation combinations,
-    selects the highest-return option at each break-point, and iteratively
-    builds a multi-year rotation. Integrates economic scoring with agronomic
-    constraints (e.g., minimum planting interval, crop group penalties).
+    Executes Cycles simulations for candidate crop-operation combinations, selects the highest-return option at each
+    break-point, and iteratively builds a multi-year rotation. Integrates economic scoring with agronomic constraints
+    (e.g., minimum planting interval, crop group penalties).
 
     Attributes:
         simulation: Base simulation name for generated input/output directories.

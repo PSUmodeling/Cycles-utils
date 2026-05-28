@@ -5,7 +5,6 @@ import pandas as pd
 import subprocess
 from collections.abc import Collection
 from dataclasses import dataclass, field
-from datetime import datetime
 from pathlib import Path
 from matplotlib.axes import Axes
 from .cycles_tools import SoilLayer, ControlConfig
@@ -27,8 +26,8 @@ class Output:
 class Cycles:
     """Interface for executing one Cycles simulation and reading its files.
 
-    Provides methods to run simulations, read outputs, and inspect soil/weather/operation
-    configurations. Automatically loads the control file upon initialization.
+    Provides methods to run simulations, read outputs, and inspect soil/weather/operation configurations. Automatically
+    loads the control file upon initialization.
 
     Attributes:
         path: Path to the simulation directory (containing input/ and output/ subdirs).

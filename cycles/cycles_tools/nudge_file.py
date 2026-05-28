@@ -45,6 +45,14 @@ def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None)
 def generate_nudge_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None=None) -> None:
     """Write a Cycles nudge file from user-provided values.
 
+    Provide either direct values or callables that accept a simulation row and return a value in `user_dict`. The
+    parameter names should be in lowercase and correspond to the fields in Cycles nudge (calibration) files. If a field
+    is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
+    the `simulation_dict` to resolve its value.
+
+    The default values for all calibration multipliers are `1.0`, and the default values for `kd_no3` and `kd_nh4` are
+    `0.0` and `5.6`, respectively.
+
     Args:
         fn: Destination nudge file path.
         user_dict: Values or callables for nudge parameters.

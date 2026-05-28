@@ -90,8 +90,10 @@ class Ssurgo:
 
     def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
         """Initialize SSURGO lookup tables and optional spatial subset.
-        When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only those map units that intersect the location or polygon;
-        the map-units are also grouped by name and symbol, and the major map unit is selected for profile extraction.
+
+        When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only
+        those map units that intersect the location or polygon; the map-units are also grouped by name and symbol, and
+        the major map unit is selected for profile extraction.
 
         Args:
             path: Directory containing SSURGO geodatabase and lookup CSV files.

@@ -90,10 +90,8 @@ class SoilGrids:
         """Reproject loaded maps to a reference raster grid.
 
         Args:
-            reference_xds: Reference raster whose CRS, transform, and resolution
-                are used for reprojection.
-            reference_name: Column name used for the reference raster values in
-                the generated matched table.
+            reference_xds: Reference raster whose CRS, transform, and resolution are used for reprojection.
+            reference_name: Column name used for the reference raster values in the generated matched table.
             boundary: Boundary geometry used to clip all rasters after reprojection.
 
         Returns:
@@ -211,8 +209,8 @@ def download_soilgrids_data(path: str | Path, *,
     maps: list[str]=ALL_MAPS, boundary: Polygon | None=None, bbox: tuple[float, float, float, float] | None=None, crs: str='epsg:4326') -> None:
     """Download SoilGrids raster layers via WCS.
 
-    You can provide either a boundary polygon or an explicit bounding box.
-    Bounding boxes are expected in ``(west, south, east, north)`` order.
+    You can provide either a boundary polygon or an explicit bounding box.  Bounding boxes are expected in
+    ``(west, south, east, north)`` order.
 
     Args:
         path: Directory where downloaded GeoTIFF files are written.

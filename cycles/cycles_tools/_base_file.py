@@ -23,7 +23,7 @@ def write_file(fn: Path, config) -> None:
 
 
 def resolve_dict_values(user_dict: dict, simulation: dict[str, Any] | None) -> dict:
-    return {key: func(simulation) if callable(func) else func for key, func in user_dict.items()}
+    return {key.lower(): func(simulation) if callable(func) else func for key, func in user_dict.items()}
 
 
 def extract(dc_class, resolved: dict) -> dict:

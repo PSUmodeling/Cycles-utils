@@ -29,9 +29,8 @@ class SimulationContext:
 class CyclesRunner:
     """Run one or many Cycles simulations with templated inputs.
 
-    Manages batch execution of Cycles simulations by generating control files,
-    operation files, and nudge files from templates and parameter dictionaries.
-    Consolidates results into a summary CSV file.
+    Manages batch execution of Cycles simulations by generating control files, operation files, and nudge files from
+    templates and parameter dictionaries.  Consolidates results into a summary CSV file.
 
     Attributes:
         executable: Absolute path to the Cycles executable binary.
@@ -110,7 +109,6 @@ class CyclesRunner:
 
 
     def _resolve(self, simulation: dict[str, Any], control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
-        """Call control_dict once per row and resolve all derived values."""
         control = resolve_dict_values(control_dict, simulation)
         return SimulationContext(
             name=control['simulation_name'],

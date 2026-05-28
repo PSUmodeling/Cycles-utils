@@ -9,8 +9,6 @@ from .soil_file import MAPPABLE_PARAMETERS
 from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
-from .soil_file import map_to_dataframe
-from .soil_file import from_dataframe
 from .weather_file import read_weather_file
 from .reinit_file import generate_reinit_file
 from .plot_tools import plot_yield
