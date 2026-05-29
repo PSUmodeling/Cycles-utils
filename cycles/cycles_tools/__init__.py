@@ -14,6 +14,7 @@ from .reinit_file import generate_reinit_file
 from .plot_tools import plot_yield
 from .plot_tools import plot_operations
 from .plot_tools import plot_map
+from .plot_tools import plot_satellite_map
 from ._base_file import resolve_dict_values
 
 __all__ = [

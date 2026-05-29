@@ -1,7 +1,9 @@
 from __future__ import annotations
 import cartopy.crs as ccrs
 import cartopy.feature as feature
+import cartopy.io.img_tiles as cimgt
 import geopandas as gpd
+import math
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
@@ -274,3 +276,32 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
         ax.set_title(title) # type: ignore
 
     return fig, ax  # type: ignore
+
+
+def _zoom_from_extent(extent, *, desired_pixels: int=1024) -> int:
+    """Determine the appropriate zoom level for a given map extent.
+    Number of global tiles at each zoom level is 2 ^ zoom_level
+    """
+    PIXELS_PER_TILE = 256
+
+    dx = abs(extent[1] - extent[0])
+    dy = abs(extent[3] - extent[2])
+
+    return round(max(math.log(desired_pixels / PIXELS_PER_TILE * 180 / dy) / math.log(2), math.log(desired_pixels / PIXELS_PER_TILE * 360 / dx) / math.log(2)))
+
+
+def plot_satellite_map(fig: Figure, extent: tuple[float, float, float, float], *,
+    alpha: float=1.0, ax: tuple[float, float, float, float] | None=None, desired_pixels: int=1024, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
+    GOOGLE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpg'
+
+    google_satellite = cimgt.GoogleTiles(url=GOOGLE_URL) if style is None else cimgt.GoogleTiles(style=style)
+
+    if ax is None:
+        ax = fig.add_subplot(1, 1, 1, projection=google_satellite.crs)
+    else:
+        ax = fig.add_axes(ax, projection=google_satellite.crs)
+
+    ax.set_extent(extent, crs=ccrs.PlateCarree())
+    ax.add_image(google_satellite, _zoom_from_extent(extent, desired_pixels=desired_pixels), alpha=alpha)
+
+    return ax, google_satellite.crs
