@@ -30,4 +30,5 @@ __all__ = [
     "plot_yield",
     "plot_operations",
     "plot_map",
+    "plot_satellite_map",
 ]
