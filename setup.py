@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='Cycles-utils',
-    version='4.0.2.post',
+    version='4.0.3',
     author='Yuning Shi',
     author_email="shiyuning@gmail.com",
     packages=find_packages(),
