@@ -292,15 +292,31 @@ def _zoom_from_extent(extent, *, desired_pixels: int=1024) -> int:
 
 def plot_satellite_map(fig: Figure, extent: tuple[float, float, float, float], *,
     alpha: float=1.0, ax: tuple[float, float, float, float] | None=None, desired_pixels: int=1024, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
+    """Render a satellite basemap over a geographic extent.
+
+    Args:
+        fig: Matplotlib figure used to create the map axes.
+        extent: Geographic bounds as ``(west, east, south, north)`` in degrees.
+        alpha: Basemap transparency where ``1.0`` is fully opaque.
+        ax: Optional axes rectangle passed to ``Figure.add_axes``.  If omitted, a full-figure subplot is created.
+        desired_pixels: Target figure resolution in pixels used to estimate tile zoom.
+        style: Optional Cartopy GoogleTiles style string. If omitted, ArcGIS World Imagery tiles are used.
+
+    Returns:
+        Tuple containing:
+            - GeoAxes with the satellite basemap.
+            - Projection associated with the tile source.
+    """
     GOOGLE_URL = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}.jpg'
 
     google_satellite = cimgt.GoogleTiles(url=GOOGLE_URL) if style is None else cimgt.GoogleTiles(style=style)
 
     if ax is None:
-        ax = fig.add_subplot(1, 1, 1, projection=google_satellite.crs)
+        ax = fig.add_subplot(1, 1, 1, projection=google_satellite.crs)  # type: ignore
     else:
-        ax = fig.add_axes(ax, projection=google_satellite.crs)
+        ax = fig.add_axes(ax, projection=google_satellite.crs)  # type: ignore
 
+    assert isinstance(ax, GeoAxes)
     ax.set_extent(extent, crs=ccrs.PlateCarree())
     ax.add_image(google_satellite, _zoom_from_extent(extent, desired_pixels=desired_pixels), alpha=alpha)
 
