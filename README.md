@@ -17,3 +17,10 @@ pip install Cycles-utils
 # API reference
 
 [psumodeling.github.io/Cycles-utils](https://psumodeling.github.io/Cycles-utils)
+
+# Compatibility
+
+| Cycles-utils version | Cycles version |
+| -------------------- | -------------- |
+| 4.0.4                | 1.5.20         |
+
