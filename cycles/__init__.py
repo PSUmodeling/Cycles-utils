@@ -8,6 +8,7 @@ from .cycles_tools import read_soil_file
 from .cycles_tools import read_weather_file
 from .cycles_tools import read_output
 from .cycles_tools import read_operation_file
+from .cycles_tools import generate_operation_file
 from .cycles_tools import SoilLayer
 from .cycles_tools import plot_yield
 from .cycles_tools import plot_operations

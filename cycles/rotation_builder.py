@@ -2,14 +2,14 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 import re
-from dataclasses import dataclass, field, fields, replace
+from dataclasses import dataclass, field, replace
 from itertools import product
 from pathlib import Path
-from typing import NamedTuple, Any
+from typing import NamedTuple
 from .cycles import Cycles
 from .cycles_runner import CyclesRunner
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
-from .cycles_tools import generate_control_file
+from .cycles_tools import generate_control_file, format_operation, generate_operation_file
 
 FERTILIZER_FILE = 'input/fertilizers.txt'
 MIN_PLANTING_INTERVAL = 7
@@ -161,7 +161,7 @@ class CyclesRotationBuilder:
         self.control_dict['operation_file'] = f'{self.simulation}.operation'
 
         generate_control_file(f'./input/{self.simulation}.ctrl', self.control_dict)
-        _write_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
+        generate_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
 
         cycles = Cycles(path='.', simulation=self.simulation, executable=self.executable)
         options = '-b'
@@ -181,7 +181,7 @@ class CyclesRotationBuilder:
             self._append_operations(result, year, doy, operations)
             self._times_planted[result.crop.symbol] += 1
 
-            _write_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
+            generate_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
 
 
     def _build_yield_matrix(self) -> None:
@@ -347,21 +347,6 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
     )
 
 
-def _format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
-    lines = [_camel_to_snake(type(operation).__name__).upper()]
-    for f in fields(operation):
-        if not f.metadata.get('readable', True):
-            continue
-        val = doy_override.get(f.name) if doy_override else None
-        if val is None:
-            val = getattr(operation, f.name)
-            if f.name == 'doy' and operation.relative_doy:
-                val = f'+{val}'
-        lines.append(f'{f.name.upper():<36}{val}')
-    lines.append('')
-    return lines
-
-
 def _write_operation_templates(crops: list[Crop]) -> None:
     for crop in crops:
         path = Path('template') / f'{crop.name}.operation'
@@ -371,15 +356,8 @@ def _write_operation_templates(crops: list[Crop]) -> None:
             overrides = {'doy': f'$DOY{ind + 1}'}
             if isinstance(op, Planting):
                 overrides['end_doy'] = f'$DOY{ind + 1}'
-            lines.extend(_format_operation(op, overrides))
+            lines.extend(format_operation(op, overrides))
         path.write_text('\n'.join(lines))
-
-
-def _write_operation_file(path: Path, operations: list[Operation]) -> None:
-    lines: list[str] = []
-    for op in operations:
-        lines.extend(_format_operation(op))
-    path.write_text('\n'.join(lines))
 
 
 def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[list[dict], dict, dict]:
@@ -460,10 +438,6 @@ def _calculate_total_window(doy: int, doys1: np.ndarray, window1: np.ndarray, do
     temp_doy = (doys1 + window1) % 365
     return (doys1 - doy + 365 * (doy + MIN_PLANTING_INTERVAL > doys1) + window1
         + doys2 - temp_doy + 365 * (temp_doy + MIN_PLANTING_INTERVAL > doys2) + window2)
-
-
-def _camel_to_snake(text: str) -> str:
-    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', text).lower()
 
 
 def _day_of_year(day: int) -> int:

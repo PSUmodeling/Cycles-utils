@@ -3,6 +3,8 @@ from .control_file import read_control_file
 from .control_file import ControlConfig
 from .nudge_file import generate_nudge_file
 from .operation_file import read_operation_file
+from .operation_file import format_operation
+from .operation_file import generate_operation_file
 from .operation_file import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .output_file import read_output
 from .soil_file import MAPPABLE_PARAMETERS

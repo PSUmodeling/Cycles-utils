@@ -1,4 +1,5 @@
 from __future__ import annotations
+import re
 from pathlib import Path
 from dataclasses import dataclass, field, fields
 from typing import get_type_hints, Protocol, Any
@@ -180,3 +181,33 @@ def read_operation_file(operation: str | Path) -> list:
             break
 
     return operations
+
+
+def _camel_to_snake(text: str) -> str:
+    return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', text).lower()
+
+
+def format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
+    lines = [_camel_to_snake(type(operation).__name__).upper()]
+    for f in fields(operation):
+        if not f.metadata.get('readable', True):
+            continue
+        val = doy_override.get(f.name) if doy_override else None
+        if val is None:
+            val = getattr(operation, f.name)
+            if f.name == 'doy' and operation.relative_doy:
+                val = f'+{val}'
+            if f.name == 'mass':
+                val = f'{val:.2f}'
+        lines.append(f'{f.name.upper():<36}{val}')
+    lines.append('')
+    return lines
+
+
+def generate_operation_file(path: Path, operations: list[Operation], *, desc: str='') -> None:
+    lines: list[str] = []
+    if desc:
+        lines.append(desc)
+    for op in operations:
+        lines.extend(format_operation(op))
+    path.write_text('\n'.join(lines))
