@@ -33,7 +33,7 @@ SSURGO_URBAN_TYPES: frozenset[str] = frozenset({
 # Lookup table structure: lut_key → {csv_table → [columns]}
 LUT_TABLES: dict[str, dict[str, list[str]]] = {
     'mapunit': {
-        'muaggatt': ['hydgrpdcd', 'muname', 'slopegradwta', 'mukey'],
+        'muaggatt': ['musym', 'muname', 'slopegradwta', 'hydgrpdcd', 'mukey'],
     },
     'component': {
         'component': ['comppct_r', 'majcompflag', 'mukey', 'cokey'],
@@ -133,8 +133,9 @@ class Ssurgo:
                 geometry=[Point(lat_lon[1], lat_lon[0])],
                 crs='epsg:4326',
             )
+        assert boundary is not None
         gdf = _read_mupolygon(path, state, boundary)
-        self._mapunits = gdf.merge(luts['mapunit'], on='mukey', how='left')
+        self._mapunits = gdf.merge(luts['mapunit'].drop(columns='musym'), on='mukey', how='left')
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
         self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
@@ -190,9 +191,13 @@ class Ssurgo:
         gmu.loc[mask, 'mukey'] = -999
         gmu.loc[mask, 'musym'] = 'N/A'
 
+        gmu['slopegradwta'] = gmu[['muname', 'musym', 'slopegradwta']].apply(
+            lambda row: None if row['musym'] == 'N/A' else _weighted_average(gmu[gmu['muname'] == row['muname']], 'slopegradwta'),  # type: ignore
+            axis=1,
+        )
         gmu = gmu.dissolve(
             by='muname',
-            aggfunc={'mukey': 'first', 'musym': 'first', 'shape_area': 'sum'},
+            aggfunc={'mukey': 'first', 'musym': 'first', 'slopegradwta': 'mean', 'hydgrpdcd': 'first', 'area': 'sum'},
         ).reset_index() # type: ignore
 
         self.grouped_mapunits = MapUnitGeoDataFrame(gmu, geometry=gmu.geometry.name, crs=gmu.crs)
@@ -217,7 +222,6 @@ class Ssurgo:
     def _select_major_mapunit(self) -> None:
         assert self.grouped_mapunits is not None
         gdf = self.grouped_mapunits[~self.non_soil_mask(self.grouped_mapunits)].copy()
-        gdf['area'] = gdf.area
         self.mukey  = int(gdf.loc[gdf['area'].idxmax(), 'mukey'])   # type: ignore
 
 
@@ -262,8 +266,9 @@ class Ssurgo:
             None.
         """
         if mukey is not None:
-            hsg = self._mapunits[self._mapunits['mukey'] == mukey]['hydgrpdcd'].iloc[0] if hsg is None else hsg
-            slope = self._mapunits[self._mapunits['mukey'] == mukey]['slopegradwta'].iloc[0] if slope is None else slope
+            gdf = self.grouped_mapunits if self.grouped_mapunits is not None else self._mapunits
+            hsg = gdf[gdf['mukey'] == mukey]['hydgrpdcd'].iloc[0] if hsg is None else hsg
+            slope = gdf[gdf['mukey'] == mukey]['slopegradwta'].iloc[0] if slope is None else slope
         else:
             mukey = self._ensure_mukey()
             hsg = self.hsg if hsg is None else hsg
@@ -272,7 +277,7 @@ class Ssurgo:
         assert mukey is not None and hsg is not None and slope is not None
 
         profile = self.get_soil_profile(mukey=mukey)
-        desc = desc if desc is not None else _build_desc(self._get_muname(mukey), mukey, hsg)
+        desc = desc if desc is not None else _build_desc(self._get_muname(mukey), self._get_musym(mukey), mukey, hsg)
         _generate_soil_file(fn, profile, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
 
 
@@ -282,13 +287,17 @@ class Ssurgo:
 
 
     def _get_muname(self, mukey: int) -> str:
-        return self._mapunits[self._mapunits['mukey'] == mukey]['muname'].iloc[0]
+        gdf = self.grouped_mapunits if self.grouped_mapunits is not None else self._mapunits
+        return gdf[gdf['mukey'] == mukey]['muname'].iloc[0]
+
+
+    def _get_musym(self, mukey: int) -> str:
+        gdf = self.grouped_mapunits if self.grouped_mapunits is not None else self._mapunits
+        return gdf[gdf['mukey'] == mukey]['musym'].iloc[0]
 
 
     def _average_slope_hsg(self) -> None:
         gdf = self._mapunits[~self.non_soil_mask(self._mapunits)].copy()
-        gdf['area'] = gdf.area
-
         self.slope = _weighted_average(gdf, 'slopegradwta') # type: ignore
         self.hsg = _dominant_hsg(gdf)   # type: ignore
 
@@ -305,9 +314,9 @@ def _validate_geographic_input(lat_lon: LatLon | None, boundary: gpd.GeoDataFram
         raise ValueError("lat_lon and boundary are mutually exclusive — provide only one.")
 
 
-def _build_desc(muname: str, mukey: int, hsg: str) -> str:
+def _build_desc(muname: str, musym: str, mukey: int, hsg: str) -> str:
     lines = [
-        f"# Soil file for MUNAME: {muname}, MUKEY: {mukey}",
+        f"# Soil file for MUNAME: {muname} (MUSYM: {musym}, MUKEY: {mukey}).",
         "# NO3, NH4, and fractions of horizontal and vertical bypass flows are default empirical values.",
     ]
     if not hsg:
@@ -373,19 +382,18 @@ def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
     return luts
 
 
-def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame | None=None) -> gpd.GeoDataFrame:
-    if boundary is not None:
-        boundary = boundary.to_crs(NAD83)
+def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
+    boundary = boundary.to_crs(NAD83)
 
     gdf = gpd.read_file(
         _ssurgo_path(path, state),
         layer='MUPOLYGON',
-        mask=shapely.union_all(boundary['geometry'].values) if boundary is not None else None,  # type: ignore
+        mask=shapely.union_all(boundary['geometry'].values),    # type: ignore
     )
-    if boundary is not None:
-        gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
-
+    gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
+    gdf['area'] = gdf.area
     gdf.columns = [c.lower() for c in gdf.columns]
+    gdf.drop(columns=['areasymbol', 'spatialver', 'shape_length', 'shape_area'], inplace=True)
     gdf['mukey'] = gdf['mukey'].astype(int)
     return gdf
 
