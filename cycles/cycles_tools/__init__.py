@@ -24,6 +24,7 @@ __all__ = [
     "read_control_file",
     "generate_nudge_file",
     "read_operation_file",
+    "generate_operation_file",
     "read_output",
     "generate_soil_file",
     "read_soil_file",

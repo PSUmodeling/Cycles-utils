@@ -102,6 +102,13 @@ class CyclesRotationBuilder:
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.
         control_dict: Base control file parameters (simulation years, options, etc.).
+        build_yield_matrix: Optional flag: If True, run simulations to build yield matrix; else read from disk.
+
+    Attributes:
+        simulation: Base simulation name for generated input/output directories.
+        executable: Absolute path to the Cycles executable binary.
+        crops: List of Crop objects with available operations for rotation.
+        control_dict: Base control file parameters (simulation years, options, etc.).
         fertilizers: Dictionary mapping fertilizer names to Fertilizer objects.
         yield_matrix: Dictionary mapping crop names to yield prediction DataFrames.
         build_yield_matrix: If True, run simulations to build yield matrix; else read from disk.
@@ -109,7 +116,6 @@ class CyclesRotationBuilder:
         fertilizer_price_data: DataFrame of fertilizer prices indexed by year, or None.
         production_cost_data: DataFrame of production costs indexed by year, or None.
         rotation_frequency: Dictionary mapping crop names to (min, max) frequency tuples.
-        _times_planted: Internal tracker of how many times each crop has been planted.
     """
 
     simulation: str

@@ -205,6 +205,16 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None = None)
 
 
 def generate_operation_file(path: Path, operations: list[Operation], *, desc: str='') -> None:
+    """Write a Cycles operation file from structured operation records.
+
+    The optional description is written as the first line when provided. Each operation is serialized with
+    to preserves Cycles field naming and relative day-of-year formatting.
+
+    Args:
+        path: Destination operation file path.
+        operations: Ordered operation records to serialize.
+        desc: Optional header or description line to place at the top of the file.
+    """
     lines: list[str] = []
     if desc:
         lines.append(desc)

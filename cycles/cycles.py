@@ -29,6 +29,11 @@ class Cycles:
     Provides methods to run simulations, read outputs, and inspect soil/weather/operation configurations. Automatically
     loads the control file upon initialization.
 
+    Args:
+        path: Path to the simulation directory (containing input/ and output/ subdirs).
+        simulation: Name of the simulation (base name of control file without extension).
+        executable: Optional absolute path to the Cycles executable binary.
+
     Attributes:
         path: Path to the simulation directory (containing input/ and output/ subdirs).
         simulation: Name of the simulation (base name of control file without extension).
@@ -64,6 +69,10 @@ class Cycles:
 
     def run(self, options: str, silence: bool=False) -> tuple[int, str]:
         """Run the Cycles executable for this simulation.
+
+        To use the `run` method, the `executable` attribute must be set to the absolute path of the Cycles binary. The
+        `options` string is passed directly to the command line when invoking Cycles, allowing you to specify any
+        command-line options supported by Cycles (e.g., `-s` for spin-up, etc.).
 
         Args:
             options: Command-line options passed to Cycles.
@@ -130,15 +139,15 @@ class Cycles:
         self.weather = _read_weather_file(self.path / 'input' / self.control.input_files.weather_file, start_year=start_year, end_year=end_year, subdaily=subdaily)
 
 
-    def generate_reinit_file(self, doy: int, *, reinit: str | None=None) -> None:
+    def generate_reinit_file(self, doy: int, *, reinit_name: str | None=None) -> None:
         """Generate a reinitialization file from model output.
 
         Args:
             doy: Day-of-year to extract from reinit output.
-            reinit: Optional output stem for the reinit file.
+            reinit_name: Optional output stem for the reinit file.
         """
         assert isinstance(self.path, Path)
-        _generate_reinit_file(self.path / 'input' / f'{self.simulation if reinit is None else reinit}.reinit', self.path / 'output' / self.simulation, doy)
+        _generate_reinit_file(self.path / 'input' / f'{self.simulation if reinit_name is None else reinit_name}.reinit', self.path / 'output' / self.simulation, doy)
 
 
     def plot_yield(self, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:

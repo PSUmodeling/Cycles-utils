@@ -15,7 +15,7 @@ plugins:
             merge_init_into_class: true
             show_root_heading: true
             members_order: source
-            show_source: true        # Adds a nice "view source" button
+            show_source: false
             filters:
               - "!^_"
             extensions:

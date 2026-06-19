@@ -32,13 +32,11 @@ class CyclesRunner:
     Manages batch execution of Cycles simulations by generating control files, operation files, and nudge files from
     templates and parameter dictionaries.  Consolidates results into a summary CSV file.
 
-    Attributes:
+    Args:
         executable: Absolute path to the Cycles executable binary.
-        rotation_builder: If True, disables spin-up option and enables rotation features.
     """
 
     executable: str
-    rotation_builder: bool = False
 
     def __post_init__(self):
         self.executable = str(Path(self.executable).resolve())
@@ -73,9 +71,6 @@ class CyclesRunner:
                 f"Got operation_template={'None' if operation_template is None else repr(operation_template)}, "
                 f"operation_dict={'None' if operation_dict is None else '...'}"
             )
-
-        if 's' in options and self.rotation_builder:
-            raise ValueError('Spin-up cannot be used with rotation builder.')
 
         operation_template = Path(operation_template) if operation_template is not None else None
         comment = user_comment + _generate_comment(self.executable, options)

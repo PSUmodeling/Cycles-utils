@@ -67,17 +67,22 @@ ALL_MAPS: list[str] = [f'{p}@{l}' for p in MAPPABLE_PARAMETERS for l in SOILGRID
 LatLon = tuple[float, float]
 
 class SoilGrids:
-    """Read SoilGrids rasters and build Cycles-compatible soil profiles."""
+    """Read SoilGrids rasters and build Cycles-compatible soil profiles.
+
+    Args:
+        path: Directory containing downloaded SoilGrids rasters.
+        maps: Optional map identifiers in ``property@layer`` format. If not provided, all available maps are loaded.
+        crs: Optional target CRS for reprojection.
+        aggregated: Optional aggregated resolution (1000 or 5000 m).
+
+    Attributes:
+        crs: Coordinate reference system used for raster operations.
+        maps: Dictionary mapping map identifiers to loaded xarray DataArrays.
+        transformer: Pyproj Transformer for converting coordinates from EPSG:4326 to the target CRS.
+        matched_maps: DataFrame of reprojected and matched map values, populated after calling reproject_match().
+    """
 
     def __init__(self, path: str | Path, *, maps: list[str]=ALL_MAPS, crs: str | None=None, aggregated: int | None=None) -> None:
-        """Load SoilGrids rasters for selected maps.
-
-        Args:
-            path: Directory containing downloaded SoilGrids rasters.
-            maps: Map identifiers in ``property@layer`` format.
-            crs: Optional target CRS for reprojection.
-            aggregated: Optional aggregated resolution (1000 or 5000 m).
-        """
         if aggregated is not None and aggregated not in [1000, 5000]:
             raise ValueError(f'Invalid value for aggregated: {aggregated}. Supported values are 1000, and 5000.')
         self.crs: str = crs if crs is not None else HOMOLOSINE

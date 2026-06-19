@@ -124,7 +124,7 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int 
     return ax
 
 
-def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None):
+def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None) -> np.ndarray:
     """Plot operations by day-of-year for each rotation year.
 
     Args:

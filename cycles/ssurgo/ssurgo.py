@@ -86,27 +86,38 @@ class MapUnitGeoDataFrame(gpd.GeoDataFrame):
 
 
 class Ssurgo:
-    """Load SSURGO lookup tables and extract soil profiles for locations."""
+    """Load SSURGO lookup tables and extract soil profiles for locations.
+
+    When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only those
+    map units that intersect the location or polygon.
+    When a boundary polygon is provided, the map-units are also grouped by name and symbol, and the major map unit is
+    selected for profile extraction. The slope and hydrologic soil group (HSG) for the selected map unit are averaged
+    across all map units that share the same name, weighted by area. When a point location is provided, the map unit
+    that contains the point is selected.
+
+    Args:
+        path: Directory containing SSURGO geodatabase and lookup CSV files.
+        state: State identifier
+        lat_lon: Optional latitude/longitude for point-based spatial filtering.
+        boundary: Optional boundary GeoDataFrame for polygon-based filtering.
+
+    Attributes:
+        state: State identifier used in SSURGO file naming.
+        components: DataFrame of soil component records from SSURGO lookup tables.
+        horizons: DataFrame of soil horizon records from SSURGO lookup tables.
+        grouped_mapunits: Grouped and dissolved map-unit GeoDataFrame when boundary filtering is used.
+        mukey: Currently selected map-unit key (int), or None if not yet selected.
+        slope: Slope gradient (%) for the selected map unit, or None if not selected.
+        hsg: Hydrologic soil group code for the selected map unit.
+
+    Returns:
+        None.
+
+    Raises:
+        ValueError: If both ``lat_lon`` and ``boundary`` are provided.
+    """
 
     def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
-        """Initialize SSURGO lookup tables and optional spatial subset.
-
-        When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only
-        those map units that intersect the location or polygon; the map-units are also grouped by name and symbol, and
-        the major map unit is selected for profile extraction.
-
-        Args:
-            path: Directory containing SSURGO geodatabase and lookup CSV files.
-            state: State identifier used in SSURGO file naming.
-            lat_lon: Optional latitude/longitude for point-based spatial filtering.
-            boundary: Optional boundary GeoDataFrame for polygon-based filtering.
-
-        Returns:
-            None.
-
-        Raises:
-            ValueError: If both ``lat_lon`` and ``boundary`` are provided.
-        """
         _validate_geographic_input(lat_lon, boundary)
 
         self.state: str = state
