@@ -139,9 +139,14 @@ class Ssurgo:
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
         self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
 
-        self._group_map_units()
-        self._select_major_mapunit()
-        self._average_slope_hsg()
+        if lat_lon is None:
+            self._group_map_units()
+            self._select_major_mapunit()
+            self._average_slope_hsg()
+        else:
+            self.mukey = int(self._mapunits['mukey'].iloc[0])
+            self.slope = self._mapunits['slopegradwta'].iloc[0]
+            self.hsg = self._mapunits['hydgrpdcd'].iloc[0]
 
 
     @property
