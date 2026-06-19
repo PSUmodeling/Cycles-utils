@@ -139,6 +139,48 @@ loads the control file upon initialization.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>path</code></b>
+                  (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the simulation directory (containing input/ and output/ subdirs).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>simulation</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Name of the simulation (base name of control file without extension).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>executable</code></b>
+                  (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional absolute path to the Cycles executable binary.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
       <th class="field-name">Attributes:</th>
       <td class="field-body">
         <ul class="first simple">
@@ -259,6 +301,9 @@ loads the control file upon initialization.</p>
     <div class="doc doc-contents ">
 
         <p>Run the Cycles executable for this simulation.</p>
+<p>To use the <code>run</code> method, the <code>executable</code> attribute must be set to the absolute path of the Cycles binary. The
+<code>options</code> string is passed directly to the command line when invoking Cycles, allowing you to specify any
+command-line options supported by Cycles (e.g., <code>-s</code> for spin-up, etc.).</p>
 
 
 <table class="field-list">
@@ -318,53 +363,6 @@ loads the control file upon initialization.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span>
-<span class="normal">80</span>
-<span class="normal">81</span>
-<span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">silence</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the Cycles executable for this simulation.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        options: Command-line options passed to Cycles.</span>
-<span class="sd">        silence: If True, suppress stdout and stderr printing.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        A tuple with process return code and stdout text.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">executable</span><span class="p">,</span> <span class="o">*</span><span class="p">(</span><span class="n">options</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">if</span> <span class="n">options</span> <span class="k">else</span> <span class="p">[]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="p">]</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
-        <span class="n">cmd</span><span class="p">,</span>
-        <span class="n">shell</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;nt&#39;</span><span class="p">,</span>
-        <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">text</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">silence</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stdout</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">stderr</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">returncode</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">stdout</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -407,35 +405,6 @@ loads the control file upon initialization.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output_types</span><span class="p">:</span> <span class="n">Collection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read one or more output tables into memory.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        output_types: Output table name or collection of names.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">output_types</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">output_types</span> <span class="o">=</span> <span class="n">output_types</span><span class="p">,</span>
-
-    <span class="k">for</span> <span class="n">output_type</span> <span class="ow">in</span> <span class="n">output_types</span><span class="p">:</span>
-        <span class="n">df</span><span class="p">,</span> <span class="n">units</span> <span class="o">=</span> <span class="n">_read_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;output&#39;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="p">,</span> <span class="n">output_type</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="n">output_type</span><span class="p">]</span> <span class="o">=</span> <span class="n">Output</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -454,19 +423,6 @@ loads the control file upon initialization.</p>
         <p>Load operation records defined in the control file.</p>
 
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_operation_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load operation records defined in the control file.&quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="o">=</span> <span class="n">_read_operation_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;input&#39;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">input_files</span><span class="o">.</span><span class="n">operation_file</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -485,23 +441,6 @@ loads the control file upon initialization.</p>
         <p>Load soil profile layers and metadata from the configured soil file.</p>
 
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_soil_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Load soil profile layers and metadata from the configured soil file.&quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">soil_profile</span><span class="p">,</span> <span class="n">meta</span> <span class="o">=</span> <span class="n">_read_soil_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;input&#39;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">input_files</span><span class="o">.</span><span class="n">soil_file</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">curve_number</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;curve_number&#39;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">slope</span> <span class="o">=</span> <span class="n">meta</span><span class="p">[</span><span class="s1">&#39;slope&#39;</span><span class="p">]</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -566,31 +505,6 @@ loads the control file upon initialization.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_weather_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">end_year</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read weather forcing data for the configured weather file.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        start_year: Inclusive first year to keep.</span>
-<span class="sd">        end_year: Inclusive last year to keep.</span>
-<span class="sd">        subdaily: If True, parse hourly format instead of daily.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span>
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">weather</span> <span class="o">=</span> <span class="n">_read_weather_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;input&#39;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">input_files</span><span class="o">.</span><span class="n">weather_file</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=</span><span class="n">start_year</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="n">end_year</span><span class="p">,</span> <span class="n">subdaily</span><span class="o">=</span><span class="n">subdaily</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -599,7 +513,7 @@ loads the control file upon initialization.</p>
 
 
 <h3 id="cycles.Cycles.generate_reinit_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_reinit_file</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reinit</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_reinit_file</span><span class="p">(</span><span class="n">doy</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reinit_name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -628,7 +542,7 @@ loads the control file upon initialization.</p>
               </div>
             </li>
             <li>
-              <b><code>reinit</code></b>
+              <b><code>reinit_name</code></b>
                   (<code><span title="str">str</span> | None</code>, default:
                       <code>None</code>
 )
@@ -643,27 +557,6 @@ loads the control file upon initialization.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_reinit_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doy</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">reinit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a reinitialization file from model output.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        doy: Day-of-year to extract from reinit output.</span>
-<span class="sd">        reinit: Optional output stem for the reinit file.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="n">Path</span><span class="p">)</span>
-    <span class="n">_generate_reinit_file</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;input&#39;</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">reinit</span><span class="w"> </span><span class="ow">is</span><span class="w"> </span><span class="kc">None</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="n">reinit</span><span class="si">}</span><span class="s1">.reinit&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">/</span> <span class="s1">&#39;output&#39;</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">simulation</span><span class="p">,</span> <span class="n">doy</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -682,21 +575,6 @@ loads the control file upon initialization.</p>
         <p>Plot grain and forage yields from harvest output.</p>
 
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span>
-<span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_yield</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Axes</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot grain and forage yields from harvest output.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="s1">&#39;harvest&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_output</span><span class="p">(</span><span class="s1">&#39;harvest&#39;</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">_plot_yield</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="s1">&#39;harvest&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -780,49 +658,6 @@ loads the control file upon initialization.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/cycles.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_operations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="p">:</span> <span class="n">Axes</span> <span class="o">|</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Plot operation timelines grouped by rotation year.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        rotation_size: Number of years in the plotted rotation.</span>
-<span class="sd">        axs: Optional axes object(s) to draw on.</span>
-<span class="sd">        fontsize: Global matplotlib font size override.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The axes used for plotting.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">read_operation_file</span><span class="p">()</span>
-
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-    <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">operations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-
-    <span class="n">rotation_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">control</span><span class="o">.</span><span class="n">simulation_years</span><span class="o">.</span><span class="n">rotation_size</span>
-
-    <span class="k">return</span> <span class="n">_plot_operations</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">operations</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="n">axs</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="n">fontsize</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>

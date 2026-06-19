@@ -228,55 +228,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span>
-<span class="normal">60</span>
-<span class="normal">61</span>
-<span class="normal">62</span>
-<span class="normal">63</span>
-<span class="normal">64</span>
-<span class="normal">65</span>
-<span class="normal">66</span>
-<span class="normal">67</span>
-<span class="normal">68</span>
-<span class="normal">69</span>
-<span class="normal">70</span>
-<span class="normal">71</span>
-<span class="normal">72</span>
-<span class="normal">73</span>
-<span class="normal">74</span>
-<span class="normal">75</span>
-<span class="normal">76</span>
-<span class="normal">77</span>
-<span class="normal">78</span>
-<span class="normal">79</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">read_gadm</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">country</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">level_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">conus</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read a GADM layer and normalize its index.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        path: Directory containing GADM shapefiles.</span>
-<span class="sd">        country: Country code used in GADM file names.</span>
-<span class="sd">        level_str: Administrative level name (country, state, county).</span>
-<span class="sd">        conus: For USA state/county layers, exclude Alaska and Hawaii.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        GeoDataFrame indexed by GID.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">level</span> <span class="o">=</span> <span class="n">GADMLevel</span><span class="p">[</span><span class="n">level_str</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
-    <span class="n">gdf</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="n">_gadm_path</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">country</span><span class="p">,</span> <span class="n">level</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">country</span> <span class="o">!=</span> <span class="s1">&#39;global&#39;</span><span class="p">:</span>
-        <span class="n">gdf</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="sa">f</span><span class="s1">&#39;GID_</span><span class="si">{</span><span class="n">level</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">:</span> <span class="s1">&#39;GID&#39;</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">gdf</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;GID&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">country</span> <span class="o">==</span> <span class="s1">&#39;USA&#39;</span> <span class="ow">and</span> <span class="n">conus</span><span class="p">:</span>
-        <span class="n">gdf</span> <span class="o">=</span> <span class="n">gdf</span><span class="p">[</span><span class="o">~</span><span class="n">gdf</span><span class="p">[</span><span class="s1">&#39;NAME_1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="s1">&#39;Alaska&#39;</span><span class="p">,</span> <span class="s1">&#39;Hawaii&#39;</span><span class="p">])]</span>
-
-    <span class="k">return</span> <span class="n">gdf</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -387,39 +338,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">state_abbreviation</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fips</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up state abbreviation by name, GID, or FIPS code.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        state: Full state name.</span>
-<span class="sd">        gid: State GID string.</span>
-<span class="sd">        fips: Numeric state FIPS code.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Two-letter state abbreviation.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching state record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">STATE_CSV</span><span class="p">,</span> <span class="n">STATE_DTYPES</span><span class="p">,</span> <span class="s1">&#39;abbreviation&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">fips</span><span class="o">=</span><span class="n">fips</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -530,39 +448,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">state_fips</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">abbreviation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up state FIPS code by name, abbreviation, or GID.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        state: Full state name.</span>
-<span class="sd">        abbreviation: Two-letter state abbreviation.</span>
-<span class="sd">        gid: State GID string.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Numeric state FIPS code.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching state record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">STATE_CSV</span><span class="p">,</span> <span class="n">STATE_DTYPES</span><span class="p">,</span> <span class="s1">&#39;fips&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">abbreviation</span><span class="o">=</span><span class="n">abbreviation</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -673,39 +558,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">82</span>
-<span class="normal">83</span>
-<span class="normal">84</span>
-<span class="normal">85</span>
-<span class="normal">86</span>
-<span class="normal">87</span>
-<span class="normal">88</span>
-<span class="normal">89</span>
-<span class="normal">90</span>
-<span class="normal">91</span>
-<span class="normal">92</span>
-<span class="normal">93</span>
-<span class="normal">94</span>
-<span class="normal">95</span>
-<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">state_gid</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">abbreviation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fips</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up state GID by name, abbreviation, or FIPS code.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        state: Full state name.</span>
-<span class="sd">        abbreviation: Two-letter state abbreviation.</span>
-<span class="sd">        fips: Numeric state FIPS code.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        State GID string.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching state record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">STATE_CSV</span><span class="p">,</span> <span class="n">STATE_DTYPES</span><span class="p">,</span> <span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">abbreviation</span><span class="o">=</span><span class="n">abbreviation</span><span class="p">,</span> <span class="n">fips</span><span class="o">=</span><span class="n">fips</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -816,39 +668,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span>
-<span class="normal">144</span>
-<span class="normal">145</span>
-<span class="normal">146</span>
-<span class="normal">147</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">state_name</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">abbreviation</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fips</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up state name by abbreviation, GID, or FIPS code.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        abbreviation: Two-letter state abbreviation.</span>
-<span class="sd">        gid: State GID string.</span>
-<span class="sd">        fips: Numeric state FIPS code.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Full state name.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching state record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">STATE_CSV</span><span class="p">,</span> <span class="n">STATE_DTYPES</span><span class="p">,</span> <span class="s1">&#39;state&#39;</span><span class="p">,</span> <span class="n">abbreviation</span><span class="o">=</span><span class="n">abbreviation</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">fips</span><span class="o">=</span><span class="n">fips</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -937,35 +756,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
-<span class="normal">173</span>
-<span class="normal">174</span>
-<span class="normal">175</span>
-<span class="normal">176</span>
-<span class="normal">177</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">county_fips</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up county FIPS code by county GID.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        gid: County GID string.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Numeric county FIPS code.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching county record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">COUNTY_CSV</span><span class="p">,</span> <span class="n">COUNTY_DTYPES</span><span class="p">,</span> <span class="s1">&#39;fips&#39;</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -1054,35 +844,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">150</span>
-<span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
-<span class="normal">162</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">county_gid</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">fips</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up county GID by county FIPS code.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        fips: Numeric county FIPS code.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        County GID string.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching county record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_find_representation</span><span class="p">(</span><span class="n">COUNTY_CSV</span><span class="p">,</span> <span class="n">COUNTY_DTYPES</span><span class="p">,</span> <span class="s1">&#39;gid&#39;</span><span class="p">,</span> <span class="n">fips</span><span class="o">=</span><span class="n">fips</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -1183,37 +944,6 @@
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/gadm/gadm.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">180</span>
-<span class="normal">181</span>
-<span class="normal">182</span>
-<span class="normal">183</span>
-<span class="normal">184</span>
-<span class="normal">185</span>
-<span class="normal">186</span>
-<span class="normal">187</span>
-<span class="normal">188</span>
-<span class="normal">189</span>
-<span class="normal">190</span>
-<span class="normal">191</span>
-<span class="normal">192</span>
-<span class="normal">193</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">county_name</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">gid</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fips</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Look up county display name by GID or FIPS code.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        gid: County GID string.</span>
-<span class="sd">        fips: Numeric county FIPS code.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        County display name formatted as &quot;County, State&quot;.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        KeyError: If no matching county record is found.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">_find_county_name</span><span class="p">(</span><span class="n">COUNTY_CSV</span><span class="p">,</span> <span class="n">COUNTY_DTYPES</span><span class="p">,</span> <span class="n">gid</span><span class="o">=</span><span class="n">gid</span><span class="p">,</span> <span class="n">fips</span><span class="o">=</span><span class="n">fips</span><span class="p">))</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>

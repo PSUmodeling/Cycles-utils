@@ -155,11 +155,12 @@
 
 
         <p>Load SSURGO lookup tables and extract soil profiles for locations.</p>
-
-        <p>Initialize SSURGO lookup tables and optional spatial subset.</p>
-<p>When a location (<code>lat_lon</code>) or boundary polygon is provided, the map-unit table is filtered to include only
-those map units that intersect the location or polygon; the map-units are also grouped by name and symbol, and
-the major map unit is selected for profile extraction.</p>
+<p>When a location (<code>lat_lon</code>) or boundary polygon is provided, the map-unit table is filtered to include only those
+map units that intersect the location or polygon.
+When a boundary polygon is provided, the map-units are also grouped by name and symbol, and the major map unit is
+selected for profile extraction. The slope and hydrologic soil group (HSG) for the selected map unit are averaged
+across all map units that share the same name, weighted by area. When a point location is provided, the map unit
+that contains the point is selected.</p>
 
 
 <table class="field-list">
@@ -185,7 +186,7 @@ the major map unit is selected for profile extraction.</p>
                   (<code><span title="str">str</span></code>)
               –
               <div class="doc-md-description">
-                <p>State identifier used in SSURGO file naming.</p>
+                <p>State identifier</p>
               </div>
             </li>
             <li>
@@ -221,11 +222,82 @@ the major map unit is selected for profile extraction.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
+      <th class="field-name">Attributes:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>state</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>State identifier used in SSURGO file naming.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>components</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>DataFrame of soil component records from SSURGO lookup tables.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>horizons</code></b>
+                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>DataFrame of soil horizon records from SSURGO lookup tables.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>grouped_mapunits</code></b>
+                  (<code><span title="cycles.ssurgo.ssurgo.MapUnitGeoDataFrame">MapUnitGeoDataFrame</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Grouped and dissolved map-unit GeoDataFrame when boundary filtering is used.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>mukey</code></b>
+                  (<code><span title="int">int</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Currently selected map-unit key (int), or None if not yet selected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>slope</code></b>
+                  (<code><span title="float">float</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>Slope gradient (%) for the selected map unit, or None if not selected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>hsg</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Hydrologic soil group code for the selected map unit.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
       <th class="field-name">Returns:</th>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code>None</code>
               –
               <div class="doc-md-description">
                 <p>None.</p>
@@ -265,115 +337,6 @@ the major map unit is selected for profile extraction.</p>
 
 
 
-                  <details class="quote">
-                    <summary>Source code in <code>cycles/ssurgo/ssurgo.py</code></summary>
-                    <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">:</span> <span class="n">LatLon</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Initialize SSURGO lookup tables and optional spatial subset.</span>
-
-<span class="sd">    When a location (`lat_lon`) or boundary polygon is provided, the map-unit table is filtered to include only</span>
-<span class="sd">    those map units that intersect the location or polygon; the map-units are also grouped by name and symbol, and</span>
-<span class="sd">    the major map unit is selected for profile extraction.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        path: Directory containing SSURGO geodatabase and lookup CSV files.</span>
-<span class="sd">        state: State identifier used in SSURGO file naming.</span>
-<span class="sd">        lat_lon: Optional latitude/longitude for point-based spatial filtering.</span>
-<span class="sd">        boundary: Optional boundary GeoDataFrame for polygon-based filtering.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None.</span>
-
-<span class="sd">    Raises:</span>
-<span class="sd">        ValueError: If both ``lat_lon`` and ``boundary`` are provided.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">_validate_geographic_input</span><span class="p">(</span><span class="n">lat_lon</span><span class="p">,</span> <span class="n">boundary</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">state</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">:</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">horizons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">grouped_mapunits</span><span class="p">:</span> <span class="n">MapUnitGeoDataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mukey</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">hsg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
-
-    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-    <span class="n">luts</span> <span class="o">=</span> <span class="n">_read_all_luts</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="n">luts</span><span class="p">[</span><span class="s1">&#39;component&#39;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">horizons</span> <span class="o">=</span> <span class="n">luts</span><span class="p">[</span><span class="s1">&#39;horizon&#39;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">lat_lon</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">boundary</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span> <span class="o">=</span> <span class="n">luts</span><span class="p">[</span><span class="s1">&#39;mapunit&#39;</span><span class="p">]</span>
-        <span class="k">return</span>
-
-    <span class="k">if</span> <span class="n">lat_lon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">boundary</span> <span class="o">=</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">(</span>
-            <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;point&#39;</span><span class="p">]},</span>
-            <span class="n">geometry</span><span class="o">=</span><span class="p">[</span><span class="n">Point</span><span class="p">(</span><span class="n">lat_lon</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">lat_lon</span><span class="p">[</span><span class="mi">0</span><span class="p">])],</span>
-            <span class="n">crs</span><span class="o">=</span><span class="s1">&#39;epsg:4326&#39;</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="n">gdf</span> <span class="o">=</span> <span class="n">_read_mupolygon</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">boundary</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span> <span class="o">=</span> <span class="n">gdf</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">luts</span><span class="p">[</span><span class="s1">&#39;mapunit&#39;</span><span class="p">],</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;mukey&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">components</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">horizons</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizons</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">horizons</span><span class="p">[</span><span class="s1">&#39;cokey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;cokey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())]</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_group_map_units</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_select_major_mapunit</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_average_slope_hsg</span><span class="p">()</span>
-</code></pre></div></td></tr></table></div>
-                  </details>
 
 
 
@@ -584,37 +547,6 @@ the major map unit is selected for profile extraction.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/ssurgo/ssurgo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">201</span>
-<span class="normal">202</span>
-<span class="normal">203</span>
-<span class="normal">204</span>
-<span class="normal">205</span>
-<span class="normal">206</span>
-<span class="normal">207</span>
-<span class="normal">208</span>
-<span class="normal">209</span>
-<span class="normal">210</span>
-<span class="normal">211</span>
-<span class="normal">212</span>
-<span class="normal">213</span>
-<span class="normal">214</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">non_soil_mask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mapunits</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="n">gpd</span><span class="o">.</span><span class="n">GeoDataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a mask for non-soil or urban map units.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        mapunits: Map-unit table to evaluate.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Boolean Series where True indicates non-soil or urban classes.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="n">mapunits</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span> <span class="o">|</span>
-        <span class="n">mapunits</span><span class="p">[</span><span class="s1">&#39;muname&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">SSURGO_NON_SOIL_TYPES</span><span class="p">)</span> <span class="o">|</span>
-        <span class="n">mapunits</span><span class="p">[</span><span class="s1">&#39;muname&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="s1">&#39;|&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">SSURGO_URBAN_TYPES</span><span class="p">),</span> <span class="n">na</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -692,55 +624,6 @@ the major map unit is selected for profile extraction.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/ssurgo/ssurgo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">224</span>
-<span class="normal">225</span>
-<span class="normal">226</span>
-<span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_soil_profile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mukey</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">major_only</span><span class="p">:</span> <span class="nb">bool</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">SoilLayer</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Build a soil profile from SSURGO components and horizons.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        mukey: Optional map-unit key. If omitted, the selected major MUKEY is used.</span>
-<span class="sd">        major_only: If True, include only components marked as major.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Soil profile as a list of ``SoilLayer`` records.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">mukey</span> <span class="o">=</span> <span class="n">mukey</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_mukey</span><span class="p">()</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">mukey</span><span class="p">)]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">major_only</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;majcompflag&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Yes&#39;</span><span class="p">]</span>
-
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">horizons</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;cokey&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="s2">&quot;hzname != &#39;R&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;cokey&#39;</span><span class="p">,</span> <span class="s1">&#39;top&#39;</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="p">[</span><span class="n">SoilLayer</span><span class="p">(</span>
-            <span class="n">top</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;top&#39;</span><span class="p">],</span>
-            <span class="n">bottom</span> <span class="o">=</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;bottom&#39;</span><span class="p">],</span>
-            <span class="o">**</span><span class="p">{</span><span class="n">p</span><span class="p">:</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">pd</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="n">p</span><span class="p">])</span> <span class="k">else</span> <span class="n">row</span><span class="p">[</span><span class="n">p</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">MAPPABLE_PARAMETERS</span><span class="p">},</span>    <span class="c1"># type: ignore</span>
-        <span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()]</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
@@ -856,65 +739,6 @@ the major map unit is selected for profile extraction.</p>
   </tbody>
 </table>
 
-            <details class="mkdocstrings-source">
-              <summary>Source code in <code>cycles/ssurgo/ssurgo.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span>
-<span class="normal">274</span>
-<span class="normal">275</span>
-<span class="normal">276</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_soil_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fn</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-    <span class="n">mukey</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">soil_depth</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate a Cycles soil file from SSURGO profile data.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        fn: Output soil file path.</span>
-<span class="sd">        mukey: Optional map-unit key. If omitted, dominant MUKEY is used.</span>
-<span class="sd">        desc: Optional custom header text for the output file.</span>
-<span class="sd">        hsg: Optional hydrologic soil group; inferred from map unit if omitted.</span>
-<span class="sd">        slope: Optional slope value; inferred from map unit if omitted.</span>
-<span class="sd">        soil_depth: Optional maximum depth (m) used during profile mapping.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        None.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">mukey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">hsg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">mukey</span><span class="p">][</span><span class="s1">&#39;hydgrpdcd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">hsg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hsg</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_mapunits</span><span class="p">[</span><span class="s1">&#39;mukey&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">mukey</span><span class="p">][</span><span class="s1">&#39;slopegradwta&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">slope</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">slope</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">mukey</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_mukey</span><span class="p">()</span>
-        <span class="n">hsg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">hsg</span> <span class="k">if</span> <span class="n">hsg</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">hsg</span>
-        <span class="n">slope</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">slope</span> <span class="k">if</span> <span class="n">slope</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">slope</span>
-
-    <span class="k">assert</span> <span class="n">mukey</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">hsg</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">slope</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
-
-    <span class="n">profile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_soil_profile</span><span class="p">(</span><span class="n">mukey</span><span class="o">=</span><span class="n">mukey</span><span class="p">)</span>
-    <span class="n">desc</span> <span class="o">=</span> <span class="n">desc</span> <span class="k">if</span> <span class="n">desc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">_build_desc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_muname</span><span class="p">(</span><span class="n">mukey</span><span class="p">),</span> <span class="n">mukey</span><span class="p">,</span> <span class="n">hsg</span><span class="p">)</span>
-    <span class="n">_generate_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="n">desc</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="n">hsg</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="n">slope</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="n">soil_depth</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
