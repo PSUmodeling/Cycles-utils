@@ -16,6 +16,18 @@ INPUT_DIR: Path = Path('input')
 OUTPUT_DIR: Path = Path('output')
 SUMMARY_DIR: Path = Path('summary')
 
+OUTPUT_CONTROL_FLAGS: dict = {
+    'dailyEnviron': 'daily_weather_out',
+    'dailyResidue': 'daily_residue_out',
+    'dailyWater': 'daily_water_out',
+    'dailyN': 'daily_nitrogen_out',
+    'dailySoilC': 'daily_soil_carbon_out',
+    'dailySoilLayersCN': 'daily_soil_lyr_cn_out',
+    'annualSOM': 'annual_soil_out',
+    'annualSoilProfileC': 'annual_profile_out',
+    'annualN': 'annual_nflux_out',
+}
+
 @dataclass
 class SimulationContext:
     name: str
@@ -43,7 +55,7 @@ class CyclesRunner:
 
 
     def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
-        summary: str='summary.csv', operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None, calibration_dict: dict[str, Any] | None=None,
+        summary: str | dict[str, str] | None=None, operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None, calibration_dict: dict[str, Any] | None=None,
         options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='') -> None:
         """Execute a batch of simulations and write a consolidated summary.
 
@@ -75,6 +87,16 @@ class CyclesRunner:
         operation_template = Path(operation_template) if operation_template is not None else None
         comment = user_comment + _generate_comment(self.executable, options)
         first_run = True
+
+        if summary is None:
+            summary = {'harvest': 'summary.csv'}
+        elif isinstance(summary, str):
+            summary = {'harvest': summary}
+        assert isinstance(summary, dict)
+
+        for key in summary.keys():
+            if key == 'harvest': continue
+            control_dict[OUTPUT_CONTROL_FLAGS[key]] = 1
 
         SUMMARY_DIR.mkdir(exist_ok=True)
 
@@ -130,15 +152,16 @@ class CyclesRunner:
             cxt.operation_fn.unlink(missing_ok=True)
 
 
-    def _write_summary(self, cycles: Cycles, summary: str, *, header: bool, comment: str) -> None:
-        cycles.read_output('harvest')
-        cycles.output['harvest'].data.insert(0, 'simulation', cycles.simulation)
+    def _write_summary(self, cycles: Cycles, summary: dict, *, header: bool, comment: str) -> None:
+        cycles.read_output(summary.keys())
+        for key, fn in summary.items():
+            cycles.output[key].data.insert(0, 'simulation', cycles.simulation)
 
-        mode = 'w' if header else 'a'
-        with open(SUMMARY_DIR / summary, mode) as f:
-            if header:
-                f.write(comment)
-            cycles.output['harvest'].data.to_csv(f, header=header, index=False)
+            mode = 'w' if header else 'a'
+            with open(SUMMARY_DIR / fn, mode) as f:
+                if header:
+                    f.write(comment)
+                cycles.output[key].data.to_csv(f, header=header, index=False)
 
 
 def _render_template(template_fn: Path, dest_fn: Path, substitutions: dict) -> None:
