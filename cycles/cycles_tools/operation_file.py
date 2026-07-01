@@ -17,22 +17,22 @@ class Planting(Operation):
     doy: int
     end_doy: int = -999
     crop: str = ''
-    max_smc: float = -999
-    min_smc: float = -999
-    max_soil_temp: float = -999
-    min_soil_temp: float = -999
+    max_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity', 'unit': '-'})
+    min_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity', 'unit': '-'})
+    max_soil_temp: float = field(default=-999, metadata={'unit': 'degree C'})
+    min_soil_temp: float = field(default=-999, metadata={'unit': 'degree C'})
     use_auto_irr: int = 0
     use_auto_fert: int = 0
-    density: float = 1.0
+    density: float = field(default=1.0, metadata={'unit': '-'})
     clipping_start: int = 1
     clipping_end: int = 366
-    maximum_soil_coverage: float = 100.0
-    standing_residue_at_harvest: float = 50.0
-    residue_removed: float = 0.0
-    clipping_biomass_threshold_lower: float = 0.5
-    clipping_biomass_threshold_upper: float = 999.0
+    maximum_soil_coverage: float = field(default=100.0, metadata={'unit': '%'})
+    standing_residue_at_harvest: float = field(default=50.0, metadata={'unit': '%'})
+    residue_removed: float = field(default=0.0, metadata={'unit': '%'})
+    clipping_biomass_threshold_lower: float = field(default=0.5, metadata={'unit': 'Mg/ha'})
+    clipping_biomass_threshold_upper: float = field(default=999, metadata={'unit': 'Mg/ha'})
     clipping_biomass_destiny: str = 'REMOVE'
-    harvest_timing: float = -999
+    harvest_timing: float = field(default=-999, metadata={'unit': '%'})
     kill_after_harvest: int = 1
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
@@ -75,10 +75,10 @@ class FixedFertilization(Operation):
     year: int | None = None
     doy: int
     source: str
-    mass: float = 0.0
+    mass: float = field(default=0.0, metadata={'unit': 'kg/ha'})
     form: str = 'Liquid'
     method: str = 'Broadcast'
-    depth: float = 0.0
+    depth: float = field(default=0.0, metadata={'unit': 'm'})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -193,13 +193,20 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None = None)
         if not f.metadata.get('readable', True):
             continue
         val = doy_override.get(f.name) if doy_override else None
+        unit = f.metadata.get('unit', '')
+        description = f.metadata.get('description', '')
+        if unit or description:
+            comment = ' '.join(filter(None, [description, f'({unit})' if unit else None]))
+        else:
+            comment = None
+
         if val is None:
             val = getattr(operation, f.name)
             if f.name == 'doy' and operation.relative_doy:
                 val = f'+{val}'
             if f.name == 'mass':
                 val = f'{val:.2f}'
-        lines.append(f'{f.name.upper():<36}{val}')
+        lines.append(f'{f.name.upper():<36}{val:<12}# {comment}' if comment is not None else f'{f.name.upper():<36}{val}')
     lines.append('')
     return lines
 
