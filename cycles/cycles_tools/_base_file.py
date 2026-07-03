@@ -7,7 +7,11 @@ from typing import Union, Any
 def _format_block(label: str, block) -> str:
     lines = [f'## {label.replace("_", " ").upper()} ##']
     for f in fields(block):
-        lines.append('%-27s\t%s' % (f.name.upper(), getattr(block, f.name)))
+        val = getattr(block, f.name)
+        if isinstance(val, float) and val == -999.0:
+            val = '-999'
+        description = f.metadata.get('description', '')
+        lines.append(f'{f.name.upper():<28}{val:<8}# {description}' if description else f'{f.name.upper():<28}{val}')
     lines.append('')
 
     return '\n'.join(lines)
