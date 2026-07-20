@@ -201,7 +201,8 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
     colorbar: bool=True, cb_axes: tuple[float, float, float, float] | None=None, extend: str='neither', cb_orientation: str='horizontal',
     label: str | None=None, title: str | None=None,
     fontsize: float | None=None,
-    frameon: bool=False) -> tuple[Figure, GeoAxes]:
+    frameon: bool=False,
+    **kwargs) -> tuple[Figure, GeoAxes]:
     """Render a thematic map from a GeoDataFrame column.
 
     Args:
@@ -245,6 +246,7 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
         ax=ax,  # type: ignore
         vmin=vmin,
         vmax=vmax,
+        **kwargs,
     )
     ax.add_feature(feature.STATES, edgecolor=[0.7, 0.7, 0.7], linewidth=0.5)    # type: ignore
     ax.add_feature(feature.LAND, facecolor=[0.8, 0.8, 0.8])     # type: ignore
@@ -268,6 +270,7 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
             ax.collections[0],  # type: ignore
             cax=cax,
             orientation=cb_orientation,
+            spacing='proportional',
             extend=extend,
         )
         if label is not None: cbar.set_label(label)
