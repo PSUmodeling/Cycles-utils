@@ -121,7 +121,9 @@ class CyclesRunner:
                 self._remove_inputs(cxt)
             if rm_output:
                 shutil.rmtree(OUTPUT_DIR / cxt.name, ignore_errors=True)
-            if rm_steady_state_soil:
+            if rm_steady_state_soil and 's' in options:
+                # Steady-state soil should only be removed if generated during this run (i.e., spin-up was requested).
+                # If using an existing steady-state soil file, it should not be removed.
                 (INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
 
 
