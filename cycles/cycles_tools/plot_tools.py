@@ -87,7 +87,7 @@ def _build_legend_handles(crops: list[str], crop_colors: dict[str, str]) -> list
     return marker_handles + crop_handles
 
 
-def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
+def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: dict | None=None, fontsize: int | None=None) -> Axes:
     """Plot grain and forage yields by crop.
 
     Args:
@@ -104,7 +104,8 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, fontsize: int 
         plt.rcParams.update({'font.size': fontsize})
 
     crops = harvest_df['crop'].unique().tolist()
-    crop_colors = _assign_crop_colors(crops, ax)
+    if crop_colors is None:
+        crop_colors = _assign_crop_colors(crops, ax)
 
     for crop in crops:
         for harvest, marker in HARVEST_MARKERS.items():

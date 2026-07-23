@@ -150,12 +150,12 @@ class Cycles:
         _generate_reinit_file(self.path / 'input' / f'{self.simulation if reinit_name is None else reinit_name}.reinit', self.path / 'output' / self.simulation, doy)
 
 
-    def plot_yield(self, *, ax: Axes | None=None, fontsize: int | None=None) -> Axes:
+    def plot_yield(self, *, ax: Axes | None=None, crop_colors: dict | None=None, fontsize: int | None=None) -> Axes:
         """Plot grain and forage yields from harvest output."""
         if 'harvest' not in self.output:
             self.read_output('harvest')
 
-        return _plot_yield(self.output['harvest'].data, ax=ax, fontsize=fontsize)
+        return _plot_yield(self.output['harvest'].data, ax=ax, crop_colors=crop_colors, fontsize=fontsize)
 
 
     def plot_operations(self, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None):
