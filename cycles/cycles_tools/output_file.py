@@ -28,7 +28,7 @@ def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[
     text = fn.read_text()
     lines = text.splitlines()
 
-    df = pd.read_csv(io.StringIO(text), comment='#').copy()
+    df = pd.read_csv(io.StringIO(text), comment='#', na_values=-999).copy()
 
     for col in DATE_COLUMNS & set(df.columns):
         df[col] = pd.to_datetime(df[col])
