@@ -124,7 +124,7 @@
 
 
 <h2 id="cycles.cycles_tools.generate_control_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_control_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">user_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">simulation_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_control_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">user_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">simulation_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -132,10 +132,10 @@
     <div class="doc doc-contents ">
 
         <p>Generate and write a Cycles control file.</p>
-<p>Provide either direct values or callables that accept a simulation row and return a value in <code>user_dict</code>. The
-parameter names should be in lowercase and correspond to the fields in Cycles simulation control files. If a field
-is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
-the <code>simulation_dict</code> to resolve its value.</p>
+<p>Provide either direct values or callables that accept a simulation configuration and return a value in <code>user_dict</code>.
+The parameter names should be in lowercase and correspond to the fields in Cycles simulation control files. If a
+field is not provided, it will be filled with a default value. If a field's value is a callable, it will be called
+with the <code>simulation_dict</code> to resolve its value.</p>
 <p>The following fields are required in <code>user_dict</code>:</p>
 <ul>
 <li><code>simulation_start_year</code></li>
@@ -172,7 +172,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -181,7 +181,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
             </li>
             <li>
               <b><code>user_dict</code></b>
-                  (<code><span title="dict">dict</span></code>)
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>Values or callables for control fields.</p>
@@ -234,14 +234,14 @@ the <code>simulation_dict</code> to resolve its value.</p>
 
 
 <h2 id="cycles.cycles_tools.read_control_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_control_file</span><span class="p">(</span><span class="n">control</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_control_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
 
 </h2>
 
 
     <div class="doc doc-contents ">
 
-        <p>Parse a Cycles control file into a ControlConfig instance.</p>
+        <p>Parse a Cycles control file into a <code>ControlConfig</code> dataclass instance.</p>
 
 
 <table class="field-list">
@@ -255,7 +255,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>control</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -299,7 +299,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
 
 
 <h2 id="cycles.cycles_tools.generate_nudge_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_nudge_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">user_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">simulation_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_nudge_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">user_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">calibration_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -307,10 +307,10 @@ the <code>simulation_dict</code> to resolve its value.</p>
     <div class="doc doc-contents ">
 
         <p>Write a Cycles nudge file from user-provided values.</p>
-<p>Provide either direct values or callables that accept a simulation row and return a value in <code>user_dict</code>. The
-parameter names should be in lowercase and correspond to the fields in Cycles nudge (calibration) files. If a field
-is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
-the <code>simulation_dict</code> to resolve its value.</p>
+<p>Provide either direct values or callables that accept a calibration configuration and return a value in <code>user_dict</code>.
+The parameter names should be in lowercase and correspond to the fields in Cycles nudge (calibration) files. If a
+field is not provided, it will be filled with a default value. If a field's value is a callable, it will be called
+with the <code>calibration_dict</code> to resolve its value.</p>
 <p>The default values for all calibration multipliers are <code>1.0</code>, and the default values for <code>kd_no3</code> and <code>kd_nh4</code> are
 <code>0.0</code> and <code>5.6</code>, respectively.</p>
 
@@ -326,7 +326,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -335,14 +335,14 @@ the <code>simulation_dict</code> to resolve its value.</p>
             </li>
             <li>
               <b><code>user_dict</code></b>
-                  (<code><span title="dict">dict</span></code>)
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>)
               –
               <div class="doc-md-description">
                 <p>Values or callables for nudge parameters.</p>
               </div>
             </li>
             <li>
-              <b><code>simulation_dict</code></b>
+              <b><code>calibration_dict</code></b>
                   (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | None</code>, default:
                       <code>None</code>
 )
@@ -365,7 +365,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
 
 
 <h2 id="cycles.cycles_tools.read_operation_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_operation_file</span><span class="p">(</span><span class="n">operation</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_operation_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -386,7 +386,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>operation</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -410,7 +410,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="list">list</span></code>
+                  <code><span title="list">list</span>[<span title="cycles.cycles_tools.operation_file.Operation">Operation</span>]</code>
               –
               <div class="doc-md-description">
                 <p>A list of operation dataclass instances.</p>
@@ -430,7 +430,7 @@ the <code>simulation_dict</code> to resolve its value.</p>
 
 
 <h2 id="cycles.cycles_tools.generate_operation_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_operation_file</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_operation_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">operations</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h2>
 
@@ -453,8 +453,8 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>path</code></b>
-                  (<code><span title="pathlib.Path">Path</span></code>)
+              <b><code>file_path</code></b>
+                  (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span></code>)
               –
               <div class="doc-md-description">
                 <p>Destination operation file path.</p>
@@ -492,7 +492,7 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
 
 
 <h2 id="cycles.cycles_tools.read_output" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_output</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">output_type</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_output</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">output_type</span><span class="p">)</span></code>
 
 </h2>
 
@@ -513,7 +513,7 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>path</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -565,7 +565,7 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
 
 
 <h2 id="cycles.cycles_tools.generate_soil_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">DEFAULT_PROFILE</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">MAPPABLE_PARAMETERS</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">DEFAULT_PROFILE</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">MAPPABLE_PARAMETERS</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h2>
 
@@ -574,7 +574,7 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
 
         <p>Generate a Cycles-formatted soil file from a list of soil layers.</p>
 <p>The input profile is first mapped to the target layering scheme, then rendered to Cycles soil-file format and
-written to <code>fn</code>.</p>
+written to <code>file_path</code>.</p>
 
 
 <table class="field-list">
@@ -588,7 +588,7 @@ written to <code>fn</code>.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -610,7 +610,7 @@ written to <code>fn</code>.</p>
 )
               –
               <div class="doc-md-description">
-                <p>Target layer structure to map onto.</p>
+                <p>Target layer structure to map onto. The <code>DEFAULT_PROFILE</code> has 12 layers from 0-2 m depth.</p>
               </div>
             </li>
             <li>
@@ -620,7 +620,8 @@ written to <code>fn</code>.</p>
 )
               –
               <div class="doc-md-description">
-                <p>Soil parameters to map from measured profile.</p>
+                <p>Soil parameters to map from measured profile. If not provided, the minimum set of parameters required for Cycles simulation will be mapped, including:
+        <code>clay</code>, <code>sand</code>, <code>soc</code>, <code>bulk_density</code>, <code>coarse_fragments</code>, <code>pH</code>.</p>
               </div>
             </li>
             <li>
@@ -733,7 +734,7 @@ written to <code>fn</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.read_soil_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_soil_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
 
 </h2>
 
@@ -754,7 +755,7 @@ written to <code>fn</code>.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -783,8 +784,7 @@ written to <code>fn</code>.</p>
               <div class="doc-md-description">
                 <p>A tuple containing:
 - List of parsed <code>SoilLayer</code> objects.
-- Header metadata dictionary with keys such as
-  <code>curve_number</code> and <code>slope</code>.</p>
+- Header metadata dictionary with keys such as <code>curve_number</code> and <code>slope</code>.</p>
               </div>
             </li>
         </ul>
@@ -801,7 +801,7 @@ written to <code>fn</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.read_weather_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">read_weather_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">read_weather_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">start_year</span><span class="o">=-</span><span class="mi">9999</span><span class="p">,</span> <span class="n">end_year</span><span class="o">=</span><span class="mi">9999</span><span class="p">,</span> <span class="n">subdaily</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
 
 </h2>
 
@@ -822,7 +822,7 @@ written to <code>fn</code>.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
               –
               <div class="doc-md-description">
@@ -954,7 +954,7 @@ written to <code>fn</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.plot_yield" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_yield</span><span class="p">(</span><span class="n">harvest_df</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_yield</span><span class="p">(</span><span class="n">harvest_df</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1002,6 +1002,13 @@ written to <code>fn</code>.</p>
                 <p>Optional global font size override.</p>
               </div>
             </li>
+            <li>
+              <b><code>**kwargs</code></b>
+              –
+              <div class="doc-md-description">
+                <p>Options to pass to matplotlib plotting method.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1039,7 +1046,7 @@ written to <code>fn</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.plot_operations" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_operations</span><span class="p">(</span><span class="n">operations</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_operations</span><span class="p">(</span><span class="n">operations</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1095,6 +1102,13 @@ written to <code>fn</code>.</p>
                 <p>Optional global font size override.</p>
               </div>
             </li>
+            <li>
+              <b><code>**kwargs</code></b>
+              –
+              <div class="doc-md-description">
+                <p>Additional options passed to matplotlib plotting method.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -1132,7 +1146,7 @@ written to <code>fn</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.plot_map" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_map</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cb_axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;neither&#39;</span><span class="p">,</span> <span class="n">cb_orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_map</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cb_axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;neither&#39;</span><span class="p">,</span> <span class="n">cb_orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
 
 </h2>
 

@@ -54,6 +54,10 @@
                   <li class="toctree-l1 current"><a class="reference internal current" href="#">Cycles Runner class</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#cycles.CyclesRunner.run">run</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#cycles.CyclesRunner.run--example">Example:</a>
+    </li>
+        </ul>
     </li>
     </ul>
                   </li>
@@ -165,7 +169,7 @@ templates and parameter dictionaries.  Consolidates results into a summary CSV f
 
 
 <h3 id="cycles.CyclesRunner.run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">control_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="s1">&#39;summary.csv&#39;</span><span class="p">,</span> <span class="n">operation_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operation_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calibration_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">rm_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rm_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rm_steady_state_soil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silence</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">user_comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">simulations</span><span class="p">,</span> <span class="n">control_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">summary</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operation_template</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operation_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">calibration_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">rm_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rm_output</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rm_steady_state_soil</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">silence</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">user_comment</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h3>
 
@@ -190,7 +194,9 @@ templates and parameter dictionaries.  Consolidates results into a summary CSV f
                   (<code><span title="cycles.cycles_runner.SimulationConfig">SimulationConfig</span></code>)
               –
               <div class="doc-md-description">
-                <p>Simulation rows as list of dicts or a DataFrame.</p>
+                <p>Simulation configurations as list of dicts or a DataFrame. Each dict or DataFrame row should be
+corresponding to a single simulation and contain values to support the control, operation, and
+calibration dictionaries.</p>
               </div>
             </li>
             <li>
@@ -198,17 +204,18 @@ templates and parameter dictionaries.  Consolidates results into a summary CSV f
                   (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>)
               –
               <div class="doc-md-description">
-                <p>Control-file values or callables evaluated per row.</p>
+                <p>Control-file values or callables evaluated per simulation.</p>
               </div>
             </li>
             <li>
               <b><code>summary</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;summary.csv&#39;</code>
+                  (<code><span title="str">str</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>] | None</code>, default:
+                      <code>None</code>
 )
               –
               <div class="doc-md-description">
-                <p>Summary CSV name written under summary directory.</p>
+                <p>Summary CSV name for the summary harvest file written under summary directory. If a dictionary is provided, the keys are output file types and the values are
+summary CSV names. If None, only the harvest summary is written into <code>summary/summary.csv</code>.</p>
               </div>
             </li>
             <li>
@@ -238,7 +245,7 @@ templates and parameter dictionaries.  Consolidates results into a summary CSV f
 )
               –
               <div class="doc-md-description">
-                <p>Nudge-file values or callables per row.</p>
+                <p>Nudge-file values or callables per simulation.</p>
               </div>
             </li>
             <li>
@@ -305,7 +312,81 @@ templates and parameter dictionaries.  Consolidates results into a summary CSV f
       </td>
     </tr>
   </tbody>
-</table>
+</table>        <p>The following fields are required in <code>control_dict</code>:</p>
+<ul>
+<li><code>simulation_name</code></li>
+<li><code>simulation_start_year</code></li>
+<li><code>simulation_end_year</code></li>
+<li><code>rotation_size</code></li>
+<li><code>operation_file</code></li>
+<li><code>soil_file</code></li>
+<li><code>weather_file</code></li>
+</ul>
+<p>The default values for other fields are:</p>
+<ul>
+<li><code>crop_file</code>: <code>GenericCrops.crop</code></li>
+<li><code>reinit_file</code>: <code>N/A</code></li>
+<li><code>soil_layers</code>: inferred from the soil file (if not provided)</li>
+<li><code>co2_level</code>: <code>-999</code></li>
+<li><code>use_reinitialization</code>: <code>0</code></li>
+<li><code>adjusted_yields</code>: <code>0</code></li>
+<li><code>hydrology_option</code>: <code>1</code></li>
+<li><code>automatic_nitrogen</code>: <code>0</code></li>
+<li><code>automatic_phosphorus</code>: <code>0</code></li>
+<li><code>automatic_sulfur</code>: <code>0</code></li>
+</ul>
+<p>All output control fields default to <code>0</code>.</p>
+<p>Note that <code>simulation_name</code> is used to generate the control file name for each simulation. The <code>simulation_name</code>
+should be unique for each simulation in the batch.</p>
+<h6 id="cycles.CyclesRunner.run--example">Example:</h6>
+<p>To run a batch simulation of continuous corn in different counties of Iowa, you can use the following code snippet:</p>
+<pre><code class="language-python">from cycles import CyclesRunner
+
+runner = CyclesRunner(executable='/path/to/Cycles')
+
+simulations: list[dict] = [
+    'GID': 'USA.16.1_1', 'weather': 'NLDAS_41.438Nx94.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.1_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
+    'GID': 'USA.16.2_1', 'weather': 'NLDAS_40.938Nx94.688W', 'soil': 'maize_rainfed_SoilGrids_USA.16.2_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
+    'GID': 'USA.16.3_1', 'weather': 'NLDAS_43.188Nx91.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.3_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 90,
+]
+</code></pre>
+<p>The control dictionary should work with the simulation configurations to generate the appropriate control files for each simulation:</p>
+<pre><code class="language-python">control_dict: dict = {
+    'simulation_name': lambda x: x['GID'],
+    'simulation_start_year': 1981,
+    'simulation_end_year': 2016,
+    'rotation_size': 1,
+    'crop_file': 'GenericCrops.crop',
+    'operation_file': lambda x: f'{x[&quot;GID&quot;]}.operation',
+    'soil_file': lambda x: f'path/to/{x[&quot;soil&quot;]}',
+    'weather_file': lambda x: f'path/to/{x[&quot;gridMET_weather&quot;]}.weather',
+}
+</code></pre>
+<p>The operation dictionary should work with a template operation file to generate the appropriate operation files for each simulation. In the template operation file, use
+placeholders for planting <code>DOY</code>, <code>END_DOY</code>, and <code>CROP</code> like below:</p>
+<pre><code>DOY         $PD1
+END_DOY     $PD2
+CROP        $CROP
+</code></pre>
+<p>Then define the operation dictionary to substitute the placeholders with values from the simulation configurations:</p>
+<pre><code class="language-python">operation_dict: dict = {
+    'PD1': lambda x: x['plant_start'],
+    'PD2': lambda x: x['plant_end'],
+    'CROP': lambda x: f'CornRM.{x[&quot;relative_maturity_group&quot;]}',
+}
+</code></pre>
+<p>Finally, run the simulations with the following code snippet:</p>
+<pre><code class="language-python">cycles_runner.run(
+    simulations=simulations,
+    control_dict=control_dict,
+    operation_template='path/to/template.operation',
+    operation_dict=operation_dict,
+    summary='summary.csv',
+    options='-s',
+)
+</code></pre>
+<p>The <code>-s</code> option enables spin-up for the simulations. The results will be consolidated into <code>summary/summary.csv</code>.</p>
+
 
     </div>
 

@@ -165,7 +165,7 @@ loads the control file upon initialization.</p>
 )
               –
               <div class="doc-md-description">
-                <p>Optional absolute path to the Cycles executable binary.</p>
+                <p>Optional absolute path to the Cycles executable binary. This is required to run simulations using the <code>run</code> method.</p>
               </div>
             </li>
         </ul>
@@ -301,7 +301,7 @@ loads the control file upon initialization.</p>
     <div class="doc doc-contents ">
 
         <p>Run the Cycles executable for this simulation.</p>
-<p>To use the <code>run</code> method, the <code>executable</code> attribute must be set to the absolute path of the Cycles binary. The
+<p>To use the <code>run</code> method, the <code>executable</code> attribute must be set to the path of the Cycles executable. The
 <code>options</code> string is passed directly to the command line when invoking Cycles, allowing you to specify any
 command-line options supported by Cycles (e.g., <code>-s</code> for spin-up, etc.).</p>
 
@@ -379,6 +379,8 @@ command-line options supported by Cycles (e.g., <code>-s</code> for spin-up, etc
     <div class="doc doc-contents ">
 
         <p>Read one or more output tables into memory.</p>
+<p>When reading multiple output tables, the <code>output_types</code> argument can be a list or tuple of table names. Each
+table is read into a pandas DataFrame and stored in the <code>output</code> dictionary with its corresponding units.</p>
 
 
 <table class="field-list">
@@ -565,7 +567,7 @@ command-line options supported by Cycles (e.g., <code>-s</code> for spin-up, etc
 
 
 <h3 id="cycles.Cycles.plot_yield" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_yield</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_yield</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
