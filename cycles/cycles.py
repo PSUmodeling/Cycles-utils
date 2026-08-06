@@ -32,7 +32,7 @@ class Cycles:
     Args:
         path: Path to the simulation directory (containing input/ and output/ subdirs).
         simulation: Name of the simulation (base name of control file without extension).
-        executable: Optional absolute path to the Cycles executable binary.
+        executable: Optional absolute path to the Cycles executable binary. This is required to run simulations using the `run` method.
 
     Attributes:
         path: Path to the simulation directory (containing input/ and output/ subdirs).
@@ -70,7 +70,7 @@ class Cycles:
     def run(self, options: str, silence: bool=False) -> tuple[int, str]:
         """Run the Cycles executable for this simulation.
 
-        To use the `run` method, the `executable` attribute must be set to the absolute path of the Cycles binary. The
+        To use the `run` method, the `executable` attribute must be set to the path of the Cycles executable. The
         `options` string is passed directly to the command line when invoking Cycles, allowing you to specify any
         command-line options supported by Cycles (e.g., `-s` for spin-up, etc.).
 
@@ -97,6 +97,9 @@ class Cycles:
 
     def read_output(self, output_types: Collection) -> None:
         """Read one or more output tables into memory.
+
+        When reading multiple output tables, the `output_types` argument can be a list or tuple of table names. Each
+        table is read into a pandas DataFrame and stored in the `output` dictionary with its corresponding units.
 
         Args:
             output_types: Output table name or collection of names.

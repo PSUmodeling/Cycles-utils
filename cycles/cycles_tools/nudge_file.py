@@ -33,8 +33,8 @@ class NudgeConfig:
     parameter_values: ParameterValues
 
 
-def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None) -> NudgeConfig:
-    resolved = resolve_dict_values(user_dict, simulation_dict)
+def _build_nudge_config(user_dict: dict[str, Any], calibration_dict: dict[str, Any] | None) -> NudgeConfig:
+    resolved = resolve_dict_values(user_dict, calibration_dict)
 
     return NudgeConfig(
         calibration_multipliers=CalibrationMultipliers(**extract(CalibrationMultipliers, resolved)),
@@ -42,22 +42,22 @@ def _build_nudge_config(user_dict: dict, simulation_dict: dict[str, Any] | None)
     )
 
 
-def generate_nudge_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None=None) -> None:
+def generate_nudge_file(file_path: str | Path, user_dict: dict[str, Any], *, calibration_dict: dict[str, Any] | None=None) -> None:
     """Write a Cycles nudge file from user-provided values.
 
-    Provide either direct values or callables that accept a simulation row and return a value in `user_dict`. The
-    parameter names should be in lowercase and correspond to the fields in Cycles nudge (calibration) files. If a field
-    is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
-    the `simulation_dict` to resolve its value.
+    Provide either direct values or callables that accept a calibration configuration and return a value in `user_dict`.
+    The parameter names should be in lowercase and correspond to the fields in Cycles nudge (calibration) files. If a
+    field is not provided, it will be filled with a default value. If a field's value is a callable, it will be called
+    with the `calibration_dict` to resolve its value.
 
     The default values for all calibration multipliers are `1.0`, and the default values for `kd_no3` and `kd_nh4` are
     `0.0` and `5.6`, respectively.
 
     Args:
-        fn: Destination nudge file path.
+        file_path: Destination nudge file path.
         user_dict: Values or callables for nudge parameters.
-        simulation_dict: Optional simulation row for callable resolution.
+        calibration_dict: Optional simulation row for callable resolution.
     """
-    fn = Path(fn)
-    config = _build_nudge_config(user_dict, simulation_dict)
-    write_file(fn, config)
+    file_path = Path(file_path)
+    config = _build_nudge_config(user_dict, calibration_dict)
+    write_file(file_path, config)

@@ -55,23 +55,120 @@ class CyclesRunner:
 
 
     def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
-        summary: str | dict[str, str] | None=None, operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None, calibration_dict: dict[str, Any] | None=None,
+        summary: str | dict[str, str] | None=None,
+        operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
+        calibration_dict: dict[str, Any] | None=None,
         options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='') -> None:
         """Execute a batch of simulations and write a consolidated summary.
 
         Args:
-            simulations: Simulation rows as list of dicts or a DataFrame.
-            control_dict: Control-file values or callables evaluated per row.
-            summary: Summary CSV name written under summary directory.
+            simulations: Simulation configurations as list of dicts or a DataFrame. Each dict or DataFrame row should be
+                corresponding to a single simulation and contain values to support the control, operation, and
+                calibration dictionaries.
+            control_dict: Control-file values or callables evaluated per simulation.
+            summary: Summary CSV name for the summary harvest file written under summary directory. If a dictionary is provided, the keys are output file types and the values are
+                summary CSV names. If None, only the harvest summary is written into `summary/summary.csv`.
             operation_template: Template file for generated operation files.
             operation_dict: Substitutions used with operation template.
-            calibration_dict: Nudge-file values or callables per row.
+            calibration_dict: Nudge-file values or callables per simulation.
             options: Cycles command options.
             rm_input: Remove generated input files after each run.
             rm_output: Remove run output directory after each run.
             rm_steady_state_soil: Remove generated steady-state soil file.
             silence: If True, suppress simulation screen output.
             user_comment: Optional text prefixed to summary header comments.
+
+        The following fields are required in `control_dict`:
+
+        - `simulation_name`
+        - `simulation_start_year`
+        - `simulation_end_year`
+        - `rotation_size`
+        - `operation_file`
+        - `soil_file`
+        - `weather_file`
+
+        The default values for other fields are:
+
+        - `crop_file`: `GenericCrops.crop`
+        - `reinit_file`: `N/A`
+        - `soil_layers`: inferred from the soil file (if not provided)
+        - `co2_level`: `-999`
+        - `use_reinitialization`: `0`
+        - `adjusted_yields`: `0`
+        - `hydrology_option`: `1`
+        - `automatic_nitrogen`: `0`
+        - `automatic_phosphorus`: `0`
+        - `automatic_sulfur`: `0`
+
+        All output control fields default to `0`.
+
+        Note that `simulation_name` is used to generate the control file name for each simulation. The `simulation_name`
+        should be unique for each simulation in the batch.
+
+        #### Example:
+
+        To run a batch simulation of continuous corn in different counties of Iowa, you can use the following code snippet:
+        ```python
+        from cycles import CyclesRunner
+
+        runner = CyclesRunner(executable='/path/to/Cycles')
+
+        simulations: list[dict] = [
+            'GID': 'USA.16.1_1', 'weather': 'NLDAS_41.438Nx94.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.1_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
+            'GID': 'USA.16.2_1', 'weather': 'NLDAS_40.938Nx94.688W', 'soil': 'maize_rainfed_SoilGrids_USA.16.2_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
+            'GID': 'USA.16.3_1', 'weather': 'NLDAS_43.188Nx91.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.3_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 90,
+        ]
+        ```
+
+        The control dictionary should work with the simulation configurations to generate the appropriate control files for each simulation:
+
+        ```python
+        control_dict: dict = {
+            'simulation_name': lambda x: x['GID'],
+            'simulation_start_year': 1981,
+            'simulation_end_year': 2016,
+            'rotation_size': 1,
+            'crop_file': 'GenericCrops.crop',
+            'operation_file': lambda x: f'{x["GID"]}.operation',
+            'soil_file': lambda x: f'path/to/{x["soil"]}',
+            'weather_file': lambda x: f'path/to/{x["gridMET_weather"]}.weather',
+        }
+        ```
+
+        The operation dictionary should work with a template operation file to generate the appropriate operation files for each simulation. In the template operation file, use
+        placeholders for planting `DOY`, `END_DOY`, and `CROP` like below:
+
+        ```
+        DOY         $PD1
+        END_DOY     $PD2
+        CROP        $CROP
+        ```
+
+        Then define the operation dictionary to substitute the placeholders with values from the simulation configurations:
+
+        ```python
+        operation_dict: dict = {
+            'PD1': lambda x: x['plant_start'],
+            'PD2': lambda x: x['plant_end'],
+            'CROP': lambda x: f'CornRM.{x["relative_maturity_group"]}',
+        }
+        ```
+
+        Finally, run the simulations with the following code snippet:
+
+        ```python
+        cycles_runner.run(
+            simulations=simulations,
+            control_dict=control_dict,
+            operation_template='path/to/template.operation',
+            operation_dict=operation_dict,
+            summary='summary.csv',
+            options='-s',
+        )
+        ```
+
+        The `-s` option enables spin-up for the simulations. The results will be consolidated into `summary/summary.csv`.
         """
         if isinstance(simulations, pd.DataFrame):
             simulations = simulations.to_dict(orient='records')
@@ -85,6 +182,8 @@ class CyclesRunner:
             )
 
         operation_template = Path(operation_template) if operation_template is not None else None
+        if user_comment:
+            user_comment = f'# {user_comment.lstrip("# ").rstrip()}\n'
         comment = user_comment + _generate_comment(self.executable, options)
         first_run = True
 

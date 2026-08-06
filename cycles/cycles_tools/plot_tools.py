@@ -21,7 +21,7 @@ HARVEST_MARKERS: dict[str, str] = {
     'forage': 'o',
 }
 
-YIELD_UNIT_LABEL: str = 'Crop yield (Mg ha$^{-1}$)'
+YIELD_UNIT_LABEL: str = 'Crop yield (Mg/ha)'
 
 @dataclass
 class OperationType:
@@ -42,7 +42,6 @@ OPERATION_TYPES = {
 MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 MDOYS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
 
-
 def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
     colors = {}
     for crop in crops:
@@ -51,7 +50,7 @@ def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
     return colors
 
 
-def _plot_harvest_type(ax: Axes, df: pd.DataFrame, crop: str, harvest: str, marker: str, color: str) -> None:
+def _plot_harvest_type(ax: Axes, df: pd.DataFrame, crop: str, harvest: str, marker: str, color: str, **kwargs) -> None:
     sub = df[(df['crop'] == crop) & (df[f'{harvest}_yield'] > 0)]
     ax.plot(
         sub['date'], sub[f'{harvest}_yield'],
@@ -59,6 +58,7 @@ def _plot_harvest_type(ax: Axes, df: pd.DataFrame, crop: str, harvest: str, mark
         color=color,
         alpha=0.8,
         ms=8,
+        **kwargs,
     )
 
 
@@ -87,13 +87,14 @@ def _build_legend_handles(crops: list[str], crop_colors: dict[str, str]) -> list
     return marker_handles + crop_handles
 
 
-def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: dict | None=None, fontsize: int | None=None) -> Axes:
+def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: dict | None=None, fontsize: int | None=None, **kwargs) -> Axes:
     """Plot grain and forage yields by crop.
 
     Args:
         harvest_df: Harvest output DataFrame.
         ax: Optional axes to draw on.
         fontsize: Optional global font size override.
+        **kwargs: Options to pass to matplotlib plotting method.
 
     Returns:
         Axes containing the yield plot.
@@ -109,7 +110,7 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: d
 
     for crop in crops:
         for harvest, marker in HARVEST_MARKERS.items():
-            _plot_harvest_type(ax, harvest_df, crop, harvest, marker, crop_colors[crop])
+            _plot_harvest_type(ax, harvest_df, crop, harvest, marker, crop_colors[crop], **kwargs)
 
     ax.set_ylabel(YIELD_UNIT_LABEL)
     ax.set_axisbelow(True)
@@ -125,7 +126,7 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: d
     return ax
 
 
-def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None) -> np.ndarray:
+def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndarray | None=None, fontsize: int | None=None, **kwargs) -> np.ndarray:
     """Plot operations by day-of-year for each rotation year.
 
     Args:
@@ -133,6 +134,7 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
         rotation_size: Number of years in the rotation.
         axs: Optional axes object(s) for rendering.
         fontsize: Optional global font size override.
+        **kwargs: Additional options passed to matplotlib plotting method.
 
     Returns:
         Axes array used to render timelines.
@@ -158,9 +160,12 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
             axs[y].plot(
                 [op.doy if not op.relative_doy else op.resolved_doy for op in sub_list], [value.yloc] * len(sub_list),
                 'o',
-                label=value.title + ':\n' + '\n'.join(f'{op.doy if not op.relative_doy else op.resolved_doy}: {getattr(op, value.label)}' if value.label is not None else f'{op.doy}' for op in sub_list),
+                label=value.title + ':\n' + '\n'.join(
+                    f'{op.doy if not op.relative_doy else op.resolved_doy}: {getattr(op, value.label)}' if value.label is not None else f'{op.doy}' for op in sub_list
+                ),
                 color=value.color,
                 ms=10,
+                **kwargs,
             )
 
             if key == 'planting':

@@ -114,16 +114,16 @@ def _resolve_reference_doy(operations: list[Operation], relative_doy: int) -> in
     return planting.doy + relative_doy
 
 
-def read_operation_file(operation: str | Path) -> list:
+def read_operation_file(file_path: str | Path) -> list[Operation]:
     """Parse a Cycles operation file into operation objects.
 
     Args:
-        operation: Path to a Cycles operation file.
+        file_path: Path to a Cycles operation file.
 
     Returns:
         A list of operation dataclass instances.
     """
-    with open(Path(operation)) as f:
+    with open(Path(file_path)) as f:
         lines = f.read().splitlines()
 
     lines = iter([line for line in lines if not line.strip().startswith('#') and line.strip()])
@@ -208,14 +208,14 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None = None)
     return lines
 
 
-def generate_operation_file(path: Path, operations: list[Operation], *, desc: str='') -> None:
+def generate_operation_file(file_path: Path | str, operations: list[Operation], *, desc: str='') -> None:
     """Write a Cycles operation file from structured operation records.
 
     The optional description is written as the first line when provided. Each operation is serialized with
     to preserves Cycles field naming and relative day-of-year formatting.
 
     Args:
-        path: Destination operation file path.
+        file_path: Destination operation file path.
         operations: Ordered operation records to serialize.
         desc: Optional header or description line to place at the top of the file.
     """
@@ -224,4 +224,4 @@ def generate_operation_file(path: Path, operations: list[Operation], *, desc: st
         lines.append(desc)
     for op in operations:
         lines.extend(format_operation(op))
-    path.write_text('\n'.join(lines))
+    Path(file_path).write_text('\n'.join(lines))

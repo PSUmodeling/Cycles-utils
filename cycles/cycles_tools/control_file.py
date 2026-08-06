@@ -65,23 +65,23 @@ def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | 
     )
 
 
-def _get_soil_layers(fn: Path) -> int:
+def _get_soil_layers(file_path: Path) -> int:
     NUM_HEADER_LINES = 2
     try:
-        lines = [line for line in fn.read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
+        lines = [line for line in file_path.read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
         return len(lines) - NUM_HEADER_LINES - 1
     except FileNotFoundError:
-        warnings.warn(f"Soil file not found: {fn}")
+        warnings.warn(f"Soil file not found: {file_path}")
         return -999
 
 
-def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
+def generate_control_file(file_path: str | Path, user_dict: dict[str, Any], *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
     """Generate and write a Cycles control file.
 
-    Provide either direct values or callables that accept a simulation row and return a value in `user_dict`. The
-    parameter names should be in lowercase and correspond to the fields in Cycles simulation control files. If a field
-    is not provided, it will be filled with a default value. If a field's value is a callable, it will be called with
-    the `simulation_dict` to resolve its value.
+    Provide either direct values or callables that accept a simulation configuration and return a value in `user_dict`.
+    The parameter names should be in lowercase and correspond to the fields in Cycles simulation control files. If a
+    field is not provided, it will be filled with a default value. If a field's value is a callable, it will be called
+    with the `simulation_dict` to resolve its value.
 
     The following fields are required in `user_dict`:
 
@@ -108,30 +108,30 @@ def generate_control_file(fn: str | Path, user_dict: dict, *, simulation_dict: d
     All output control fields default to `0`.
 
     Args:
-        fn: Destination control file path.
+        file_path: Destination control file path.
         user_dict: Values or callables for control fields.
         simulation_dict: Optional simulation row for callable resolution.
 
     Returns:
         The generated control configuration.
     """
-    fn = Path(fn)
-    config = _build_control_config(user_dict, simulation_dict, fn.parent)
-    write_file(fn, config)
+    file_path = Path(file_path)
+    config = _build_control_config(user_dict, simulation_dict, file_path.parent)
+    write_file(file_path, config)
 
     return config
 
 
-def read_control_file(control: str | Path) -> ControlConfig:
-    """Parse a Cycles control file into a ControlConfig instance.
+def read_control_file(file_path: str | Path) -> ControlConfig:
+    """Parse a Cycles control file into a `ControlConfig` dataclass instance.
 
     Args:
-        control: Path to a Cycles control file path.
+        file_path: Path to a Cycles control file path.
 
     Returns:
         Control configuration.
     """
-    with open(Path(control)) as f:
+    with open(Path(file_path)) as f:
         lines = f.read().splitlines()
     lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])
 

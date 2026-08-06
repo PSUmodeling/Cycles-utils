@@ -14,21 +14,21 @@ def _parse_units(lines: list[str], columns) -> dict[str, str]:
     return dict(zip(columns, [u.strip() for u in unit_line.split(',')]))
 
 
-def read_output(path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[str, str]]:
+def read_output(file_path: str | Path, output_type: str) -> tuple[pd.DataFrame, dict[str, str]]:
     """Read one Cycles output file and associated unit strings.
 
     Args:
-        path: Directory containing output CSV files.
-        output_type: Output file type, such as ``harvest``.
+        file_path: Directory containing output CSV files.
+        output_type: Output file type, such as `harvest`.
 
     Returns:
         Parsed DataFrame and a column-to-unit mapping.
     """
-    fn = Path(path) / f'{output_type}.csv'
+    fn = Path(file_path) / f'{output_type}.csv'
     text = fn.read_text()
     lines = text.splitlines()
 
-    df = pd.read_csv(io.StringIO(text), comment='#', na_values=-999).copy()
+    df = pd.read_csv(io.StringIO(text), comment='#', na_values='-999').copy()
 
     for col in DATE_COLUMNS & set(df.columns):
         df[col] = pd.to_datetime(df[col])

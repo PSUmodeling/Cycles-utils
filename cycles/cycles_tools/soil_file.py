@@ -220,19 +220,20 @@ def _map_layers(profile: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFIL
     return [_map_layer(layer, profile, parameters) for layer in trimmed]
 
 
-def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
+def generate_soil_file(file_path: str | Path, profile: list[SoilLayer], *,
     target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
     desc: str='', slope: float | None=None, curve_number: float | None=None, hsg: str='') -> list[SoilLayer]:
     """Generate a Cycles-formatted soil file from a list of soil layers.
 
     The input profile is first mapped to the target layering scheme, then rendered to Cycles soil-file format and
-    written to ``fn``.
+    written to `file_path`.
 
     Args:
-        fn: Output soil file path.
+        file_path: Output soil file path.
         profile: Soil profile layers in depth order.
-        target: Target layer structure to map onto.
-        parameters: Soil parameters to map from measured profile.
+        target: Target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
+        parameters: Soil parameters to map from measured profile. If not provided, the minimum set of parameters required for Cycles simulation will be mapped, including:
+                    `clay`, `sand`, `soc`, `bulk_density`, `coarse_fragments`, `pH`.
         soil_depth: Optional maximum depth (m) to include in mapping.
         desc: Optional description/comment line written at file top.
         slope: Optional slope value written to the header.
@@ -243,28 +244,27 @@ def generate_soil_file(fn: str | Path, profile: list[SoilLayer], *,
         The mapped soil layers written to the output file.
 
     Raises:
-        ValueError: If both ``curve_number`` and ``hsg`` are provided.
+        ValueError: If both `curve_number` and `hsg` are provided.
     """
     if curve_number is not None and hsg:
         raise ValueError("Only one of curve_number and hsg can be provided.")
     layers = _map_layers(profile, target, parameters, soil_depth)
-    Path(fn).write_text('\n'.join(_render_soil_file(layers, desc, slope, curve_number, hsg)) + '\n')
+    Path(file_path).write_text('\n'.join(_render_soil_file(layers, desc, slope, curve_number, hsg)) + '\n')
     return layers
 
 
-def read_soil_file(fn: str | Path) -> tuple[list[SoilLayer], dict]:
+def read_soil_file(file_path: str | Path) -> tuple[list[SoilLayer], dict]:
     """Read a Cycles soil file into structured objects.
 
     Args:
-        fn: Soil file path to read.
+        file_path: Soil file path to read.
 
     Returns:
         A tuple containing:
-            - List of parsed ``SoilLayer`` objects.
-            - Header metadata dictionary with keys such as
-              ``curve_number`` and ``slope``.
+            - List of parsed `SoilLayer` objects.
+            - Header metadata dictionary with keys such as `curve_number` and `slope`.
     """
-    lines = [line for line in Path(fn).read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
+    lines = [line for line in Path(file_path).read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
 
     meta, data_lines = _parse_header(lines)
     layers = _parse_layers(data_lines)
