@@ -993,6 +993,16 @@ written to <code>file_path</code>.</p>
               </div>
             </li>
             <li>
+              <b><code>crop_colors</code></b>
+                  (<code><span title="dict">dict</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional mapping from crop names to plot colors. If omitted, colors are assigned from the axes' color cycle.</p>
+              </div>
+            </li>
+            <li>
               <b><code>fontsize</code></b>
                   (<code><span title="int">int</span> | None</code>, default:
                       <code>None</code>
@@ -1006,7 +1016,7 @@ written to <code>file_path</code>.</p>
               <b><code>**kwargs</code></b>
               –
               <div class="doc-md-description">
-                <p>Options to pass to matplotlib plotting method.</p>
+                <p>Options to pass to the matplotlib plotting method.</p>
               </div>
             </li>
         </ul>
@@ -1349,7 +1359,7 @@ written to <code>file_path</code>.</p>
 
 
 <h2 id="cycles.cycles_tools.plot_satellite_map" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_satellite_map</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_pixels</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">plot_satellite_map</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_pixels</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1370,19 +1380,21 @@ written to <code>file_path</code>.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fig</code></b>
-                  (<code><span title="matplotlib.figure.Figure">Figure</span></code>)
+              <b><code>bound</code></b>
+                  (<code><span title="cycles.cycles_tools.plot_tools.MapExtent">MapExtent</span></code>)
               –
               <div class="doc-md-description">
-                <p>Matplotlib figure used to create the map axes.</p>
+                <p>Geographic bounds as <code>(west, east, south, north)</code> in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.</p>
               </div>
             </li>
             <li>
-              <b><code>extent</code></b>
-                  (<code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>]</code>)
+              <b><code>figsize</code></b>
+                  (<code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>] | None</code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
-                <p>Geographic bounds as <code>(west, east, south, north)</code> in degrees.</p>
+                <p>Optional figure size passed to <code>matplotlib.pyplot.figure</code>.</p>
               </div>
             </li>
             <li>
@@ -1397,7 +1409,7 @@ written to <code>file_path</code>.</p>
             </li>
             <li>
               <b><code>ax</code></b>
-                  (<code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>] | None</code>, default:
+                  (<code><span title="collections.abc.Sequence">Sequence</span>[<span title="float">float</span>] | None</code>, default:
                       <code>None</code>
 )
               –

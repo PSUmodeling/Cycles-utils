@@ -145,7 +145,7 @@
 
 
 <h3 id="cycles.ssurgo.Ssurgo" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">Ssurgo</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">lat_lon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+              <code class="highlight language-python"><span class="n">Ssurgo</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lat_lon</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">boundary</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
@@ -183,10 +183,12 @@ that contains the point is selected.</p>
             </li>
             <li>
               <b><code>state</code></b>
-                  (<code><span title="str">str</span></code>)
+                  (<code><span title="str">str</span> | None</code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
-                <p>State identifier</p>
+                <p>Optional state identifier. If omitted, it is inferred from the boundary.</p>
               </div>
             </li>
             <li>
@@ -196,17 +198,17 @@ that contains the point is selected.</p>
 )
               –
               <div class="doc-md-description">
-                <p>Optional latitude/longitude for point-based spatial filtering.</p>
+                <p>Optional latitude/longitude for point-based spatial filtering. The tuple is ordered as (latitude, longitude).</p>
               </div>
             </li>
             <li>
               <b><code>boundary</code></b>
-                  (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span> | None</code>, default:
+                  (<code><span title="cycles.ssurgo.ssurgo.FieldBoundary">FieldBoundary</span> | None</code>, default:
                       <code>None</code>
 )
               –
               <div class="doc-md-description">
-                <p>Optional boundary GeoDataFrame for polygon-based filtering.</p>
+                <p>Optional boundary GeoDataFrame or path to a supported geospatial file for polygon-based filtering.</p>
               </div>
             </li>
         </ul>
@@ -250,6 +252,14 @@ that contains the point is selected.</p>
               </div>
             </li>
             <li>
+              <b><code>mapunits</code></b>
+                  (<code><span title="cycles.ssurgo.ssurgo.MapUnitGeoDataFrame">MapUnitGeoDataFrame</span> | <span title="pandas.DataFrame">DataFrame</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Map-unit GeoDataFrame or DataFrame, filtered by location or boundary if provided.</p>
+              </div>
+            </li>
+            <li>
               <b><code>grouped_mapunits</code></b>
                   (<code><span title="cycles.ssurgo.ssurgo.MapUnitGeoDataFrame">MapUnitGeoDataFrame</span> | None</code>)
               –
@@ -263,6 +273,22 @@ that contains the point is selected.</p>
               –
               <div class="doc-md-description">
                 <p>Currently selected map-unit key (int), or None if not yet selected.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>muname</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Map-unit name for the selected map unit.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>musym</code></b>
+                  (<code><span title="str">str</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Map-unit symbol for the selected map unit.</p>
               </div>
             </li>
             <li>
@@ -323,7 +349,7 @@ that contains the point is selected.</p>
                   <code><span title="ValueError">ValueError</span></code>
               –
               <div class="doc-md-description">
-                <p>If both <code>lat_lon</code> and <code>boundary</code> are provided.</p>
+                <p>If neither <code>state</code> nor a boundary is provided, or if both <code>lat_lon</code> and <code>boundary</code> are provided.</p>
               </div>
             </li>
         </ul>
@@ -632,7 +658,7 @@ that contains the point is selected.</p>
 
 
 <h4 id="cycles.ssurgo.Ssurgo.generate_soil_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mukey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">mukey</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h4>
 
@@ -653,7 +679,7 @@ that contains the point is selected.</p>
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>fn</code></b>
+              <b><code>file_path</code></b>
                   (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span></code>)
               –
               <div class="doc-md-description">

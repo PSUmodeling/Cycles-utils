@@ -114,7 +114,7 @@
 
 
 <h2 id="cycles.Cycles" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">Cycles</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">simulation</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Output</span><span class="p">](),</span> <span class="n">control</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">operations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">soil_profile</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weather</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">Cycles</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
@@ -577,6 +577,75 @@ table is read into a pandas DataFrame and stored in the <code>output</code> dict
         <p>Plot grain and forage yields from harvest output.</p>
 
 
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>ax</code></b>
+                  (<code><span title="matplotlib.axes.Axes">Axes</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional axes to draw on.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>crop_colors</code></b>
+                  (<code><span title="dict">dict</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional mapping from crop names to plot colors.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>fontsize</code></b>
+                  (<code><span title="int">int</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional global font size override.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="matplotlib.axes.Axes">Axes</span></code>
+              –
+              <div class="doc-md-description">
+                <p>Axes containing the yield plot.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
     </div>
 
 </div>
@@ -606,13 +675,6 @@ table is read into a pandas DataFrame and stored in the <code>output</code> dict
       <td class="field-body">
         <ul class="first simple">
             <li>
-              <b><code>rotation_size</code></b>
-              –
-              <div class="doc-md-description">
-                <p>Number of years in the plotted rotation.</p>
-              </div>
-            </li>
-            <li>
               <b><code>axs</code></b>
                   (<code><span title="matplotlib.axes.Axes">Axes</span> | <span title="numpy.ndarray">ndarray</span> | None</code>, default:
                       <code>None</code>
@@ -629,7 +691,7 @@ table is read into a pandas DataFrame and stored in the <code>output</code> dict
 )
               –
               <div class="doc-md-description">
-                <p>Global matplotlib font size override.</p>
+                <p>Optional global matplotlib font size override.</p>
               </div>
             </li>
         </ul>
