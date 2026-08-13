@@ -11,6 +11,7 @@ from pathlib import Path
 from shapely.geometry import Point
 from cycles.cycles_tools import generate_soil_file as _generate_soil_file
 from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS
+from cycles.cycles_tools import read_geospatial_file
 
 NAD83: str = 'epsg:5070'    # NAD83 / Conus Albers, CRS of SSURGO
 
@@ -68,7 +69,7 @@ SSURGO_PARAMETERS: dict[str, SsurgoParameter] = {
 }
 
 LatLon = tuple[float, float]
-
+FieldBoundary = gpd.GeoDataFrame | str | Path
 
 class MapUnitGeoDataFrame(gpd.GeoDataFrame):
     def plot(self, **kwargs) -> Axes:
@@ -117,7 +118,7 @@ class Ssurgo:
         ValueError: If both ``lat_lon`` and ``boundary`` are provided.
     """
 
-    def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: gpd.GeoDataFrame | None=None) -> None:
+    def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
         _validate_geographic_input(lat_lon, boundary)
 
         self.state: str = state
@@ -144,6 +145,9 @@ class Ssurgo:
                 geometry=[Point(lat_lon[1], lat_lon[0])],
                 crs='epsg:4326',
             )
+        elif isinstance(boundary, (str, Path)):
+            boundary = read_geospatial_file(boundary)
+
         assert boundary is not None
         gdf = _read_mupolygon(path, state, boundary)
         self._mapunits = gdf.merge(luts['mapunit'].drop(columns='musym'), on='mukey', how='left')
@@ -266,12 +270,12 @@ class Ssurgo:
             ) for _, row in df.iterrows()]
 
 
-    def generate_soil_file(self, fn: Path | str, *,
+    def generate_soil_file(self, file_path: Path | str, *,
         mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, soil_depth: float | None=None) -> None:
         """Generate a Cycles soil file from SSURGO profile data.
 
         Args:
-            fn: Output soil file path.
+            file_path: Output soil file path.
             mukey: Optional map-unit key. If omitted, dominant MUKEY is used.
             desc: Optional custom header text for the output file.
             hsg: Optional hydrologic soil group; inferred from map unit if omitted.
@@ -294,7 +298,7 @@ class Ssurgo:
 
         profile = self.get_soil_profile(mukey=mukey)
         desc = desc if desc is not None else _build_desc(self._get_muname(mukey), self._get_musym(mukey), mukey, hsg)
-        _generate_soil_file(fn, profile, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
+        _generate_soil_file(file_path, profile, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
 
 
     def _ensure_mukey(self) -> int:
@@ -325,7 +329,7 @@ def _truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
     )
 
 
-def _validate_geographic_input(lat_lon: LatLon | None, boundary: gpd.GeoDataFrame | None) -> None:
+def _validate_geographic_input(lat_lon: LatLon | None, boundary: FieldBoundary | None) -> None:
     if lat_lon is not None and boundary is not None:
         raise ValueError("lat_lon and boundary are mutually exclusive — provide only one.")
 

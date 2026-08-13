@@ -19,7 +19,7 @@ setup(
     install_requires=['pandas>=1.2.4', 'geopandas>=0.9.0', 'numpy>=1.19.5', 'cartopy>=0.18.0', 'matplotlib>=3.4.2'],
     extras_require = {
         'soilgrids':  ['rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'shapely>=1.7.1'],
-        'gssurgo': ['shapely>=1.7.1'],
+        'gssurgo': ['shapely>=1.7.1', 'fiona>=1.8.20'],
         'weather': ['netCDF4>=1.5.7', 'tqdm>=4.60.0'],
     }
 )

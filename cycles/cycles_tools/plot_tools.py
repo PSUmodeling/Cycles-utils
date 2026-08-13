@@ -8,6 +8,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from ._base_file import read_geospatial_file
 from cartopy.mpl.geoaxes import GeoAxes
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -42,6 +43,8 @@ OPERATION_TYPES = {
 
 MONTHS = ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D']
 MDOYS = [1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335]
+
+MapExtent = Sequence[float] | gpd.GeoDataFrame | Polygon | str | Path
 
 def _assign_crop_colors(crops: list[str], ax: Axes) -> dict[str, str]:
     colors = {}
@@ -300,8 +303,21 @@ def _zoom_from_extent(extent, *, desired_pixels: int=1024) -> int:
     return round(max(math.log(desired_pixels / PIXELS_PER_TILE * 180 / dy) / math.log(2), math.log(desired_pixels / PIXELS_PER_TILE * 360 / dx) / math.log(2)))
 
 
-def plot_satellite_map(fig: Figure, extent: Sequence[float] | gpd.GeoDataFrame | Polygon, *,
-    alpha: float=1.0, ax: Sequence[float] | None=None, desired_pixels: int=1024, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
+def _get_extent_from_geometry(geometry: gpd.GeoDataFrame | Polygon) -> tuple[float, float, float, float]:
+    xmin, ymin, xmax, ymax = geometry.to_crs('epsg:4326').total_bounds if isinstance(geometry, gpd.GeoDataFrame) else geometry.bounds
+    xc = 0.5 * xmin + 0.5 * xmax
+    yc = 0.5 * ymin + 0.5 * ymax
+
+    return (
+        (xmin - xc) * 1.2 + xc,
+        (xmax - xc) * 1.2 + xc,
+        (ymin - yc) * 1.2 + yc,
+        (ymax - yc) * 1.2 + yc,
+    )
+
+
+def plot_satellite_map(bound: MapExtent, *,
+    figsize: tuple[float, float] | None=None, ax: Sequence[float] | None=None, desired_pixels: int=1024, alpha: float=1.0, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
     """Render a satellite basemap over a geographic extent.
 
     Args:
@@ -321,23 +337,24 @@ def plot_satellite_map(fig: Figure, extent: Sequence[float] | gpd.GeoDataFrame |
 
     google_satellite = cimgt.GoogleTiles(url=GOOGLE_URL) if style is None else cimgt.GoogleTiles(style=style)
 
+    if figsize is None:
+        fig = plt.figure()
+    else:
+        fig = plt.figure(figsize=figsize)
+
     if ax is None:
         ax = fig.add_subplot(1, 1, 1, projection=google_satellite.crs)  # type: ignore
     else:
         ax = fig.add_axes(ax, projection=google_satellite.crs)  # type: ignore
     assert isinstance(ax, GeoAxes)
 
-    if isinstance(extent, gpd.GeoDataFrame) or isinstance(extent, Polygon):
-        xmin, ymin, xmax, ymax = extent.to_crs('epsg:4326').total_bounds if isinstance(extent, gpd.GeoDataFrame) else extent.bounds
-        xc = 0.5 * xmin + 0.5 * xmax
-        yc = 0.5 * ymin + 0.5 * ymax
-
-        extent = [
-            (xmin - xc) * 1.2 + xc,
-            (xmax - xc) * 1.2 + xc,
-            (ymin - yc) * 1.2 + yc,
-            (ymax - yc) * 1.2 + yc,
-        ]
+    if isinstance(bound, (str, Path)):
+        gdf = read_geospatial_file(bound)
+        extent = _get_extent_from_geometry(gdf)
+    elif isinstance(bound, (gpd.GeoDataFrame, Polygon)):
+        extent = _get_extent_from_geometry(bound)
+    else:
+        extent = bound
 
     ax.set_extent(extent, crs=ccrs.PlateCarree())
     ax.add_image(google_satellite, _zoom_from_extent(extent, desired_pixels=desired_pixels), alpha=alpha)

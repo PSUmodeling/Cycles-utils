@@ -1,4 +1,7 @@
 from __future__ import annotations
+import fiona
+import geopandas as gpd
+import pandas as pd
 import types
 from dataclasses import fields
 from pathlib import Path
@@ -49,3 +52,24 @@ def unwrap_optional(t) -> type:
     if origin is Union or origin is types.UnionType or isinstance(t, types.UnionType):
         return next(arg for arg in t.__args__ if arg is not type(None))
     return t
+
+
+def read_geospatial_file(file_path: str | Path) -> gpd.GeoDataFrame:
+    file_path = Path(file_path)
+    ext = file_path.suffix.lstrip('.').lower()
+    match ext:
+        case 'shp':
+            return gpd.read_file(file_path)
+        case 'kml':
+            return _read_kml(file_path)
+        case _:
+            raise ValueError(f"Unsupported boundary format: '.{ext}'")
+
+
+def _read_kml(file_path: Path) -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame(
+        pd.concat(
+            [gpd.read_file(file_path, driver='KML', layer=layer) for layer in fiona.listlayers(file_path)],
+            ignore_index=True,
+        )
+    )
