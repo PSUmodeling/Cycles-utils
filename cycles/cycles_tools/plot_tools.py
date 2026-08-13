@@ -15,6 +15,7 @@ from matplotlib.axes import Axes
 from matplotlib.colors import Colormap
 from matplotlib.figure import Figure
 from pathlib import Path
+from shapely.geometry import Polygon
 
 HARVEST_MARKERS: dict[str, str] = {
     'grain': 'd',
@@ -299,8 +300,8 @@ def _zoom_from_extent(extent, *, desired_pixels: int=1024) -> int:
     return round(max(math.log(desired_pixels / PIXELS_PER_TILE * 180 / dy) / math.log(2), math.log(desired_pixels / PIXELS_PER_TILE * 360 / dx) / math.log(2)))
 
 
-def plot_satellite_map(fig: Figure, extent: tuple[float, float, float, float], *,
-    alpha: float=1.0, ax: tuple[float, float, float, float] | None=None, desired_pixels: int=1024, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
+def plot_satellite_map(fig: Figure, extent: Sequence[float] | gpd.GeoDataFrame | Polygon, *,
+    alpha: float=1.0, ax: Sequence[float] | None=None, desired_pixels: int=1024, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
     """Render a satellite basemap over a geographic extent.
 
     Args:
@@ -324,8 +325,20 @@ def plot_satellite_map(fig: Figure, extent: tuple[float, float, float, float], *
         ax = fig.add_subplot(1, 1, 1, projection=google_satellite.crs)  # type: ignore
     else:
         ax = fig.add_axes(ax, projection=google_satellite.crs)  # type: ignore
-
     assert isinstance(ax, GeoAxes)
+
+    if isinstance(extent, gpd.GeoDataFrame) or isinstance(extent, Polygon):
+        xmin, ymin, xmax, ymax = extent.to_crs('epsg:4326').total_bounds if isinstance(extent, gpd.GeoDataFrame) else extent.bounds
+        xc = 0.5 * xmin + 0.5 * xmax
+        yc = 0.5 * ymin + 0.5 * ymax
+
+        extent = [
+            (xmin - xc) * 1.2 + xc,
+            (xmax - xc) * 1.2 + xc,
+            (ymin - yc) * 1.2 + yc,
+            (ymax - yc) * 1.2 + yc,
+        ]
+
     ax.set_extent(extent, crs=ccrs.PlateCarree())
     ax.add_image(google_satellite, _zoom_from_extent(extent, desired_pixels=desired_pixels), alpha=alpha)
 
