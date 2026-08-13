@@ -97,7 +97,7 @@ class CyclesRotationBuilder:
     break-point, and iteratively builds a multi-year rotation. Integrates economic scoring with agronomic constraints
     (e.g., minimum planting interval, crop group penalties).
 
-    Attributes:
+    Args:
         simulation: Base simulation name for generated input/output directories.
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.

@@ -154,7 +154,16 @@ class Cycles:
 
 
     def plot_yield(self, *, ax: Axes | None=None, crop_colors: dict | None=None, fontsize: int | None=None) -> Axes:
-        """Plot grain and forage yields from harvest output."""
+        """Plot grain and forage yields from harvest output.
+
+        Args:
+            ax: Optional axes to draw on.
+            crop_colors: Optional mapping from crop names to plot colors.
+            fontsize: Optional global font size override.
+
+        Returns:
+            Axes containing the yield plot.
+        """
         if 'harvest' not in self.output:
             self.read_output('harvest')
 
@@ -165,9 +174,8 @@ class Cycles:
         """Plot operation timelines grouped by rotation year.
 
         Args:
-            rotation_size: Number of years in the plotted rotation.
             axs: Optional axes object(s) to draw on.
-            fontsize: Global matplotlib font size override.
+            fontsize: Optional global matplotlib font size override.
 
         Returns:
             The axes used for plotting.

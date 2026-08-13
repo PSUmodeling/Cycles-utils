@@ -102,16 +102,19 @@ class Ssurgo:
 
     Args:
         path: Directory containing SSURGO geodatabase and lookup CSV files.
-        state: State identifier
-        lat_lon: Optional latitude/longitude for point-based spatial filtering.
-        boundary: Optional boundary GeoDataFrame for polygon-based filtering.
+        state: Optional state identifier. If omitted, it is inferred from the boundary.
+        lat_lon: Optional latitude/longitude for point-based spatial filtering. The tuple is ordered as (latitude, longitude).
+        boundary: Optional boundary GeoDataFrame or path to a supported geospatial file for polygon-based filtering.
 
     Attributes:
         state: State identifier used in SSURGO file naming.
         components: DataFrame of soil component records from SSURGO lookup tables.
         horizons: DataFrame of soil horizon records from SSURGO lookup tables.
+        mapunits: Map-unit GeoDataFrame or DataFrame, filtered by location or boundary if provided.
         grouped_mapunits: Grouped and dissolved map-unit GeoDataFrame when boundary filtering is used.
         mukey: Currently selected map-unit key (int), or None if not yet selected.
+        muname: Map-unit name for the selected map unit.
+        musym: Map-unit symbol for the selected map unit.
         slope: Slope gradient (%) for the selected map unit, or None if not selected.
         hsg: Hydrologic soil group code for the selected map unit.
 
@@ -119,7 +122,7 @@ class Ssurgo:
         None.
 
     Raises:
-        ValueError: If both ``lat_lon`` and ``boundary`` are provided.
+        ValueError: If neither ``state`` nor a boundary is provided, or if both ``lat_lon`` and ``boundary`` are provided.
     """
 
     def __init__(self, path: str | Path, *, state: str | None=None, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
@@ -134,7 +137,7 @@ class Ssurgo:
         elif isinstance(boundary, (str, Path)):
             boundary = read_geospatial_file(boundary)
 
-        self.state: str = state if state is not None else _find_state_from_boundary(boundary)
+        self.state: str = state if state is not None else _find_state_from_boundary(boundary)   # type: ignore
         self._mapunits: gpd.GeoDataFrame | pd.DataFrame
         self.components: pd.DataFrame
         self.horizons: pd.DataFrame
@@ -329,6 +332,7 @@ class Ssurgo:
 def _find_state_from_boundary(boundary: gpd.GeoDataFrame) -> str:
     gdf = gpd.read_file(os.path.join(pt, '../data/cb_2018_us_state_20m.shp'))
     centroid = boundary.to_crs('+proj=cea').unary_union.centroid
+    assert gdf.crs is not None
     return gpd.tools.sjoin(gpd.GeoDataFrame({'geometry': [centroid]}, crs='+proj=cea').to_crs(gdf.crs), gdf, predicate='within', how='left')['STUSPS'].iloc[0]
 
 

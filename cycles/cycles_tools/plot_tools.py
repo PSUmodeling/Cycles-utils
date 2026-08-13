@@ -97,8 +97,9 @@ def plot_yield(harvest_df: pd.DataFrame, *, ax: Axes | None=None, crop_colors: d
     Args:
         harvest_df: Harvest output DataFrame.
         ax: Optional axes to draw on.
+        crop_colors: Optional mapping from crop names to plot colors. If omitted, colors are assigned from the axes' color cycle.
         fontsize: Optional global font size override.
-        **kwargs: Options to pass to matplotlib plotting method.
+        **kwargs: Options to pass to the matplotlib plotting method.
 
     Returns:
         Axes containing the yield plot.
@@ -321,8 +322,8 @@ def plot_satellite_map(bound: MapExtent, *,
     """Render a satellite basemap over a geographic extent.
 
     Args:
-        fig: Matplotlib figure used to create the map axes.
-        extent: Geographic bounds as ``(west, east, south, north)`` in degrees.
+        bound: Geographic bounds as ``(west, east, south, north)`` in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.
+        figsize: Optional figure size passed to ``matplotlib.pyplot.figure``.
         alpha: Basemap transparency where ``1.0`` is fully opaque.
         ax: Optional axes rectangle passed to ``Figure.add_axes``.  If omitted, a full-figure subplot is created.
         desired_pixels: Target figure resolution in pixels used to estimate tile zoom.
