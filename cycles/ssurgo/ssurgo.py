@@ -3,6 +3,7 @@ import geopandas as gpd
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import numpy as np
+import os
 import pandas as pd
 import shapely
 from dataclasses import dataclass
@@ -13,7 +14,10 @@ from cycles.cycles_tools import generate_soil_file as _generate_soil_file
 from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS
 from cycles.cycles_tools import read_geospatial_file
 
+pt = os.path.dirname(os.path.realpath(__file__))
+
 NAD83: str = 'epsg:5070'    # NAD83 / Conus Albers, CRS of SSURGO
+WGS84: str = 'epsg:4326'    # WGS84, CRS of lat/lon coordinates
 
 SSURGO_NON_SOIL_TYPES: frozenset[str] = frozenset({
     'Acidic rock land',
@@ -118,10 +122,19 @@ class Ssurgo:
         ValueError: If both ``lat_lon`` and ``boundary`` are provided.
     """
 
-    def __init__(self, path: str | Path, state: str, *, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
-        _validate_geographic_input(lat_lon, boundary)
+    def __init__(self, path: str | Path, *, state: str | None=None, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
+        _validate_geographic_input(state, lat_lon, boundary)
 
-        self.state: str = state
+        if lat_lon is not None:
+            boundary = gpd.GeoDataFrame(
+                {'name': ['point']},
+                geometry=[Point(lat_lon[1], lat_lon[0])],
+                crs=WGS84,
+            )
+        elif isinstance(boundary, (str, Path)):
+            boundary = read_geospatial_file(boundary)
+
+        self.state: str = state if state is not None else _find_state_from_boundary(boundary)
         self._mapunits: gpd.GeoDataFrame | pd.DataFrame
         self.components: pd.DataFrame
         self.horizons: pd.DataFrame
@@ -131,7 +144,7 @@ class Ssurgo:
         self.hsg: str = ''
 
         path = Path(path)
-        luts = _read_all_luts(path, state)
+        luts = _read_all_luts(path, self.state)
         self.components = luts['component']
         self.horizons = luts['horizon']
 
@@ -139,17 +152,8 @@ class Ssurgo:
             self._mapunits = luts['mapunit']
             return
 
-        if lat_lon is not None:
-            boundary = gpd.GeoDataFrame(
-                {'name': ['point']},
-                geometry=[Point(lat_lon[1], lat_lon[0])],
-                crs='epsg:4326',
-            )
-        elif isinstance(boundary, (str, Path)):
-            boundary = read_geospatial_file(boundary)
-
         assert boundary is not None
-        gdf = _read_mupolygon(path, state, boundary)
+        gdf = _read_mupolygon(path, self.state, boundary)
         self._mapunits = gdf.merge(luts['mapunit'].drop(columns='musym'), on='mukey', how='left')
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
         self.horizons = self.horizons[self.horizons['cokey'].isin(self.components['cokey'].unique())]
@@ -322,6 +326,12 @@ class Ssurgo:
         self.hsg = _dominant_hsg(gdf)   # type: ignore
 
 
+def _find_state_from_boundary(boundary: gpd.GeoDataFrame) -> str:
+    gdf = gpd.read_file(os.path.join(pt, '../data/cb_2018_us_state_20m.shp'))
+    centroid = boundary.to_crs('+proj=cea').unary_union.centroid
+    return gpd.tools.sjoin(gpd.GeoDataFrame({'geometry': [centroid]}, crs='+proj=cea').to_crs(gdf.crs), gdf, predicate='within', how='left')['STUSPS'].iloc[0]
+
+
 def _truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
     return colors.LinearSegmentedColormap.from_list(
         'trunc({n},{a:.2f},{b:.2f})'.format(n=cmap.name, a=minval, b=maxval),
@@ -329,7 +339,11 @@ def _truncate_colormap(cmap, minval=0.0, maxval=1.0, n=100):
     )
 
 
-def _validate_geographic_input(lat_lon: LatLon | None, boundary: FieldBoundary | None) -> None:
+def _validate_geographic_input(state: str | None, lat_lon: LatLon | None, boundary: FieldBoundary | None) -> None:
+    if state is None and lat_lon is None and boundary is None:
+        raise ValueError("state, lat_lon or boundary must be provided.")
+    if state is not None and (lat_lon is not None or boundary is not None):
+        raise ValueError("state is mutually exclusive with lat_lon and boundary — provide only one.")
     if lat_lon is not None and boundary is not None:
         raise ValueError("lat_lon and boundary are mutually exclusive — provide only one.")
 
