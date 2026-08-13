@@ -318,14 +318,15 @@ def _get_extent_from_geometry(geometry: gpd.GeoDataFrame | Polygon) -> tuple[flo
 
 
 def plot_satellite_map(bound: MapExtent, *,
-    figsize: tuple[float, float] | None=None, ax: Sequence[float] | None=None, desired_pixels: int=1024, alpha: float=1.0, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
+    fig: Figure | None=None, figsize: tuple[float, float] | None=None, ax: Sequence[float] | None=None, desired_pixels: int=1024, alpha: float=1.0, style: str | None=None) -> tuple[GeoAxes, ccrs.Projection]:
     """Render a satellite basemap over a geographic extent.
 
     Args:
         bound: Geographic bounds as ``(west, east, south, north)`` in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.
-        figsize: Optional figure size passed to ``matplotlib.pyplot.figure``.
+        fig: Optional existing figure to which the map axes are added. If omitted, a new figure is created.
+        figsize: Optional figure size passed to ``matplotlib.pyplot.figure`` when creating a new figure.
         alpha: Basemap transparency where ``1.0`` is fully opaque.
-        ax: Optional axes rectangle passed to ``Figure.add_axes``.  If omitted, a full-figure subplot is created.
+        ax: Optional axes rectangle passed to ``Figure.add_axes``. If omitted, a full-figure subplot is created.
         desired_pixels: Target figure resolution in pixels used to estimate tile zoom.
         style: Optional Cartopy GoogleTiles style string. If omitted, ArcGIS World Imagery tiles are used.
 
@@ -338,9 +339,7 @@ def plot_satellite_map(bound: MapExtent, *,
 
     google_satellite = cimgt.GoogleTiles(url=GOOGLE_URL) if style is None else cimgt.GoogleTiles(style=style)
 
-    if figsize is None:
-        fig = plt.figure()
-    else:
+    if fig is None:
         fig = plt.figure(figsize=figsize)
 
     if ax is None:
