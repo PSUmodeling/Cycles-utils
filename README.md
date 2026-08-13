@@ -22,5 +22,6 @@ pip install Cycles-utils
 
 | Cycles-utils version | Cycles version |
 | -------------------- | -------------- |
+| 4.0.6                | 1.5.20         |
 | 4.0.5                | 1.5.20         |
 | 4.0.4                | 1.5.20         |
