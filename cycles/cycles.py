@@ -49,14 +49,14 @@ class Cycles:
 
     path: Path | str
     simulation: str
-    output: dict[str, Output] = field(default_factory=dict[str, Output])
-    control: ControlConfig | None = None
-    operations: list | None = None
-    soil_profile: list[SoilLayer] | None = None
-    curve_number: int | None = None
-    slope: float | None = None
-    weather: pd.DataFrame | None = None
     executable: Path | str | None = None
+    output: dict[str, Output] = field(init=False, default_factory=dict[str, Output])
+    control: ControlConfig | None = field(init=False, default=None)
+    operations: list | None = field(init=False, default=None)
+    soil_profile: list[SoilLayer] | None = field(init=False, default=None)
+    curve_number: int | None = field(init=False, default=None)
+    slope: float | None = field(init=False, default=None)
+    weather: pd.DataFrame | None = field(init=False, default=None)
 
 
     def __post_init__(self):
