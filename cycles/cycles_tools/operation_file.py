@@ -52,7 +52,7 @@ class Tillage(Operation):
 class Harvest(Operation):
     year: int | None = None
     doy: int
-    tool: str = 'Grain_Harvest'
+    tool: str = 'GrainHarvest'
     crop_name: str = 'N/A'
     frac_thermal_time: float = 0.0
     kill_efficiency: float = 0.0
@@ -63,7 +63,7 @@ class Harvest(Operation):
 class Kill(Operation):
     year: int | None = None
     doy: int
-    tool: str = 'Kill_Crop'
+    tool: str = 'KillCrop'
     crop_name: str = 'N/A'
     frac_thermal_time: float = 0.0
     kill_efficiency: float = 0.0
@@ -161,17 +161,17 @@ def read_operation_file(file_path: str | Path) -> list[Operation]:
             if operation == 'tillage':
                 tool = operation_dict['tool'].lower().replace('_', '')
                 if tool in ('grainharvest', 'harvestgrain'):
-                    operation_dict['tool'] = 'grain_harvest'
+                    operation_dict['tool'] = 'GrainHarvest'
                     if operation_dict['crop_name'].lower() in ('n/a', 'na', 'all'):
                         operation_dict['crop_name'] = 'All'
                     target_class = Harvest
                 elif tool in ('forageharvest', 'harvestforage'):
-                    operation_dict['tool'] = 'forage_harvest'
+                    operation_dict['tool'] = 'ForageHarvest'
                     if operation_dict['crop_name'].lower() in ('n/a', 'na', 'all'):
                         operation_dict['crop_name'] = 'All'
                     target_class = Harvest
                 elif tool in ('kill', 'killcrop', 'killcrops'):
-                    operation_dict['tool'] = 'kill'
+                    operation_dict['tool'] = 'KillCrop'
                     if operation_dict['crop_name'].lower() in ('n/a', 'na', 'all'):
                         operation_dict['crop_name'] = 'All'
                     target_class = Kill
