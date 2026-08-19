@@ -223,5 +223,7 @@ def generate_operation_file(file_path: Path | str, operations: list[Operation], 
     if desc:
         lines.append(desc)
     for op in operations:
+        if isinstance(op, (Harvest, Kill)):
+            op = Tillage(**op.__dict__)
         lines.extend(format_operation(op))
     Path(file_path).write_text('\n'.join(lines))
