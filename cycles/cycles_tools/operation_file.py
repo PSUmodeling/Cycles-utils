@@ -199,8 +199,9 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None = None)
             val = getattr(operation, f.name)
             if f.name == 'doy' and operation.relative_doy:
                 val = f'+{val}'
-            if f.name == 'mass':
-                val = f'{val:.2f}'
+            if f.name in ['mass', 'density']:
+                assert isinstance(val, float)
+                val = f'{val:.2f}' if val != round(val, 2) else str(val)
             if isinstance(val, float) and val == -999.0:
                 val = '-999'
         lines.append(f'{f.name.upper():<36}{val:<12}# {description}' if description else f'{f.name.upper():<36}{val}')
