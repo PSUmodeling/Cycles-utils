@@ -11,7 +11,7 @@ from matplotlib.axes import Axes
 from pathlib import Path
 from shapely.geometry import Point
 from cycles.cycles_tools import generate_soil_file as _generate_soil_file
-from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS
+from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
 from cycles.cycles_tools import read_geospatial_file
 
 pt = os.path.dirname(os.path.realpath(__file__))
@@ -278,7 +278,7 @@ class Ssurgo:
 
 
     def generate_soil_file(self, file_path: Path | str, *,
-        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, soil_depth: float | None=None) -> None:
+        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE, soil_depth: float | None=None) -> None:
         """Generate a Cycles soil file from SSURGO profile data.
 
         Args:
@@ -288,6 +288,7 @@ class Ssurgo:
             hsg: Optional hydrologic soil group; inferred from map unit if omitted.
             slope: Optional slope value; inferred from map unit if omitted.
             soil_depth: Optional maximum depth (m) used during profile mapping.
+            layers: Optional target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
 
         Returns:
             None.
@@ -305,7 +306,7 @@ class Ssurgo:
 
         profile = self.get_soil_profile(mukey=mukey)
         desc = desc if desc is not None else _build_desc(self._get_muname(mukey), self._get_musym(mukey), mukey, hsg)
-        _generate_soil_file(file_path, profile, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
+        _generate_soil_file(file_path, profile, layers=layers, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
 
 
     def _ensure_mukey(self) -> int:

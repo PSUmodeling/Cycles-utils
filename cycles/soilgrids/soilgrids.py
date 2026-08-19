@@ -10,7 +10,7 @@ from pyproj import Transformer
 from rasterio.enums import Resampling
 from shapely.geometry import Point, Polygon
 from cycles.cycles_tools import generate_soil_file as _generate_soil_file
-from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS
+from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
 
 HOMOLOSINE = (
     'PROJCS["Interrupted_Goode_Homolosine",'
@@ -133,7 +133,7 @@ class SoilGrids:
         ) for key, layer in SOILGRIDS_LAYERS.items()]
 
 
-    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None) -> None:
+    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE) -> None:
         """Generate a Cycles soil file from SoilGrids values.
 
         Args:
@@ -142,6 +142,7 @@ class SoilGrids:
             desc: Optional custom header text for the output file.
             hsg: Optional hydrologic soil group code used for curve-number mapping.
             slope: Optional slope value written to the soil file header.
+            layers: Optional target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
 
         Returns:
             None.
@@ -149,7 +150,7 @@ class SoilGrids:
         profile: list[SoilLayer] = self.get_soil_profile(lat_lon)
         desc = desc if desc is not None else _build_desc(lat_lon, hsg)
 
-        _generate_soil_file(Path(fn), profile, desc=desc, hsg=hsg, slope=slope)
+        _generate_soil_file(Path(fn), profile, layers=layers, desc=desc, hsg=hsg, slope=slope)
 
 
     def _extract_values(self, lat_lon: LatLon) -> dict[str, float]:

@@ -7,7 +7,7 @@ from .operation_file import format_operation
 from .operation_file import generate_operation_file
 from .operation_file import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .output_file import read_output
-from .soil_file import MAPPABLE_PARAMETERS
+from .soil_file import MAPPABLE_PARAMETERS, DEFAULT_PROFILE
 from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
 from .soil_file import read_soil_file

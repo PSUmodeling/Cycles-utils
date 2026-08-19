@@ -107,23 +107,23 @@ DEFAULT_PROFILE: list[SoilLayer] = [
 ]
 
 
-def _trim(target: list[SoilLayer], measured_bottom: float, soil_depth: float | None=None) -> list[SoilLayer]:
+def _trim(target_layers: list[SoilLayer], measured_bottom: float, soil_depth: float | None=None) -> list[SoilLayer]:
     cutoff = min(measured_bottom, soil_depth) if soil_depth is not None else measured_bottom
-    return [l for l in target if l.overlap_with(l.top, cutoff) > 0.5]
+    return [l for l in target_layers if l.overlap_with(l.top, cutoff) > 0.5]
 
 
-def _map_layer(target: SoilLayer, profile: list[SoilLayer], parameters: list[str]) -> SoilLayer:
+def _map_layer(target_layers: SoilLayer, profile: list[SoilLayer], parameters: list[str]) -> SoilLayer:
     return SoilLayer(
-        top = target.top,
-        bottom = target.bottom,
-        no3 = target.no3,
-        nh4 = target.nh4,
-        **{p: _weighted_average(p, target, profile) for p in parameters},  # type: ignore
+        top = target_layers.top,
+        bottom = target_layers.bottom,
+        no3 = target_layers.no3,
+        nh4 = target_layers.nh4,
+        **{p: _weighted_average(p, target_layers, profile) for p in parameters},  # type: ignore
     )
 
 
-def _weighted_average(parameter: str, target: SoilLayer, profile: list[SoilLayer]) -> float | None:
-    valid = [(w, v) for m in profile if (w := m.overlap_with(target.top, target.bottom)) > 0 and (v := getattr(m, parameter)) is not None]
+def _weighted_average(parameter: str, target_layers: SoilLayer, profile: list[SoilLayer]) -> float | None:
+    valid = [(w, v) for m in profile if (w := m.overlap_with(target_layers.top, target_layers.bottom)) > 0 and (v := getattr(m, parameter)) is not None]
     if not valid:
         return None
     total = sum(w for w, _ in valid)
@@ -215,13 +215,13 @@ def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
     return token
 
 
-def _map_layers(profile: list[SoilLayer], target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
-    trimmed = _trim(target, profile[-1].bottom, soil_depth)
+def _map_layers(profile: list[SoilLayer], target_layers: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
+    trimmed = _trim(target_layers, profile[-1].bottom, soil_depth)
     return [_map_layer(layer, profile, parameters) for layer in trimmed]
 
 
 def generate_soil_file(file_path: str | Path, profile: list[SoilLayer], *,
-    target: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
+    layers: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None,
     desc: str='', slope: float | None=None, curve_number: float | None=None, hsg: str='') -> list[SoilLayer]:
     """Generate a Cycles-formatted soil file from a list of soil layers.
 
@@ -231,7 +231,7 @@ def generate_soil_file(file_path: str | Path, profile: list[SoilLayer], *,
     Args:
         file_path: Output soil file path.
         profile: Soil profile layers in depth order.
-        target: Target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
+        layers: Target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
         parameters: Soil parameters to map from measured profile. If not provided, the minimum set of parameters required for Cycles simulation will be mapped, including:
                     `clay`, `sand`, `soc`, `bulk_density`, `coarse_fragments`, `pH`.
         soil_depth: Optional maximum depth (m) to include in mapping.
@@ -248,9 +248,9 @@ def generate_soil_file(file_path: str | Path, profile: list[SoilLayer], *,
     """
     if curve_number is not None and hsg:
         raise ValueError("Only one of curve_number and hsg can be provided.")
-    layers = _map_layers(profile, target, parameters, soil_depth)
-    Path(file_path).write_text('\n'.join(_render_soil_file(layers, desc, slope, curve_number, hsg)) + '\n')
-    return layers
+    mapped_layers = _map_layers(profile, layers, parameters, soil_depth)
+    Path(file_path).write_text('\n'.join(_render_soil_file(mapped_layers, desc, slope, curve_number, hsg)) + '\n')
+    return mapped_layers
 
 
 def read_soil_file(file_path: str | Path) -> tuple[list[SoilLayer], dict]:
