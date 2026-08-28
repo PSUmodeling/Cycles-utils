@@ -11,28 +11,39 @@ class Operation(Protocol):
     relative_doy: bool
     resolved_doy: int | None
 
+def fmt_float(value: float, digits: int=2) -> str:
+    if value == -999.0:
+        return '-999'
+    if value != round(value, digits):
+        return f'{value:.{digits}f}'
+    return f'{value:g}'
+
+# Convenience lambdas for metadata
+FMT_1F = lambda v: fmt_float(v, 1)
+FMT_2F = lambda v: fmt_float(v, 2)
+
 @dataclass(kw_only=True)
 class Planting(Operation):
     year: int | None = None
     doy: int
     end_doy: int = -999
     crop: str = ''
-    max_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity (-)'})
-    min_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity (-)'})
-    max_soil_temp: float = field(default=-999, metadata={'description': '(degree C)'})
-    min_soil_temp: float = field(default=-999, metadata={'description': '(degree C)'})
+    max_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity (-)', 'fmt': FMT_2F})
+    min_smc: float = field(default=-999, metadata={'description': 'fraction of plant available water between permanent wilting point and field capacity (-)', 'fmt': FMT_2F})
+    max_soil_temp: float = field(default=-999, metadata={'description': '(degree C)', 'fmt': FMT_1F})
+    min_soil_temp: float = field(default=-999, metadata={'description': '(degree C)', 'fmt': FMT_1F})
     use_auto_irr: int = 0
     use_auto_fert: int = 0
-    density: float = field(default=1.0, metadata={'description': '(-)'})
+    density: float = field(default=1.0, metadata={'description': '(-)', 'fmt': FMT_2F})
     clipping_start: int = 1
     clipping_end: int = 366
-    maximum_soil_coverage: float = field(default=100.0, metadata={'description': '(%)'})
-    standing_residue_at_harvest: float = field(default=50.0, metadata={'description': '(%)'})
-    residue_removed: float = field(default=0.0, metadata={'description': '(%)'})
-    clipping_biomass_threshold_lower: float = field(default=0.5, metadata={'description': '(Mg/ha)'})
-    clipping_biomass_threshold_upper: float = field(default=999, metadata={'description': '(Mg/ha)'})
+    maximum_soil_coverage: float = field(default=100.0, metadata={'description': '(%)', 'fmt': FMT_1F})
+    standing_residue_at_harvest: float = field(default=50.0, metadata={'description': '(%)', 'fmt': FMT_1F})
+    residue_removed: float = field(default=0.0, metadata={'description': '(%)', 'fmt': FMT_1F})
+    clipping_biomass_threshold_lower: float = field(default=0.5, metadata={'description': '(Mg/ha)', 'fmt': FMT_1F})
+    clipping_biomass_threshold_upper: float = field(default=999, metadata={'description': '(Mg/ha)', 'fmt': FMT_1F})
     clipping_biomass_destiny: str = 'REMOVE'
-    harvest_timing: float = field(default=-999, metadata={'description': '(%)'})
+    harvest_timing: float = field(default=-999, metadata={'description': '(%)', 'fmt': FMT_1F})
     kill_after_harvest: int = 1
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
@@ -43,8 +54,8 @@ class Tillage(Operation):
     doy: int
     tool: str
     crop_name: str = 'N/A'
-    frac_thermal_time: float = 0.0
-    kill_efficiency: float = 0.0
+    frac_thermal_time: float = field(default=0.0, metadata={'fmt': FMT_2F})
+    kill_efficiency: float = field(default=0.0, metadata={'fmt': FMT_2F})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -54,8 +65,8 @@ class Harvest(Operation):
     doy: int
     tool: str = 'GrainHarvest'
     crop_name: str = 'N/A'
-    frac_thermal_time: float = 0.0
-    kill_efficiency: float = 0.0
+    frac_thermal_time: float = field(default=0.0, metadata={'fmt': FMT_2F})
+    kill_efficiency: float = field(default=0.0, metadata={'fmt': FMT_2F})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -65,8 +76,8 @@ class Kill(Operation):
     doy: int
     tool: str = 'KillCrop'
     crop_name: str = 'N/A'
-    frac_thermal_time: float = 0.0
-    kill_efficiency: float = 0.0
+    frac_thermal_time: float = field(default=0.0, metadata={'fmt': FMT_2F})
+    kill_efficiency: float = field(default=0.0, metadata={'fmt': FMT_2F})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -75,10 +86,10 @@ class FixedFertilization(Operation):
     year: int | None = None
     doy: int
     source: str
-    mass: float = field(default=0.0, metadata={'description': '(kg/ha)'})
+    mass: float = field(default=0.0, metadata={'description': '(kg/ha)', 'fmt': FMT_2F})
     form: str = 'Liquid'
     method: str = 'Broadcast'
-    depth: float = field(default=0.0, metadata={'description': '(m)'})
+    depth: float = field(default=0.0, metadata={'description': '(m)', 'fmt': FMT_2F})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -86,7 +97,7 @@ class FixedFertilization(Operation):
 class FixedIrrigation(Operation):
     year: int | None = None
     doy: int
-    volume: float = 0.0
+    volume: float = field(default=0.0, metadata={'description': '(mm)', 'fmt': FMT_1F})
     relative_doy: bool = field(default=False, metadata={'readable': False})
     resolved_doy: int | None = field(default=None, metadata={'readable': False})
 
@@ -95,8 +106,8 @@ class AutoIrrigation:
     crop: str
     start_day: int = 1
     end_day: int = 366
-    water_depletion: float = 0.5
-    depth: float = 0.0
+    water_depletion: float = field(default=0.5, metadata={'fmt': FMT_2F})
+    depth: float = field(default=0.05, metadata={'fmt': FMT_2F})
 
 OPERATION_PARAMETERS = {
     'planting': Planting,
@@ -187,6 +198,7 @@ def _camel_to_snake(text: str) -> str:
     return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', text).lower()
 
 
+
 def format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
     lines = [_camel_to_snake(type(operation).__name__).upper()]
     for f in fields(operation):
@@ -194,17 +206,16 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None = None)
             continue
         val = doy_override.get(f.name) if doy_override else None
         description = f.metadata.get('description', '')
+        fmt = f.metadata.get('fmt')
 
         if val is None:
             val = getattr(operation, f.name)
             if f.name == 'doy' and operation.relative_doy:
                 val = f'+{val}'
-            if f.name in ['mass', 'density']:
-                assert isinstance(val, float)
-                val = f'{val:.2f}' if val != round(val, 2) else str(val)
-            if isinstance(val, float) and val == -999.0:
-                val = '-999'
-        lines.append(f'{f.name.upper():<36}{val:<12}# {description}' if description else f'{f.name.upper():<36}{val}')
+
+            formatted = fmt(val) if fmt is not None else str(val)
+
+        lines.append(f'{f.name.upper():<36}{formatted:<12}# {description}' if description else f'{f.name.upper():<36}{formatted}')
     lines.append('')
     return lines
 
