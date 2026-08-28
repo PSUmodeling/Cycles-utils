@@ -133,7 +133,7 @@ class SoilGrids:
         ) for key, layer in SOILGRIDS_LAYERS.items()]
 
 
-    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE) -> None:
+    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE) -> list[SoilLayer]:
         """Generate a Cycles soil file from SoilGrids values.
 
         Args:
@@ -149,8 +149,9 @@ class SoilGrids:
         """
         profile: list[SoilLayer] = self.get_soil_profile(lat_lon)
         desc = desc if desc is not None else _build_desc(lat_lon, hsg)
+        soil_layers = _generate_soil_file(Path(fn), profile, layers=layers, desc=desc, hsg=hsg, slope=slope)
 
-        _generate_soil_file(Path(fn), profile, layers=layers, desc=desc, hsg=hsg, slope=slope)
+        return soil_layers
 
 
     def _extract_values(self, lat_lon: LatLon) -> dict[str, float]:

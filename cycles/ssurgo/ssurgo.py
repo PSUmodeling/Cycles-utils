@@ -80,6 +80,7 @@ class MapUnitGeoDataFrame(gpd.GeoDataFrame):
         n = len(self)
         kwargs.setdefault('column', 'musym')
         kwargs.setdefault('legend', True)
+        kwargs.setdefault('legend_kwds', {'loc': 'center left', 'bbox_to_anchor': (1.0, 0.5), 'fontsize': 12})
         kwargs.setdefault(
             'cmap',
             'tab20' if n > 20 else _truncate_colormap(plt.get_cmap('tab20'), 0, n / 20),
@@ -278,7 +279,7 @@ class Ssurgo:
 
 
     def generate_soil_file(self, file_path: Path | str, *,
-        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE, soil_depth: float | None=None) -> None:
+        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE, soil_depth: float | None=None) -> tuple[list[SoilLayer], str, float]:
         """Generate a Cycles soil file from SSURGO profile data.
 
         Args:
@@ -306,7 +307,9 @@ class Ssurgo:
 
         profile = self.get_soil_profile(mukey=mukey)
         desc = desc if desc is not None else _build_desc(self._get_muname(mukey), self._get_musym(mukey), mukey, hsg)
-        _generate_soil_file(file_path, profile, layers=layers, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
+        soil_layers = _generate_soil_file(file_path, profile, layers=layers, desc=desc, hsg=hsg, slope=slope, soil_depth=soil_depth)
+
+        return soil_layers, hsg, slope
 
 
     def _ensure_mukey(self) -> int:
