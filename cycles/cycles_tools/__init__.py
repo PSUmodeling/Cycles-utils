@@ -1,6 +1,8 @@
 from .control_file import generate_control_file
 from .control_file import read_control_file
 from .control_file import ControlConfig
+from .converter import convert_obsolete_crop_files, convert_obsolete_operation_files, convert_obsolete_soil_files
+from .crop_file import read_crop_file, generate_crop_file
 from .nudge_file import generate_nudge_file
 from .operation_file import read_operation_file
 from .operation_file import format_operation
