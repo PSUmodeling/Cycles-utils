@@ -75,7 +75,7 @@ def _get_soil_layers(file_path: Path) -> int:
         return -999
 
 
-def generate_control_file(file_path: str | Path, user_dict: dict[str, Any], *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
+def generate_control_file(file_path: str | Path, user_dict: dict[str, Any] | ControlConfig, *, simulation_dict: dict[str, Any] | None=None) -> ControlConfig:
     """Generate and write a Cycles control file.
 
     Provide either direct values or callables that accept a simulation configuration and return a value in `user_dict`.
@@ -116,7 +116,10 @@ def generate_control_file(file_path: str | Path, user_dict: dict[str, Any], *, s
         The generated control configuration.
     """
     file_path = Path(file_path)
-    config = _build_control_config(user_dict, simulation_dict, file_path.parent)
+    if not isinstance(user_dict, ControlConfig):
+        config = _build_control_config(user_dict, simulation_dict, file_path.parent)
+    else:
+        config = user_dict
     write_file(file_path, config)
 
     return config
