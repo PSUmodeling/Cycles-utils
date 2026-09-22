@@ -3,29 +3,31 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 from ._base_file import write_file, resolve_dict_values, extract
+from ._base_file import FMT_2F
 
 @dataclass(kw_only=True)
 class CalibrationMultipliers:
-    soc_decomp_rate: float = field(default=1.0, metadata={'description': 'soil organic carbon decomposition rate'})
-    residue_decomp_rate: float = field(default=1.0, metadata={'description': 'residue decomposition rate'})
-    root_decomp_rate: float = field(default=1.0, metadata={'description': 'root decomposition rate'})
-    rhizo_decomp_rate: float = field(default=1.0, metadata={'description': 'rhizodeposit decomposition rate'})
-    manure_decomp_rate: float = field(default=1.0, metadata={'description': 'manure decomposition rate'})
-    ferment_decomp_rate: float = field(default=1.0, metadata={'description': 'ferment decomposition rate'})
-    microb_decomp_rate: float = field(default=1.0, metadata={'description': 'microbe decomposition rate'})
-    soc_humif_power: float = field(default=1.0, metadata={'description': 'soil organic carbon humification exponent'})
-    nitrif_rate: float = field(default=1.0, metadata={'description': 'nitrification rate'})
-    pot_denitrif_rate: float = field(default=1.0, metadata={'description': 'potential denitrification rate'})
-    denitrif_half_rate: float = field(default=1.0, metadata={'description': 'half saturation constant for denitrification'})
-    decomp_half_resp: float = field(default=1.0, metadata={'description': 'decomposition half response to saturation (default 0.22)'})
-    decomp_resp_power: float = field(default=1.0, metadata={'description': 'decomposition exponential response to saturation (default 3.0)'})
-    root_progression: float = field(default=1.0, metadata={'description': 'rooting depth progression rate'})
-    radiation_use_efficiency: float = field(default=1.0, metadata={'description': 'crop radiation use efficiency'})
+    soc_decomp_rate: float = field(default=1.0, metadata={'description': 'soil organic carbon decomposition rate', 'fmt': FMT_2F})
+    residue_decomp_rate: float = field(default=1.0, metadata={'description': 'residue decomposition rate', 'fmt': FMT_2F})
+    root_decomp_rate: float = field(default=1.0, metadata={'description': 'root decomposition rate', 'fmt': FMT_2F})
+    rhizo_decomp_rate: float = field(default=1.0, metadata={'description': 'rhizodeposit decomposition rate', 'fmt': FMT_2F})
+    manure_decomp_rate: float = field(default=1.0, metadata={'description': 'manure decomposition rate', 'fmt': FMT_2F})
+    ferment_decomp_rate: float = field(default=1.0, metadata={'description': 'ferment decomposition rate', 'fmt': FMT_2F})
+    microb_decomp_rate: float = field(default=1.0, metadata={'description': 'microbe decomposition rate', 'fmt': FMT_2F})
+    soc_humif_power: float = field(default=1.0, metadata={'description': 'soil organic carbon humification exponent', 'fmt': FMT_2F})
+    nitrif_rate: float = field(default=1.0, metadata={'description': 'nitrification rate', 'fmt': FMT_2F})
+    pot_denitrif_rate: float = field(default=1.0, metadata={'description': 'potential denitrification rate', 'fmt': FMT_2F})
+    denitrif_half_rate: float = field(default=1.0, metadata={'description': 'half saturation constant for denitrification', 'fmt': FMT_2F})
+    decomp_half_resp: float = field(default=1.0, metadata={'description': 'decomposition half response to saturation (default 0.22)', 'fmt': FMT_2F})
+    decomp_resp_power: float = field(default=1.0, metadata={'description': 'decomposition exponential response to saturation (default 3.0)', 'fmt': FMT_2F})
+    root_progression: float = field(default=1.0, metadata={'description': 'rooting depth progression rate', 'fmt': FMT_2F})
+    radiation_use_efficiency: float = field(default=1.0, metadata={'description': 'crop radiation use efficiency', 'fmt': FMT_2F})
+    drainage: float = field(default=1.0, metadata={'description': 'subsurface drainage', 'fmt': FMT_2F})
 
 @dataclass(kw_only=True)
 class ParameterValues:
-    kd_no3: float = field(default=0.0, metadata={'description': 'adsorption coefficient for NO3 (default 0.0 cm3/g)'})
-    kd_nh4: float = field(default=5.6, metadata={'description': 'adsorption coefficient for NH4 (default 5.6 cm3/g)'})
+    kd_no3: float = field(default=0.0, metadata={'description': 'adsorption coefficient for NO3 (default 0.0 cm3/g)', 'fmt': FMT_2F})
+    kd_nh4: float = field(default=5.6, metadata={'description': 'adsorption coefficient for NH4 (default 5.6 cm3/g)', 'fmt': FMT_2F})
 
 @dataclass
 class NudgeConfig:

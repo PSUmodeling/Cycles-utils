@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, get_type_hints
-from ._base_file import write_file, resolve_dict_values, extract, parse_value, unwrap_optional
+from ._base_file import write_file, resolve_dict_values, extract, parse_value, unwrap_optional, FMT_1F
 
 @dataclass(kw_only=True)
 class SimulationYears:
@@ -22,7 +22,7 @@ class InputFiles:
 @dataclass(kw_only=True)
 class SimulationOptions:
     soil_layers: int
-    co2_level: float = field(default=-999, metadata={'description': 'atmospheric CO2 concentration (ppm). Use co2.txt file if set to -999'})
+    co2_level: float = field(default=-999, metadata={'description': 'Atmospheric CO2 concentration (ppm). Use co2.txt file if set to -999', 'fmt': FMT_1F})
     use_reinitialization: int = 0
     adjusted_yields: int = 0
     hydrology_option: int = field(default=1, metadata={'description': "1: gravity driven, 2: Richards' equation with Crank-Nicholson, 3: Richards' equation with CVode"})

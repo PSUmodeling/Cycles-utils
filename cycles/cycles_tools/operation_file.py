@@ -3,24 +3,13 @@ import re
 from pathlib import Path
 from dataclasses import dataclass, field, fields
 from typing import get_type_hints, Protocol, Any
-from ._base_file import parse_value
+from ._base_file import parse_value, FMT_1F, FMT_2F, format_field
 
 class Operation(Protocol):
     year: int | None
     doy: int
     relative_doy: bool
     resolved_doy: int | None
-
-def fmt_float(value: float, digits: int=2) -> str:
-    if value == -999.0:
-        return '-999'
-    if value != round(value, digits):
-        return f'{value:.{digits}f}'
-    return f'{value:g}'
-
-# Convenience lambdas for metadata
-FMT_1F = lambda v: fmt_float(v, 1)
-FMT_2F = lambda v: fmt_float(v, 2)
 
 @dataclass(kw_only=True)
 class Planting(Operation):
@@ -199,23 +188,19 @@ def _camel_to_snake(text: str) -> str:
 
 
 
-def format_operation(operation: Any, doy_override: dict[str, str] | None = None) -> list[str]:
+def format_operation(operation: Any, doy_override: dict[str, str] | None=None) -> list[str]:
     lines = [_camel_to_snake(type(operation).__name__).upper()]
     for f in fields(operation):
         if not f.metadata.get('readable', True):
             continue
         val = doy_override.get(f.name) if doy_override else None
-        description = f.metadata.get('description', '')
-        fmt = f.metadata.get('fmt')
 
         if val is None:
             val = getattr(operation, f.name)
             if f.name == 'doy' and operation.relative_doy:
                 val = f'+{val}'
 
-            formatted = fmt(val) if fmt is not None else str(val)
-
-        lines.append(f'{f.name.upper():<36}{formatted:<12}# {description}' if description else f'{f.name.upper():<36}{formatted}')
+        lines.append(format_field(operation, f, (36, 12), val))
     lines.append('')
     return lines
 

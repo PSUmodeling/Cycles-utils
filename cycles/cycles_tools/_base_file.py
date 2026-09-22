@@ -7,14 +7,39 @@ from dataclasses import fields
 from pathlib import Path
 from typing import Union, Any
 
-def _format_block(label: str, block) -> str:
-    lines = [f'## {label.replace("_", " ").upper()} ##']
-    for f in fields(block):
-        val = getattr(block, f.name)
-        if isinstance(val, float) and val == -999.0:
-            val = '-999'
-        description = f.metadata.get('description', '')
-        lines.append(f'{f.name.upper():<28}{val:<8}# {description}' if description else f'{f.name.upper():<28}{val}')
+def _fmt_float(value: float, digits: int=2) -> str:
+    if value == -999.0:
+        return '-999'
+    for d in range(1, digits):
+        if value == round(value, d):
+            return f'{value:.{d}f}'
+    else:
+        return f'{value:.{digits}f}'
+
+# Convenience lambdas for metadata
+FMT_1F = lambda v: _fmt_float(v, 1)
+FMT_2F = lambda v: _fmt_float(v, 2)
+FMT_3F = lambda v: _fmt_float(v, 3)
+FMT_4F = lambda v: _fmt_float(v, 4)
+
+def format_field(object, attribute, widths: tuple[int, int], value=None) -> str:
+    fmt = attribute.metadata.get('fmt')
+    description = attribute.metadata.get('description', '')
+
+    if value is None:
+        value = getattr(object, attribute.name)
+
+    formatted = fmt(value) if fmt is not None else str(value)
+
+    return f'{attribute.name.upper():<{widths[0]}}{formatted:<{widths[1]}}# {description}' if description else f'{attribute.name.upper():<{widths[0]}}{formatted}'
+
+
+def format_block(label: str, object, *, widths: tuple[int, int]=(28, 8), center: bool=False, all_caps: bool=True) -> str:
+    label = label.replace("_", " ").upper() if all_caps else label.replace("_", " ").capitalize()
+
+    lines = [f' ' * (28 if center else 0) + f'## {label} ##']
+    for f in fields(object):
+        lines.append(format_field(object, f, widths))
     lines.append('')
 
     return '\n'.join(lines)
@@ -22,7 +47,7 @@ def _format_block(label: str, block) -> str:
 
 def write_file(fn: Path, config) -> None:
     content = '\n'.join(
-        _format_block(f.name, getattr(config, f.name))
+        format_block(f.name, getattr(config, f.name))
         for f in fields(config)
         if getattr(config, f.name) is not None
     )
