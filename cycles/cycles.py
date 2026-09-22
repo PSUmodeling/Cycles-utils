@@ -47,8 +47,8 @@ class Cycles:
         executable: Absolute path to the Cycles executable binary.
     """
 
-    path: Path | str
     simulation: str
+    path: Path | str = '.'
     executable: Path | str | None = None
     output: dict[str, Output] = field(init=False, default_factory=dict[str, Output])
     control: ControlConfig | None = field(init=False, default=None)
@@ -81,7 +81,10 @@ class Cycles:
         Returns:
             A tuple with process return code and stdout text.
         """
+        cwd = os.getcwd()
         cmd = [self.executable, *(options.split() if options else []), self.simulation]
+
+        os.chdir(self.path)
         result = subprocess.run(
             cmd,
             shell=os.name == 'nt',
@@ -92,6 +95,9 @@ class Cycles:
             print(result.stdout)
         if result.stderr:
             print(result.stderr)
+
+        os.chdir(cwd)
+
         return result.returncode, result.stdout
 
 

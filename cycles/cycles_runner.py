@@ -12,9 +12,9 @@ from .cycles_tools import generate_control_file, generate_nudge_file, resolve_di
 
 SimulationConfig = list[dict] | pd.DataFrame
 
-INPUT_DIR: Path = Path('input')
-OUTPUT_DIR: Path = Path('output')
-SUMMARY_DIR: Path = Path('summary')
+INPUT_DIR: str = 'input'
+OUTPUT_DIR: str = 'output'
+SUMMARY_DIR: str = 'summary'
 
 OUTPUT_CONTROL_FLAGS: dict = {
     'dailyEnviron': 'daily_weather_out',
@@ -49,9 +49,11 @@ class CyclesRunner:
     """
 
     executable: str
+    path: Path | str = '.'
 
     def __post_init__(self):
         self.executable = str(Path(self.executable).resolve())
+        self.path = Path(self.path)
 
 
     def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
@@ -197,7 +199,8 @@ class CyclesRunner:
             if key == 'harvest': continue
             control_dict[OUTPUT_CONTROL_FLAGS[key]] = 1
 
-        SUMMARY_DIR.mkdir(exist_ok=True)
+        assert isinstance(self.path, Path)
+        (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
 
         for s in simulations:
             cxt: SimulationContext = self._resolve(s, control_dict, operation_dict, calibration_dict)
@@ -205,7 +208,7 @@ class CyclesRunner:
 
             self._write_inputs(cxt, operation_template)
 
-            cycles = Cycles(path='.', simulation=cxt.name, executable=self.executable)
+            cycles = Cycles(simulation=cxt.name, path=self.path, executable=self.executable)
 
             code, _ = cycles.run(options=options, silence=silence)
 
@@ -219,36 +222,39 @@ class CyclesRunner:
             if rm_input:
                 self._remove_inputs(cxt)
             if rm_output:
-                shutil.rmtree(OUTPUT_DIR / cxt.name, ignore_errors=True)
+                shutil.rmtree(self.path / OUTPUT_DIR / cxt.name, ignore_errors=True)
             if rm_steady_state_soil and 's' in options:
                 # Steady-state soil should only be removed if generated during this run (i.e., spin-up was requested).
                 # If using an existing steady-state soil file, it should not be removed.
-                (INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
+                (self.path / INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
 
 
     def _resolve(self, simulation: dict[str, Any], control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
         control = resolve_dict_values(control_dict, simulation)
+        assert isinstance(self.path, Path)
         return SimulationContext(
             name=control['simulation_name'],
             control_dict=control,
             operation_dict=resolve_dict_values(operation_dict, simulation) if operation_dict is not None else None,
             calibration_dict=resolve_dict_values(calibration_dict, simulation) if calibration_dict is not None else None,
-            operation_fn=INPUT_DIR / control['operation_file'],
+            operation_fn=self.path / INPUT_DIR / control['operation_file'],
         )
 
 
     def _write_inputs(self, cxt: SimulationContext, operation_template: Path | None) -> None:
+        assert isinstance(self.path, Path)
         if operation_template is not None:
             assert cxt.operation_dict is not None
             _render_template(operation_template, cxt.operation_fn, cxt.operation_dict)
         if cxt.calibration_dict is not None:
-            generate_nudge_file(INPUT_DIR / f'{cxt.name}.nudge', cxt.calibration_dict)
-        generate_control_file(INPUT_DIR / f'{cxt.name}.ctrl', cxt.control_dict)
+            generate_nudge_file(self.path / INPUT_DIR / f'{cxt.name}.nudge', cxt.calibration_dict)
+        generate_control_file(self.path / INPUT_DIR / f'{cxt.name}.ctrl', cxt.control_dict)
 
 
     def _remove_inputs(self, cxt: SimulationContext) -> None:
-        (INPUT_DIR / f'{cxt.name}.ctrl').unlink(missing_ok=True)
-        (INPUT_DIR / f'{cxt.name}.nudge').unlink(missing_ok=True)
+        assert isinstance(self.path, Path)
+        (self.path / INPUT_DIR / f'{cxt.name}.ctrl').unlink(missing_ok=True)
+        (self.path / INPUT_DIR / f'{cxt.name}.nudge').unlink(missing_ok=True)
         if cxt.operation_dict is not None:
             cxt.operation_fn.unlink(missing_ok=True)
 
@@ -259,7 +265,7 @@ class CyclesRunner:
             cycles.output[key].data.insert(0, 'simulation', cycles.simulation)
 
             mode = 'w' if header else 'a'
-            with open(SUMMARY_DIR / fn, mode) as f:
+            with open(self.path / SUMMARY_DIR / fn, mode) as f:
                 if header:
                     f.write(comment)
                 cycles.output[key].data.to_csv(f, header=header, index=False)
