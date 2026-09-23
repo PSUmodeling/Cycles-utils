@@ -10,7 +10,7 @@ from pyproj import Transformer
 from rasterio.enums import Resampling
 from shapely.geometry import Point, Polygon
 from ..cycles_tools import generate_soil_file as _generate_soil_file
-from ..cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
+from ..cycles_tools.soil_file import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
 
 HOMOLOSINE = (
     'PROJCS["Interrupted_Goode_Homolosine",'

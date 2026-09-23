@@ -21,8 +21,7 @@ setup(
     # minimal install doesn't require the GDAL/cartopy stack.
     install_requires=['pandas>=1.2.4', 'numpy>=1.19.5', 'matplotlib>=3.4.2'],
     extras_require={
-        # Needed for Cycles.plot_yield / plot_operations / plot_map /
-        # plot_satellite_map and cycles_tools.read_geospatial_file
+        # Needed for Cycles.plot_yield / plot_operations / plot_map / plot_satellite_map
         'plot': ['cartopy>=0.18.0', 'geopandas>=0.9.0', 'fiona>=1.8.20', 'shapely>=1.7.1'],
         'soilgrids':  ['geopandas>=0.9.0', 'rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'shapely>=1.7.1'],
         'gssurgo': ['geopandas>=0.9.0', 'shapely>=1.7.1', 'fiona>=1.8.20'],

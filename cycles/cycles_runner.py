@@ -8,7 +8,8 @@ from pathlib import Path
 from string import Template
 from typing import Any
 from .cycles import Cycles
-from .cycles_tools import generate_control_file, generate_nudge_file, _resolve_dict_values
+from .cycles_tools import generate_control_file, generate_nudge_file
+from .cycles_tools._base_file import _resolve_dict_values
 
 SimulationConfig = list[dict] | pd.DataFrame
 

@@ -9,7 +9,8 @@ from typing import NamedTuple
 from .cycles import Cycles
 from .cycles_runner import CyclesRunner
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
-from .cycles_tools import generate_control_file, format_operation, generate_operation_file
+from .cycles_tools import generate_control_file, generate_operation_file
+from .cycles_tools.operation_file import _format_operation
 
 FERTILIZER_FILE = 'input/fertilizers.txt'
 MIN_PLANTING_INTERVAL = 7
@@ -370,7 +371,7 @@ def _write_operation_templates(crops: list[Crop], path: Path) -> None:
             overrides = {'doy': f'$DOY{ind + 1}'}
             if isinstance(op, Planting):
                 overrides['end_doy'] = f'$DOY{ind + 1}'
-            lines.extend(format_operation(op, overrides))
+            lines.extend(_format_operation(op, overrides))
         template_fn.write_text('\n'.join(lines))
 
 

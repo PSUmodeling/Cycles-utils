@@ -34,7 +34,6 @@ __all__ = [
     "plot_operations",
     "plot_map",
     "plot_satellite_map",
-    "read_geospatial_file",
 ]
 
 # Names that require the optional plotting/geospatial dependencies
@@ -47,7 +46,6 @@ _LAZY_ATTRS = {
     "plot_operations": ".plot_tools",
     "plot_map": ".plot_tools",
     "plot_satellite_map": ".plot_tools",
-    "read_geospatial_file": "._geo_file",
 }
 
 

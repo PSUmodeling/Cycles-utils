@@ -11,8 +11,8 @@ from matplotlib.axes import Axes
 from pathlib import Path
 from shapely.geometry import Point
 from ..cycles_tools import generate_soil_file as _generate_soil_file
-from ..cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
-from ..cycles_tools import read_geospatial_file
+from ..cycles_tools.soil_file import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
+from ..cycles_tools._geo_file import _read_geospatial_file
 
 pt = os.path.dirname(os.path.realpath(__file__))
 
@@ -136,7 +136,7 @@ class Ssurgo:
                 crs=WGS84,
             )
         elif isinstance(boundary, (str, Path)):
-            boundary = read_geospatial_file(boundary)
+            boundary = _read_geospatial_file(boundary)
 
         self.state: str = state if state is not None else _find_state_from_boundary(boundary)   # type: ignore
         self._mapunits: gpd.GeoDataFrame | pd.DataFrame
