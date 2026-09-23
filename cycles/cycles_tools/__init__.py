@@ -15,12 +15,7 @@ from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
 from .weather_file import read_weather_file
 from .reinit_file import generate_reinit_file
-from .plot_tools import plot_yield
-from .plot_tools import plot_operations
-from .plot_tools import plot_map
-from .plot_tools import plot_satellite_map
 from ._base_file import resolve_dict_values
-from ._base_file import read_geospatial_file
 
 __all__ = [
     "generate_control_file",
@@ -37,4 +32,41 @@ __all__ = [
     "plot_operations",
     "plot_map",
     "plot_satellite_map",
+    "read_geospatial_file",
 ]
+
+# Names that require the optional plotting/geospatial dependencies
+# (cartopy, geopandas, fiona). Installed via `pip install cycles-utils[plot]`.
+# These are imported lazily (PEP 562) so that `import cycles_tools` and
+# `import cycles` work without those heavy dependencies for users who only
+# need to read/write Cycles input/output files and run simulations.
+_LAZY_ATTRS = {
+    "plot_yield": ".plot_tools",
+    "plot_operations": ".plot_tools",
+    "plot_map": ".plot_tools",
+    "plot_satellite_map": ".plot_tools",
+    "read_geospatial_file": "._geo_file",
+}
+
+
+def __getattr__(name: str):
+    module_name = _LAZY_ATTRS.get(name)
+    if module_name is None:
+        raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+    import importlib
+    try:
+        module = importlib.import_module(module_name, __name__)
+    except ImportError as exc:
+        raise ImportError(
+            f"'{name}' requires the optional plotting/geospatial dependencies. "
+            f"Install them with: pip install cycles-utils[plot]"
+        ) from exc
+
+    value = getattr(module, name)
+    globals()[name] = value  # cache for subsequent lookups
+    return value
+
+
+def __dir__():
+    return sorted(list(globals().keys()) + list(_LAZY_ATTRS.keys()))

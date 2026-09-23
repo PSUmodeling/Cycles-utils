@@ -102,6 +102,8 @@ class CyclesRotationBuilder:
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.
         control_dict: Base control file parameters (simulation years, options, etc.).
+        path: Working directory containing (or to contain) the `input/`, `summary/`, and
+            `template/` subdirectories. Defaults to the current directory.
         build_yield_matrix: Optional flag: If True, run simulations to build yield matrix; else read from disk.
 
     Attributes:
@@ -109,6 +111,7 @@ class CyclesRotationBuilder:
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.
         control_dict: Base control file parameters (simulation years, options, etc.).
+        path: Working directory containing the `input/`, `summary/`, and `template/` subdirectories.
         fertilizers: Dictionary mapping fertilizer names to Fertilizer objects.
         yield_matrix: Dictionary mapping crop names to yield prediction DataFrames.
         build_yield_matrix: If True, run simulations to build yield matrix; else read from disk.
@@ -122,6 +125,7 @@ class CyclesRotationBuilder:
     executable: str
     crops: list[Crop]
     control_dict: dict
+    path: str | Path = '.'
     fertilizers: dict[str, Fertilizer] = field(init=False, default_factory=dict)
     yield_matrix: dict[str, pd.DataFrame] = field(init=False)
     build_yield_matrix: bool = field(default=True, kw_only=True)
@@ -133,7 +137,8 @@ class CyclesRotationBuilder:
 
     def __post_init__(self) -> None:
         self.executable = str(Path(self.executable).resolve())
-        self.fertilizers = _read_fertilizer_file(Path('./') / FERTILIZER_FILE)
+        self.path = Path(self.path)
+        self.fertilizers = _read_fertilizer_file(self.path / FERTILIZER_FILE)
         self._times_planted = {crop.symbol: 0 for crop in self.crops}
 
         for crop in self.crops:
@@ -166,10 +171,10 @@ class CyclesRotationBuilder:
         self.control_dict['rotation_size'] = self.control_dict['simulation_end_year'] - self.control_dict['simulation_start_year'] + 1
         self.control_dict['operation_file'] = f'{self.simulation}.operation'
 
-        generate_control_file(f'./input/{self.simulation}.ctrl', self.control_dict)
-        generate_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
+        generate_control_file(self.path / 'input' / f'{self.simulation}.ctrl', self.control_dict)
+        generate_operation_file(self.path / 'input' / f'{self.simulation}.operation', operations)
 
-        cycles = Cycles(path='.', simulation=self.simulation, executable=self.executable)
+        cycles = Cycles(path=self.path, simulation=self.simulation, executable=self.executable)
         options = '-b'
 
         while True:
@@ -187,14 +192,14 @@ class CyclesRotationBuilder:
             self._append_operations(result, year, doy, operations)
             self._times_planted[result.crop.symbol] += 1
 
-            generate_operation_file(Path('./input') / f'{self.simulation}.operation', operations)
+            generate_operation_file(self.path / 'input' / f'{self.simulation}.operation', operations)
 
 
     def _build_yield_matrix(self) -> None:
         self.yield_matrix = {}
-        _write_operation_templates(self.crops)
+        _write_operation_templates(self.crops, self.path)
 
-        cycles_runner = CyclesRunner(self.executable)
+        cycles_runner = CyclesRunner(self.executable, path=self.path)
         for crop in self.crops:
             simulations, control_dict, operation_dict = _build_simulations(crop.operations, self.control_dict)
             cycles_runner.run(
@@ -202,7 +207,7 @@ class CyclesRotationBuilder:
                 summary=f'{crop.name}.csv',
                 control_dict=control_dict,
                 operation_dict=operation_dict,
-                operation_template=f'template/{crop.name}.operation',
+                operation_template=self.path / 'template' / f'{crop.name}.operation',
                 rm_input=True,
                 rm_output=True,
             )
@@ -267,7 +272,7 @@ class CyclesRotationBuilder:
 
 
     def _read_yield_matrix(self, crop: Crop) -> pd.DataFrame:
-        df = pd.read_csv(f'summary/{crop.name}.csv', usecols=[1, 3, 6, 7, 18], comment='#')
+        df = pd.read_csv(self.path / 'summary' / f'{crop.name}.csv', usecols=[1, 3, 6, 7, 18], comment='#')
         df['date'] = pd.to_datetime(df['date'])
         df['planting_date'] = pd.to_datetime(df['planting_date'])
         df['doy'] = pd.to_datetime(df['planting_date']).dt.dayofyear
@@ -353,17 +358,17 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
     )
 
 
-def _write_operation_templates(crops: list[Crop]) -> None:
+def _write_operation_templates(crops: list[Crop], path: Path) -> None:
     for crop in crops:
-        path = Path('template') / f'{crop.name}.operation'
-        path.parent.mkdir(exist_ok=True)
+        template_fn = Path(path) / 'template' / f'{crop.name}.operation'
+        template_fn.parent.mkdir(parents=True, exist_ok=True)
         lines: list[str] = []
         for ind, op in enumerate(crop.operations):
             overrides = {'doy': f'$DOY{ind + 1}'}
             if isinstance(op, Planting):
                 overrides['end_doy'] = f'$DOY{ind + 1}'
             lines.extend(format_operation(op, overrides))
-        path.write_text('\n'.join(lines))
+        template_fn.write_text('\n'.join(lines))
 
 
 def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[list[dict], dict, dict]:

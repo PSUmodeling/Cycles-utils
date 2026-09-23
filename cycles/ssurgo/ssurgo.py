@@ -10,9 +10,9 @@ from dataclasses import dataclass
 from matplotlib.axes import Axes
 from pathlib import Path
 from shapely.geometry import Point
-from cycles.cycles_tools import generate_soil_file as _generate_soil_file
-from cycles.cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
-from cycles.cycles_tools import read_geospatial_file
+from ..cycles_tools import generate_soil_file as _generate_soil_file
+from ..cycles_tools import SoilLayer, MAPPABLE_PARAMETERS, DEFAULT_PROFILE
+from ..cycles_tools import read_geospatial_file
 
 pt = os.path.dirname(os.path.realpath(__file__))
 

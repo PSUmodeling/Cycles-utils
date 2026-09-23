@@ -8,7 +8,7 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from ._base_file import read_geospatial_file
+from ._geo_file import read_geospatial_file
 from cartopy.mpl.geoaxes import GeoAxes
 from collections.abc import Sequence
 from dataclasses import dataclass

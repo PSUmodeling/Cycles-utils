@@ -14,8 +14,6 @@ from .cycles_tools import read_weather_file as _read_weather_file
 from .cycles_tools import read_output as _read_output
 from .cycles_tools import read_operation_file as _read_operation_file
 from .cycles_tools import generate_reinit_file as _generate_reinit_file
-from .cycles_tools import plot_yield as _plot_yield
-from .cycles_tools import plot_operations as _plot_operations
 
 @dataclass
 class Output:
@@ -173,6 +171,7 @@ class Cycles:
         if 'harvest' not in self.output:
             self.read_output('harvest')
 
+        from .cycles_tools import plot_yield as _plot_yield  # lazy: optional [plot] extra
         return _plot_yield(self.output['harvest'].data, ax=ax, crop_colors=crop_colors, fontsize=fontsize)
 
 
@@ -194,4 +193,5 @@ class Cycles:
 
         rotation_size = self.control.simulation_years.rotation_size
 
+        from .cycles_tools import plot_operations as _plot_operations  # lazy: optional [plot] extra
         return _plot_operations(self.operations, rotation_size, axs=axs, fontsize=fontsize)
