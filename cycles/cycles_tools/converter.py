@@ -131,7 +131,7 @@ def convert_obsolete_crop_files(crop_fns: dict[str | Path, str | Path], *, plant
             for crop_name, obsolete_crop in obsolete_crops.items() if crop_name in selected_crops
         }
 
-    generate_crop_file(Path(new_fn), crops)
+        generate_crop_file(Path(new_fn), crops)
 
 
 def _read_obsolete_operation_file(file_path: str | Path, tillage_tools: list, fertilizers: list) -> list[dict]:
