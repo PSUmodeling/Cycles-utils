@@ -171,6 +171,7 @@ class CyclesRotationBuilder:
         self.control_dict['rotation_size'] = self.control_dict['simulation_end_year'] - self.control_dict['simulation_start_year'] + 1
         self.control_dict['operation_file'] = f'{self.simulation}.operation'
 
+        assert isinstance(self.path, Path)
         generate_control_file(self.path / 'input' / f'{self.simulation}.ctrl', self.control_dict)
         generate_operation_file(self.path / 'input' / f'{self.simulation}.operation', operations)
 
@@ -197,6 +198,7 @@ class CyclesRotationBuilder:
 
     def _build_yield_matrix(self) -> None:
         self.yield_matrix = {}
+        assert isinstance(self.path, Path)
         _write_operation_templates(self.crops, self.path)
 
         cycles_runner = CyclesRunner(self.executable, path=self.path)
@@ -272,6 +274,7 @@ class CyclesRotationBuilder:
 
 
     def _read_yield_matrix(self, crop: Crop) -> pd.DataFrame:
+        assert isinstance(self.path, Path)
         df = pd.read_csv(self.path / 'summary' / f'{crop.name}.csv', usecols=[1, 3, 6, 7, 18], comment='#')
         df['date'] = pd.to_datetime(df['date'])
         df['planting_date'] = pd.to_datetime(df['planting_date'])

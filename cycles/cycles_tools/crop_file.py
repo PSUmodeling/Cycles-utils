@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, get_type_hints, Protocol
-from ._base_file import write_file, resolve_dict_values, extract, parse_value, unwrap_optional, format_block
+from ._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, _format_block
 from ._base_file import FMT_1F, FMT_2F, FMT_3F, FMT_4F
 
 @dataclass(kw_only=True)
@@ -96,17 +96,25 @@ class Crop:
 def _read_individual_crop(lines: iter[str], hints: dict[str, type]) -> dict[str, Crop] | None:  # type: ignore
     crop_dict = {}
     try:
-        name = str(parse_value(next(lines), 'name', str))
+        name = str(_parse_value(next(lines), 'name', str))
         for f in fields(Crop):
-            target_class = unwrap_optional(hints[f.name])
+            target_class = _unwrap_optional(hints[f.name])
             sub_hints = get_type_hints(target_class)
-            crop_dict[f.name] = target_class(**{sub_field.name: parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
+            crop_dict[f.name] = target_class(**{sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
         return {name: Crop(**crop_dict)}
     except StopIteration:
         return None
 
 
 def read_crop_file(file_path: str | Path) -> dict[str, Crop]:
+    """Read a Cycles crop file into named `Crop` dataclass instances.
+
+    Args:
+        file_path: Path to a Cycles crop file.
+
+    Returns:
+        A dictionary mapping crop names to their structured crop definitions.
+    """
     with open(Path(file_path)) as f:
         lines = f.read().splitlines()
     lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])
@@ -144,7 +152,7 @@ def generate_crop_file(file_path: str | Path, crops: dict[str, Crop]) -> None:
             ])
         )
         contents.append(''.join(
-            format_block(f.name, getattr(crop, f.name), widths=(44, 12), center=True, all_caps=False)
+            _format_block(f.name, getattr(crop, f.name), widths=(44, 12), center=True, all_caps=False)
             for f in fields(Crop)
         ))
 

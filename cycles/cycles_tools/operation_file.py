@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 from dataclasses import dataclass, field, fields
 from typing import get_type_hints, Protocol, Any
-from ._base_file import parse_value, FMT_1F, FMT_2F, format_field
+from ._base_file import _parse_value, FMT_1F, FMT_2F, _format_field
 
 class Operation(Protocol):
     year: int | None
@@ -145,7 +145,7 @@ def read_operation_file(file_path: str | Path) -> list[Operation]:
                 if f.name == 'doy':
                     operation_dict[f.name] = raw    # keep as raw string for + detection
                 else:
-                    operation_dict[f.name] = parse_value(raw, f.name, hints[f.name])
+                    operation_dict[f.name] = _parse_value(raw, f.name, hints[f.name])
 
             # Detect relative DOY before constructing the instance
             raw_doy = operation_dict.get('doy', '')
@@ -154,7 +154,7 @@ def read_operation_file(file_path: str | Path) -> list[Operation]:
                 operation_dict['relative_doy'] = True
                 operation_dict['resolved_doy'] = _resolve_reference_doy(operations, operation_dict['doy'])
             else:
-                operation_dict['doy'] = parse_value(raw_doy, 'doy', hints['doy'])
+                operation_dict['doy'] = _parse_value(raw_doy, 'doy', hints['doy'])
                 operation_dict['relative_doy'] = False
 
             # Reclassify tillage operations
@@ -188,7 +188,7 @@ def _camel_to_snake(text: str) -> str:
 
 
 
-def format_operation(operation: Any, doy_override: dict[str, str] | None=None) -> list[str]:
+def _format_operation(operation: Any, doy_override: dict[str, str] | None=None) -> list[str]:
     lines = [_camel_to_snake(type(operation).__name__).upper()]
     for f in fields(operation):
         if not f.metadata.get('readable', True):
@@ -200,7 +200,7 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None=None) -
             if f.name == 'doy' and operation.relative_doy:
                 val = f'+{val}'
 
-        lines.append(format_field(operation, f, (36, 12), val))
+        lines.append(_format_field(operation, f, (36, 12), val))
     lines.append('')
     return lines
 
@@ -208,8 +208,8 @@ def format_operation(operation: Any, doy_override: dict[str, str] | None=None) -
 def generate_operation_file(file_path: Path | str, operations: list[Operation], *, desc: str='') -> None:
     """Write a Cycles operation file from structured operation records.
 
-    The optional description is written as the first line when provided. Each operation is serialized with
-    to preserves Cycles field naming and relative day-of-year formatting.
+    The optional description is written as the first line when provided. Each operation is serialized with to preserve
+    Cycles field naming and relative day-of-year formatting.
 
     Args:
         file_path: Destination operation file path.
@@ -222,5 +222,5 @@ def generate_operation_file(file_path: Path | str, operations: list[Operation], 
     for op in operations:
         if isinstance(op, (Harvest, Kill)):
             op = Tillage(**op.__dict__)
-        lines.extend(format_operation(op))
+        lines.extend(_format_operation(op))
     Path(file_path).write_text('\n'.join(lines))

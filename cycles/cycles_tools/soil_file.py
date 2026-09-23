@@ -1,6 +1,5 @@
 from __future__ import annotations
-import pandas as pd
-from dataclasses import dataclass, asdict, fields
+from dataclasses import dataclass, asdict
 from pathlib import Path
 
 CURVE_NUMBERS: dict[str, int] = {

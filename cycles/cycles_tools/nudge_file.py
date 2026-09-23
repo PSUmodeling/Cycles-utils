@@ -2,7 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from ._base_file import write_file, resolve_dict_values, extract
+from ._base_file import _write_file, _resolve_dict_values, _extract
 from ._base_file import FMT_2F
 
 @dataclass(kw_only=True)
@@ -36,11 +36,11 @@ class NudgeConfig:
 
 
 def _build_nudge_config(user_dict: dict[str, Any], calibration_dict: dict[str, Any] | None) -> NudgeConfig:
-    resolved = resolve_dict_values(user_dict, calibration_dict)
+    resolved = _resolve_dict_values(user_dict, calibration_dict)
 
     return NudgeConfig(
-        calibration_multipliers=CalibrationMultipliers(**extract(CalibrationMultipliers, resolved)),
-        parameter_values=ParameterValues(**extract(ParameterValues, resolved)),
+        calibration_multipliers=CalibrationMultipliers(**_extract(CalibrationMultipliers, resolved)),
+        parameter_values=ParameterValues(**_extract(ParameterValues, resolved)),
     )
 
 
@@ -62,4 +62,4 @@ def generate_nudge_file(file_path: str | Path, user_dict: dict[str, Any], *, cal
     """
     file_path = Path(file_path)
     config = _build_nudge_config(user_dict, calibration_dict)
-    write_file(file_path, config)
+    _write_file(file_path, config)

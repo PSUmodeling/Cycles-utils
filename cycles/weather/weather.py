@@ -419,7 +419,8 @@ def _read_land_mask(reanalysis: REANALYSIS) -> pd.DataFrame:
 
 
 def _get_grid_info(reanalysis: REANALYSIS, grid_ind: int, mask_df: pd.DataFrame) -> tuple[float, str, float]:
-    grid_lat, grid_lon = mask_df.loc[grid_ind, ['latitude', 'longitude']]   # type: ignore
+    grid_lat, grid_lon = mask_df.loc[grid_ind, ['latitude', 'longitude']]
+    assert isinstance(grid_lat, float) and isinstance(grid_lon, float)
     grid_str = '%.3f%sx%.3f%s' % (abs(grid_lat), 'S' if grid_lat < 0.0 else 'N', abs(grid_lon), 'W' if grid_lon < 0.0 else 'E')
 
     fn = f'{reanalysis.name}_{grid_str}'

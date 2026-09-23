@@ -8,7 +8,6 @@ import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from ._geo_file import read_geospatial_file
 from cartopy.mpl.geoaxes import GeoAxes
 from collections.abc import Sequence
 from dataclasses import dataclass
@@ -17,6 +16,7 @@ from matplotlib.colors import Colormap
 from matplotlib.figure import Figure
 from pathlib import Path
 from shapely.geometry import Polygon
+from ._geo_file import _read_geospatial_file
 
 HARVEST_MARKERS: dict[str, str] = {
     'grain': 'd',
@@ -322,11 +322,11 @@ def plot_satellite_map(bound: MapExtent, *,
     """Render a satellite basemap over a geographic extent.
 
     Args:
-        bound: Geographic bounds as ``(west, east, south, north)`` in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.
+        bound: Geographic bounds as `(west, east, south, north)` in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.
         fig: Optional existing figure to which the map axes are added. If omitted, a new figure is created.
-        figsize: Optional figure size passed to ``matplotlib.pyplot.figure`` when creating a new figure.
-        alpha: Basemap transparency where ``1.0`` is fully opaque.
-        ax: Optional axes rectangle passed to ``Figure.add_axes``. If omitted, a full-figure subplot is created.
+        figsize: Optional figure size passed to `matplotlib.pyplot.figure` when creating a new figure.
+        alpha: Basemap transparency where `1.0` is fully opaque.
+        ax: Optional axes rectangle passed to `Figure.add_axes`. If omitted, a full-figure subplot is created.
         desired_pixels: Target figure resolution in pixels used to estimate tile zoom.
         style: Optional Cartopy GoogleTiles style string. If omitted, ArcGIS World Imagery tiles are used.
 
@@ -349,7 +349,7 @@ def plot_satellite_map(bound: MapExtent, *,
     assert isinstance(ax, GeoAxes)
 
     if isinstance(bound, (str, Path)):
-        gdf = read_geospatial_file(bound)
+        gdf = _read_geospatial_file(bound)
         extent = _get_extent_from_geometry(gdf)
     elif isinstance(bound, (gpd.GeoDataFrame, Polygon)):
         extent = _get_extent_from_geometry(bound)

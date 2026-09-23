@@ -8,7 +8,7 @@ from pathlib import Path
 from string import Template
 from typing import Any
 from .cycles import Cycles
-from .cycles_tools import generate_control_file, generate_nudge_file, resolve_dict_values
+from .cycles_tools import generate_control_file, generate_nudge_file, _resolve_dict_values
 
 SimulationConfig = list[dict] | pd.DataFrame
 
@@ -230,13 +230,13 @@ class CyclesRunner:
 
 
     def _resolve(self, simulation: dict[str, Any], control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
-        control = resolve_dict_values(control_dict, simulation)
+        control = _resolve_dict_values(control_dict, simulation)
         assert isinstance(self.path, Path)
         return SimulationContext(
             name=control['simulation_name'],
             control_dict=control,
-            operation_dict=resolve_dict_values(operation_dict, simulation) if operation_dict is not None else None,
-            calibration_dict=resolve_dict_values(calibration_dict, simulation) if calibration_dict is not None else None,
+            operation_dict=_resolve_dict_values(operation_dict, simulation) if operation_dict is not None else None,
+            calibration_dict=_resolve_dict_values(calibration_dict, simulation) if calibration_dict is not None else None,
             operation_fn=self.path / INPUT_DIR / control['operation_file'],
         )
 
@@ -260,6 +260,7 @@ class CyclesRunner:
 
 
     def _write_summary(self, cycles: Cycles, summary: dict, *, header: bool, comment: str) -> None:
+        assert isinstance(self.path, Path)
         cycles.read_output(summary.keys())
         for key, fn in summary.items():
             cycles.output[key].data.insert(0, 'simulation', cycles.simulation)

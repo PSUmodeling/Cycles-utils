@@ -5,22 +5,21 @@ from .converter import convert_obsolete_crop_files, convert_obsolete_operation_f
 from .crop_file import read_crop_file, generate_crop_file
 from .nudge_file import generate_nudge_file
 from .operation_file import read_operation_file
-from .operation_file import format_operation
 from .operation_file import generate_operation_file
 from .operation_file import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .output_file import read_output
-from .soil_file import MAPPABLE_PARAMETERS, DEFAULT_PROFILE
 from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
 from .weather_file import read_weather_file
 from .reinit_file import generate_reinit_file
-from ._base_file import resolve_dict_values
 
 __all__ = [
     "generate_control_file",
     "read_control_file",
     "generate_nudge_file",
+    "read_crop_file",
+    "generate_crop_file",
     "read_operation_file",
     "generate_operation_file",
     "read_output",
@@ -28,6 +27,9 @@ __all__ = [
     "read_soil_file",
     "read_weather_file",
     "generate_reinit_file",
+    "convert_obsolete_crop_files",
+    "convert_obsolete_operation_files",
+    "convert_obsolete_soil_files",
     "plot_yield",
     "plot_operations",
     "plot_map",

@@ -4,11 +4,7 @@ import geopandas as gpd
 import pandas as pd
 from pathlib import Path
 
-# Geospatial file readers (shapefile/KML boundary files).
-# Isolated in this module so that fiona/geopandas are only imported when a
-# geospatial feature is actually used (e.g. plot_tools), not by every
-# consumer of the core Cycles file-format modules.
-def read_geospatial_file(file_path: str | Path) -> gpd.GeoDataFrame:
+def _read_geospatial_file(file_path: str | Path) -> gpd.GeoDataFrame:
     file_path = Path(file_path)
     ext = file_path.suffix.lstrip('.').lower()
     match ext:

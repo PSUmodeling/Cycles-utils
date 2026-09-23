@@ -71,7 +71,7 @@ class SoilGrids:
 
     Args:
         path: Directory containing downloaded SoilGrids rasters.
-        maps: Optional map identifiers in ``property@layer`` format. If not provided, all available maps are loaded.
+        maps: Optional map identifiers in `property@layer` format. If not provided, all available maps are loaded.
         crs: Optional target CRS for reprojection.
         aggregated: Optional aggregated resolution (1000 or 5000 m).
 
@@ -217,20 +217,20 @@ def download_soilgrids_data(path: str | Path, *,
     """Download SoilGrids raster layers via WCS.
 
     You can provide either a boundary polygon or an explicit bounding box.  Bounding boxes are expected in
-    ``(west, south, east, north)`` order.
+    `(west, south, east, north)` order.
 
     Args:
         path: Directory where downloaded GeoTIFF files are written.
-        maps: Map identifiers in ``property@layer`` format.
+        maps: Map identifiers in `property@layer` format.
         boundary: Optional polygon used to derive a buffered bounding box.
-        bbox: Optional explicit bounding box as ``(west, south, east, north)``.
-        crs: CRS of the provided ``bbox`` coordinates.
+        bbox: Optional explicit bounding box as `(west, south, east, north)`.
+        crs: CRS of the provided `bbox` coordinates.
 
     Returns:
         None.
 
     Raises:
-        ValueError: If neither ``boundary`` nor ``bbox`` is provided.
+        ValueError: If neither `boundary` nor `bbox` is provided.
     """
     if boundary is not None and bbox is None:
         bbox = _bbox_from_boundary(boundary)

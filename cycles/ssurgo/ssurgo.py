@@ -123,7 +123,7 @@ class Ssurgo:
         None.
 
     Raises:
-        ValueError: If neither ``state`` nor a boundary is provided, or if both ``lat_lon`` and ``boundary`` are provided.
+        ValueError: If neither `state` nor a boundary is provided, or if both `lat_lon` and `boundary` are provided.
     """
 
     def __init__(self, path: str | Path, *, state: str | None=None, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
@@ -156,7 +156,7 @@ class Ssurgo:
             self._mapunits = luts['mapunit']
             return
 
-        assert boundary is not None
+        assert isinstance(boundary, gpd.GeoDataFrame)
         gdf = _read_mupolygon(path, self.state, boundary)
         self._mapunits = gdf.merge(luts['mapunit'].drop(columns='musym'), on='mukey', how='left')
         self.components = self.components[self.components['mukey'].isin(self._mapunits['mukey'].unique())]
@@ -261,7 +261,7 @@ class Ssurgo:
             major_only: If True, include only components marked as major.
 
         Returns:
-            Soil profile as a list of ``SoilLayer`` records.
+            Soil profile as a list of `SoilLayer` records.
         """
         mukey = mukey or self._ensure_mukey()
 

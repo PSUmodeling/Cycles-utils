@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, get_type_hints
-from ._base_file import write_file, resolve_dict_values, extract, parse_value, unwrap_optional, FMT_1F
+from ._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, FMT_1F
 
 @dataclass(kw_only=True)
 class SimulationYears:
@@ -52,16 +52,16 @@ class ControlConfig:
 
 
 def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | None, input_dir: Path) -> ControlConfig:
-    resolved = resolve_dict_values(control_dict, simulation_dict)
+    resolved = _resolve_dict_values(control_dict, simulation_dict)
 
     if 'soil_layers' not in resolved:
         resolved['soil_layers'] = _get_soil_layers(input_dir / resolved['soil_file'])
 
     return ControlConfig(
-        simulation_years=SimulationYears(**extract(SimulationYears, resolved)),
-        input_files=InputFiles(**extract(InputFiles, resolved)),
-        simulation_options=SimulationOptions(**extract(SimulationOptions, resolved)),
-        output_control=OutputControl(**extract(OutputControl, resolved)),
+        simulation_years=SimulationYears(**_extract(SimulationYears, resolved)),
+        input_files=InputFiles(**_extract(InputFiles, resolved)),
+        simulation_options=SimulationOptions(**_extract(SimulationOptions, resolved)),
+        output_control=OutputControl(**_extract(OutputControl, resolved)),
     )
 
 
@@ -120,7 +120,7 @@ def generate_control_file(file_path: str | Path, user_dict: dict[str, Any] | Con
         config = _build_control_config(user_dict, simulation_dict, file_path.parent)
     else:
         config = user_dict
-    write_file(file_path, config)
+    _write_file(file_path, config)
 
     return config
 
@@ -142,8 +142,8 @@ def read_control_file(file_path: str | Path) -> ControlConfig:
 
     control_dict = {}
     for f in fields(ControlConfig):
-        target_class = unwrap_optional(hints[f.name])
+        target_class = _unwrap_optional(hints[f.name])
         sub_hints = get_type_hints(target_class)
-        control_dict[f.name] = target_class(**{sub_field.name: parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
+        control_dict[f.name] = target_class(**{sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
 
     return ControlConfig(**control_dict)

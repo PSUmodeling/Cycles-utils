@@ -1,13 +1,13 @@
+from dataclasses import dataclass, field, fields
+from pathlib import Path
+from typing import get_type_hints, Any
+from ._base_file import _unwrap_optional, _format_field, FMT_1F, FMT_2F, FMT_3F
 from .operation_file import Planting, Tillage, FixedFertilization
 from .operation_file import generate_operation_file
 from .crop_file import Crop, generate_crop_file
 from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
-from dataclasses import dataclass, field, fields
-from pathlib import Path
-from typing import get_type_hints, Any
 from .soil_file import DEFAULT_PROFILE
-from ._base_file import unwrap_optional, format_field, FMT_1F, FMT_2F, FMT_3F
 
 SOC_FRACTION = 0.58
 OPERATION_TYPES = ('planting', 'tillage', 'fixed_fertilization', 'fixed_irrigation', 'auto_irrigation')
@@ -45,7 +45,7 @@ def _create_object_from_dict(target_class: type, data_dict: dict[str, Any], *, o
 
     return target_class(
         **{
-            f.name: unwrap_optional(hints[f.name])(data_dict.get(keys[f.name], f.default))
+            f.name: _unwrap_optional(hints[f.name])(data_dict.get(keys[f.name], f.default))
             for f in fields(target_class)
             if f.name in keys and keys[f.name] in data_dict
         }
@@ -116,6 +116,12 @@ def _read_obsolete_crop_file(file_path: str | Path) -> dict[str, dict[str, str]]
 
 
 def convert_obsolete_crop_files(crop_fns: dict[str | Path, str | Path], *, planted_crops: set[str] | None=None) -> None:
+    """Convert obsolete crop files to the current Cycles crop-file format.
+
+    Args:
+        crop_fns: Mapping from obsolete crop-file paths to destination paths.
+        planted_crops: Optional set of crop names to include. If omitted, all crops in each source file are converted.
+    """
     for obsolete_fn, new_fn in crop_fns.items():
         print(f'{obsolete_fn} -> {new_fn}')
         obsolete_crops: dict[str, dict[str, str]] = _read_obsolete_crop_file(obsolete_fn)
@@ -185,7 +191,7 @@ def _convert_obsolete_operations(obsolete_operations: list[dict], crops: dict[st
 
 def _write_resource_file(file_path: Path, resources: list, resource_class: type) -> None:
     contents = [
-        '\n'.join(format_field(r, f, (20, 12)) for f in fields(resource_class))
+        '\n'.join(_format_field(r, f, (20, 12)) for f in fields(resource_class))
         for r in resources
     ]
 
@@ -193,6 +199,19 @@ def _write_resource_file(file_path: Path, resources: list, resource_class: type)
 
 
 def convert_obsolete_operation_files(operation_fns: dict[str, str], crop_fn: str | Path, input_dir: str | Path) -> set[str]:
+    """Convert obsolete operation files and write their shared resources.
+
+    The conversion creates current-format operation files and writes the
+    referenced tillage tools and fertilizers to `input_dir`.
+
+    Args:
+        operation_fns: Mapping from obsolete operation-file paths to destination paths.
+        crop_fn: Path to the obsolete crop file referenced by the operations.
+        input_dir: Directory in which to write `tillage_tools.txt` and `fertilizers.txt`.
+
+    Returns:
+        The names of crops referenced by planting operations.
+    """
     crop_dict = _read_obsolete_crop_file(crop_fn)
     planted_crops = []
     tillage_tools: list[TillageTool] = []
@@ -239,6 +258,13 @@ def _read_obsolete_soil_file(file_path: str | Path) -> tuple[list, int, float, s
 
 
 def convert_obsolete_soil_files(soil_fns: dict, *, keep_profile: bool=True) -> None:
+    """Convert obsolete soil files to the current Cycles soil-file format.
+
+    Args:
+        soil_fns: Mapping from obsolete soil-file paths to destination paths.
+        keep_profile: If true, preserve the source layer structure; otherwise,
+            use the default Cycles soil profile.
+    """
     for obsolete_fn, new_fn in soil_fns.items():
         print(f'{obsolete_fn} -> {new_fn}')
         _convert_obsolete_soil_file(obsolete_fn, new_fn, keep_profile)
