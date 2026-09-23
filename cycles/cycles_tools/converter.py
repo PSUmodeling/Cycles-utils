@@ -14,51 +14,25 @@ OPERATION_TYPES = ('planting', 'tillage', 'fixed_fertilization', 'fixed_irrigati
 
 @dataclass
 class TillageTool:
-    tool: str
+    tool: str = field(compare=False)    # label only; not part of identity
     depth: float = field(metadata={'description': '(m)', 'fmt': FMT_2F})
     soil_disturb_ratio: float = field(metadata={'description': '(-)', 'fmt': FMT_1F})
     mixing_efficiency: float = field(metadata={'description': '(-)', 'fmt': FMT_3F})
 
-    def __eq__(self, other):
-        if not isinstance(other, TillageTool):
-            return NotImplemented
-        return (
-            self.depth == other.depth and
-            self.soil_disturb_ratio == other.soil_disturb_ratio and
-            self.mixing_efficiency == other.mixing_efficiency
-        )
-
 @dataclass
 class Fertilizer:
-    fertilizer: str
+    fertilizer: str = field(compare=False)  # label only; not part of identity
     c_organic: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    c_charcoal: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    c_charcoal: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
     n_organic: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    n_charcoal: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    n_charcoal: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
     n_nh4: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
     n_no3: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    p_organic: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    p_charcoal: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    p_inorganic: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    k: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-    s: float = field(metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
-
-    def __eq__(self, other):
-        if not isinstance(other, Fertilizer):
-            return NotImplemented
-        return (
-            self.c_organic == other.c_organic
-            and self.n_organic == other.n_organic
-            and self.n_nh4 == other.n_nh4
-            and self.n_no3 == other.n_no3
-            #and self.c_charcoal == other.c_charcoal
-            #and self.n_charcoal == other.n_charcoal
-            #and self.p_organic == other.p_organic
-            #and self.p_charcoal == other.p_charcoal
-            #and self.p_inorganic == other.p_inorganic
-            #and self.k == other.k
-            #and self.s == other.s
-        )
+    p_organic: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    p_charcoal: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    p_inorganic: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    k: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
+    s: float = field(compare=False, metadata={'description': '(kg/kg)', 'fmt': FMT_3F})
 
 
 def _create_object_from_dict(target_class: type, data_dict: dict[str, Any], *, override_defaults: dict={}) -> Any:
