@@ -403,7 +403,7 @@
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code><span title="list">list</span>[<span title="cycles.cycles_tools.SoilLayer">SoilLayer</span>]</code>
+                  <code><span title="list">list</span>[<span title="cycles.cycles_tools.soil_file.SoilLayer">SoilLayer</span>]</code>
               –
               <div class="doc-md-description">
                 <p>Soil layers populated from SoilGrids values at the nearest grid cell.</p>
@@ -423,7 +423,7 @@
 
 
 <h4 id="cycles.soilgrids.SoilGrids.generate_soil_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">lat_lon</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">DEFAULT_PROFILE</span><span class="p">)</span></code>
 
 </h4>
 
@@ -489,6 +489,16 @@
                 <p>Optional slope value written to the soil file header.</p>
               </div>
             </li>
+            <li>
+              <b><code>layers</code></b>
+                  (<code><span title="list">list</span>[<span title="cycles.cycles_tools.soil_file.SoilLayer">SoilLayer</span>]</code>, default:
+                      <code><span title="cycles.cycles_tools.soil_file.DEFAULT_PROFILE">DEFAULT_PROFILE</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional target layer structure to map onto. The <code>DEFAULT_PROFILE</code> has 12 layers from 0-2 m depth.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -506,7 +516,7 @@
       <td class="field-body">
         <ul class="first simple">
             <li>
-                  <code>None</code>
+                  <code><span title="list">list</span>[<span title="cycles.cycles_tools.soil_file.SoilLayer">SoilLayer</span>]</code>
               –
               <div class="doc-md-description">
                 <p>None.</p>

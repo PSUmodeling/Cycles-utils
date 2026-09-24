@@ -181,7 +181,7 @@ with the <code>simulation_dict</code> to resolve its value.</p>
             </li>
             <li>
               <b><code>user_dict</code></b>
-                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]</code>)
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>] | <span title="cycles.cycles_tools.control_file.ControlConfig">ControlConfig</span></code>)
               –
               <div class="doc-md-description">
                 <p>Values or callables for control fields.</p>
@@ -283,6 +283,309 @@ with the <code>simulation_dict</code> to resolve its value.</p>
               –
               <div class="doc-md-description">
                 <p>Control configuration.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="cycles.cycles_tools.convert_obsolete_crop_files" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">convert_obsolete_crop_files</span><span class="p">(</span><span class="n">crop_fns</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">planted_crops</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert obsolete crop files to the current Cycles crop-file format.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>crop_fns</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span> | <span title="pathlib.Path">Path</span>, <span title="str">str</span> | <span title="pathlib.Path">Path</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Mapping from obsolete crop-file paths to destination paths.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>planted_crops</code></b>
+                  (<code><span title="set">set</span>[<span title="str">str</span>] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Optional set of crop names to include. If omitted, all crops in each source file are converted.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="cycles.cycles_tools.convert_obsolete_operation_files" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">convert_obsolete_operation_files</span><span class="p">(</span><span class="n">operation_fns</span><span class="p">,</span> <span class="n">crop_fn</span><span class="p">,</span> <span class="n">input_dir</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert obsolete operation files and write their shared resources.</p>
+<p>The conversion creates current-format operation files and writes the
+referenced tillage tools and fertilizers to <code>input_dir</code>.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>operation_fns</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="str">str</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Mapping from obsolete operation-file paths to destination paths.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>crop_fn</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to the obsolete crop file referenced by the operations.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>input_dir</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Directory in which to write <code>tillage_tools.txt</code> and <code>fertilizers.txt</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="set">set</span>[<span title="str">str</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>The names of crops referenced by planting operations.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="cycles.cycles_tools.convert_obsolete_soil_files" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">convert_obsolete_soil_files</span><span class="p">(</span><span class="n">soil_fns</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keep_profile</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convert obsolete soil files to the current Cycles soil-file format.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>soil_fns</code></b>
+                  (<code><span title="dict">dict</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Mapping from obsolete soil-file paths to destination paths.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>keep_profile</code></b>
+                  (<code><span title="bool">bool</span></code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>If true, preserve the source layer structure; otherwise,
+use the default Cycles soil profile.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="cycles.cycles_tools.read_crop_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">read_crop_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Read a Cycles crop file into named <code>Crop</code> dataclass instances.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>file_path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Path to a Cycles crop file.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="cycles.cycles_tools.crop_file.Crop">Crop</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>A dictionary mapping crop names to their structured crop definitions.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="cycles.cycles_tools.generate_crop_file" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">generate_crop_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">crops</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Write a Cycles crop file from user-provided values.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>file_path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Destination crop file path.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>crops</code></b>
+                  (<code><span title="dict">dict</span>[<span title="str">str</span>, <span title="cycles.cycles_tools.crop_file.Crop">Crop</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>Dictionary of crop names and their corresponding <code>Crop</code> dataclass instances.</p>
               </div>
             </li>
         </ul>
@@ -438,8 +741,8 @@ with the <code>calibration_dict</code> to resolve its value.</p>
     <div class="doc doc-contents ">
 
         <p>Write a Cycles operation file from structured operation records.</p>
-<p>The optional description is written as the first line when provided. Each operation is serialized with
-to preserves Cycles field naming and relative day-of-year formatting.</p>
+<p>The optional description is written as the first line when provided. Each operation is serialized with to preserve
+Cycles field naming and relative day-of-year formatting.</p>
 
 
 <table class="field-list">
@@ -565,7 +868,7 @@ to preserves Cycles field naming and relative day-of-year formatting.</p>
 
 
 <h2 id="cycles.cycles_tools.generate_soil_file" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="n">DEFAULT_PROFILE</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">MAPPABLE_PARAMETERS</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_soil_file</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">profile</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">layers</span><span class="o">=</span><span class="n">DEFAULT_PROFILE</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="n">MAPPABLE_PARAMETERS</span><span class="p">,</span> <span class="n">soil_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">slope</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">curve_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsg</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
 
 </h2>
 
@@ -604,7 +907,7 @@ written to <code>file_path</code>.</p>
               </div>
             </li>
             <li>
-              <b><code>target</code></b>
+              <b><code>layers</code></b>
                   (<code><span title="list">list</span>[<span title="cycles.cycles_tools.soil_file.SoilLayer">SoilLayer</span>]</code>, default:
                       <code><span title="cycles.cycles_tools.soil_file.DEFAULT_PROFILE">DEFAULT_PROFILE</span></code>
 )
@@ -938,528 +1241,6 @@ written to <code>file_path</code>.</p>
               –
               <div class="doc-md-description">
                 <p>Day-of-year extracted from re-initialization.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="cycles.cycles_tools.plot_yield" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_yield</span><span class="p">(</span><span class="n">harvest_df</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">crop_colors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Plot grain and forage yields by crop.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>harvest_df</code></b>
-                  (<code><span title="pandas.DataFrame">DataFrame</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Harvest output DataFrame.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>ax</code></b>
-                  (<code><span title="matplotlib.axes.Axes">Axes</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional axes to draw on.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>crop_colors</code></b>
-                  (<code><span title="dict">dict</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional mapping from crop names to plot colors. If omitted, colors are assigned from the axes' color cycle.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>fontsize</code></b>
-                  (<code><span title="int">int</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional global font size override.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>**kwargs</code></b>
-              –
-              <div class="doc-md-description">
-                <p>Options to pass to the matplotlib plotting method.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="matplotlib.axes.Axes">Axes</span></code>
-              –
-              <div class="doc-md-description">
-                <p>Axes containing the yield plot.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="cycles.cycles_tools.plot_operations" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_operations</span><span class="p">(</span><span class="n">operations</span><span class="p">,</span> <span class="n">rotation_size</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Plot operations by day-of-year for each rotation year.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>operations</code></b>
-                  (<code><span title="list">list</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Sequence of parsed operation objects.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>rotation_size</code></b>
-                  (<code><span title="int">int</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Number of years in the rotation.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>axs</code></b>
-                  (<code><span title="matplotlib.axes.Axes">Axes</span> | <span title="numpy.ndarray">ndarray</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional axes object(s) for rendering.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>fontsize</code></b>
-                  (<code><span title="int">int</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional global font size override.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>**kwargs</code></b>
-              –
-              <div class="doc-md-description">
-                <p>Additional options passed to matplotlib plotting method.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="numpy.ndarray">ndarray</span></code>
-              –
-              <div class="doc-md-description">
-                <p>Axes array used to render timelines.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="cycles.cycles_tools.plot_map" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_map</span><span class="p">(</span><span class="n">gdf</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="n">ccrs</span><span class="o">.</span><span class="n">PlateCarree</span><span class="p">(),</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">colorbar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cb_axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="s1">&#39;neither&#39;</span><span class="p">,</span> <span class="n">cb_orientation</span><span class="o">=</span><span class="s1">&#39;horizontal&#39;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">frameon</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Render a thematic map from a GeoDataFrame column.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>gdf</code></b>
-                  (<code><span title="geopandas.GeoDataFrame">GeoDataFrame</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>GeoDataFrame to visualize.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>column</code></b>
-                  (<code><span title="str">str</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Column name to visualize.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>projection</code></b>
-                  (<code><span title="cartopy.crs.Projection">Projection</span></code>, default:
-                      <code><span title="cartopy.crs.PlateCarree">PlateCarree</span>()</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Map projection for output axes.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>ax</code></b>
-                  (<code><span title="collections.abc.Sequence">Sequence</span>[<span title="float">float</span>] | <span title="cartopy.mpl.geoaxes.GeoAxes">GeoAxes</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Existing GeoAxes or add_axes rectangle.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>cmap</code></b>
-                  (<code><span title="matplotlib.colors.Colormap">Colormap</span> | <span title="str">str</span></code>, default:
-                      <code>&#39;viridis&#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Matplotlib colormap.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>vmin</code></b>
-                  (<code><span title="float">float</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional lower bound for colormap normalization.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>vmax</code></b>
-                  (<code><span title="float">float</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional upper bound for colormap normalization.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>colorbar</code></b>
-                  (<code><span title="bool">bool</span></code>, default:
-                      <code>True</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Whether to draw a colorbar.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>cb_axes</code></b>
-                  (<code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>, <span title="float">float</span>] | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional colorbar axes rectangle.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>extend</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;neither&#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Colorbar extension mode.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>cb_orientation</code></b>
-                  (<code><span title="str">str</span></code>, default:
-                      <code>&#39;horizontal&#39;</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Colorbar orientation.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>label</code></b>
-                  (<code><span title="str">str</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional colorbar label.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>title</code></b>
-                  (<code><span title="str">str</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional plot title.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>fontsize</code></b>
-                  (<code><span title="float">float</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional global font size override.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>frameon</code></b>
-                  (<code><span title="bool">bool</span></code>, default:
-                      <code>False</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Whether to draw map frame and grid labels.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="tuple">tuple</span>[<span title="matplotlib.figure.Figure">Figure</span>, <span title="cartopy.mpl.geoaxes.GeoAxes">GeoAxes</span>]</code>
-              –
-              <div class="doc-md-description">
-                <p>Tuple of figure and GeoAxes.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h2 id="cycles.cycles_tools.plot_satellite_map" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_satellite_map</span><span class="p">(</span><span class="n">bound</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">desired_pixels</span><span class="o">=</span><span class="mi">1024</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">style</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
-
-</h2>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Render a satellite basemap over a geographic extent.</p>
-
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Parameters:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-              <b><code>bound</code></b>
-                  (<code><span title="cycles.cycles_tools.plot_tools.MapExtent">MapExtent</span></code>)
-              –
-              <div class="doc-md-description">
-                <p>Geographic bounds as <code>(west, east, south, north)</code> in degrees, or a GeoDataFrame, Polygon, or path to a geospatial file.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>figsize</code></b>
-                  (<code><span title="tuple">tuple</span>[<span title="float">float</span>, <span title="float">float</span>] | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional figure size passed to <code>matplotlib.pyplot.figure</code>.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>alpha</code></b>
-                  (<code><span title="float">float</span></code>, default:
-                      <code>1.0</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Basemap transparency where <code>1.0</code> is fully opaque.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>ax</code></b>
-                  (<code><span title="collections.abc.Sequence">Sequence</span>[<span title="float">float</span>] | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional axes rectangle passed to <code>Figure.add_axes</code>.  If omitted, a full-figure subplot is created.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>desired_pixels</code></b>
-                  (<code><span title="int">int</span></code>, default:
-                      <code>1024</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Target figure resolution in pixels used to estimate tile zoom.</p>
-              </div>
-            </li>
-            <li>
-              <b><code>style</code></b>
-                  (<code><span title="str">str</span> | None</code>, default:
-                      <code>None</code>
-)
-              –
-              <div class="doc-md-description">
-                <p>Optional Cartopy GoogleTiles style string. If omitted, ArcGIS World Imagery tiles are used.</p>
-              </div>
-            </li>
-        </ul>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<table class="field-list">
-  <colgroup>
-    <col class="field-name" />
-    <col class="field-body" />
-  </colgroup>
-  <tbody valign="top">
-    <tr class="field">
-      <th class="field-name">Returns:</th>
-      <td class="field-body">
-        <ul class="first simple">
-            <li>
-                  <code><span title="tuple">tuple</span>[<span title="cartopy.mpl.geoaxes.GeoAxes">GeoAxes</span>, <span title="cartopy.crs.Projection">Projection</span>]</code>
-              –
-              <div class="doc-md-description">
-                <p>Tuple containing:
-- GeoAxes with the satellite basemap.
-- Projection associated with the tile source.</p>
               </div>
             </li>
         </ul>

@@ -100,7 +100,7 @@
 
 
 <h2 id="cycles.CyclesRotationBuilder" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">CyclesRotationBuilder</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">crops</span><span class="p">,</span> <span class="n">control_dict</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">build_yield_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
+              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">CyclesRotationBuilder</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="p">,</span> <span class="n">crops</span><span class="p">,</span> <span class="n">control_dict</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">build_yield_matrix</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
@@ -162,6 +162,17 @@ break-point, and iteratively builds a multi-year rotation. Integrates economic s
               </div>
             </li>
             <li>
+              <b><code>path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>, default:
+                      <code>&#39;.&#39;</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Working directory containing (or to contain) the <code>input/</code>, <code>summary/</code>, and
+<code>template/</code> subdirectories. Defaults to the current directory.</p>
+              </div>
+            </li>
+            <li>
               <b><code>build_yield_matrix</code></b>
                   (<code><span title="bool">bool</span></code>, default:
                       <code>True</code>
@@ -217,6 +228,14 @@ break-point, and iteratively builds a multi-year rotation. Integrates economic s
               –
               <div class="doc-md-description">
                 <p>Base control file parameters (simulation years, options, etc.).</p>
+              </div>
+            </li>
+            <li>
+              <b><code>path</code></b>
+                  (<code><span title="str">str</span> | <span title="pathlib.Path">Path</span></code>)
+              –
+              <div class="doc-md-description">
+                <p>Working directory containing the <code>input/</code>, <code>summary/</code>, and <code>template/</code> subdirectories.</p>
               </div>
             </li>
             <li>

@@ -114,7 +114,7 @@
 
 
 <h2 id="cycles.Cycles" class="doc doc-heading">
-              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">Cycles</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">simulation</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+              <code class="highlight language-python"><span class="n">cycles</span><span class="o">.</span><span class="n">Cycles</span><span class="p">(</span><span class="n">simulation</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">executable</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-dataclass"><code>dataclass</code></small>
@@ -144,7 +144,9 @@ loads the control file upon initialization.</p>
         <ul class="first simple">
             <li>
               <b><code>path</code></b>
-                  (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span></code>)
+                  (<code><span title="pathlib.Path">Path</span> | <span title="str">str</span></code>, default:
+                      <code>&#39;.&#39;</code>
+)
               –
               <div class="doc-md-description">
                 <p>Path to the simulation directory (containing input/ and output/ subdirs).</p>
