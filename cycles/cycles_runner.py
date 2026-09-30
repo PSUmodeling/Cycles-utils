@@ -3,6 +3,7 @@ import os
 import pandas as pd
 import shutil
 import subprocess
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
@@ -173,6 +174,8 @@ class CyclesRunner:
 
         The `-s` option enables spin-up for the simulations. The results will be consolidated into `summary/summary.csv`.
         """
+        if calibration_dict is not None and 'n' not in options:
+            warnings.warn('Nudge parameters are provided but Cycles is not running in nudge mode.', UserWarning)
         if isinstance(simulations, pd.DataFrame):
             simulations = simulations.to_dict(orient='records')
         assert isinstance(simulations, list)
