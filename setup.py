@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='Cycles-utils',
-    version='4.1.0',
+    version='4.1.0.post',
     author='Yuning Shi',
     author_email="shiyuning@gmail.com",
     packages=find_packages(),
@@ -29,8 +29,7 @@ setup(
         # cycles.gadm (administrative boundary lookup).
         'gadm': ['geopandas>=0.9.0'],
         # Convenience bundle for contributors/CI running the full test suite
-        'all': ['cartopy>=0.18.0', 'geopandas>=0.9.0', 'fiona>=1.8.20', 'shapely>=1.7.1',
-                'rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'pyproj>=3.0.1',
+        'all': ['cartopy>=0.18.0', 'geopandas>=0.9.0', 'fiona>=1.8.20', 'shapely>=1.7.1', 'rioxarray>=0.5.0', 'owslib>=0.24.1', 'rasterio>=1.2.3', 'pyproj>=3.0.1',
                 'netCDF4>=1.5.7', 'tqdm>=4.60.0', 'scipy>=1.6.3'],
     },
 )

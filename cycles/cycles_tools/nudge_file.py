@@ -18,6 +18,7 @@ class CalibrationMultipliers:
     nitrif_rate: float = field(default=1.0, metadata={'description': 'nitrification rate', 'fmt': FMT_2F})
     pot_denitrif_rate: float = field(default=1.0, metadata={'description': 'potential denitrification rate', 'fmt': FMT_2F})
     denitrif_half_rate: float = field(default=1.0, metadata={'description': 'half saturation constant for denitrification', 'fmt': FMT_2F})
+    n2o_respiration_factor: float = field(default=1.0, metadata={'description': 'respiration factor that modulates proportion of N2O from denitrification', 'fmt': FMT_2F})
     decomp_half_resp: float = field(default=1.0, metadata={'description': 'decomposition half response to saturation (default 0.22)', 'fmt': FMT_2F})
     decomp_resp_power: float = field(default=1.0, metadata={'description': 'decomposition exponential response to saturation (default 3.0)', 'fmt': FMT_2F})
     root_progression: float = field(default=1.0, metadata={'description': 'rooting depth progression rate', 'fmt': FMT_2F})
