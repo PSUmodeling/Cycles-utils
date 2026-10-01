@@ -7,7 +7,7 @@ from itertools import product
 from pathlib import Path
 from typing import NamedTuple
 from .cycles import Cycles
-from .cycles_runner import CyclesRunner
+from .cycles_runner import CyclesRunner, _run_cycles_simulation
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
 from .cycles_tools.operation_file import _format_operation
@@ -176,11 +176,9 @@ class CyclesRotationBuilder:
         generate_control_file(self.path / 'input' / f'{self.simulation}.ctrl', self.control_dict)
         generate_operation_file(self.path / 'input' / f'{self.simulation}.operation', operations)
 
-        cycles = Cycles(path=self.path, simulation=self.simulation, executable=self.executable)
         options = '-b'
-
         while True:
-            status, screen_output = cycles.run(options=options, silence=False)
+            status, screen_output = _run_cycles_simulation(self.path, self.executable, self.simulation, options, silence=False)
             if status != BREAK_POINT_REACHED:
                 break
 

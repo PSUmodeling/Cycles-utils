@@ -12,7 +12,7 @@ from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file
 from .cycles_tools._base_file import _resolve_dict_values
 
-SimulationConfig = list[dict] | pd.DataFrame
+SimulationConfig = list[dict] | pd.DataFrame | list[None] | None
 
 INPUT_DIR: str = 'input'
 OUTPUT_DIR: str = 'output'
@@ -58,7 +58,7 @@ class CyclesRunner:
         self.path = Path(self.path)
 
 
-    def run(self, simulations: SimulationConfig, control_dict: dict[str, Any], *,
+    def run(self, *, control_dict: dict[str, Any], simulations: SimulationConfig=None,
         summary: str | dict[str, str] | None=None,
         operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
         calibration_dict: dict[str, Any] | None=None,
@@ -176,9 +176,6 @@ class CyclesRunner:
         """
         if calibration_dict is not None and 'n' not in options:
             warnings.warn('Nudge parameters are provided but Cycles is not running in nudge mode.', UserWarning)
-        if isinstance(simulations, pd.DataFrame):
-            simulations = simulations.to_dict(orient='records')
-        assert isinstance(simulations, list)
 
         if (operation_template is None) != (operation_dict is None):
             raise ValueError(
@@ -206,23 +203,28 @@ class CyclesRunner:
         assert isinstance(self.path, Path)
         (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
 
+        simulations = _prepare_simulations(simulations)
+        assert isinstance(simulations, list)
         for s in simulations:
             cxt: SimulationContext = self._resolve(s, control_dict, operation_dict, calibration_dict)
             print(f'{cxt.name} - ', end='')
 
             self._write_inputs(cxt, operation_template)
 
-            cycles = Cycles(simulation=cxt.name, path=self.path, executable=self.executable)
-
-            code, _ = cycles.run(options=options, silence=silence)
+            code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
 
             if code == 0:
-                self._write_summary(cycles, summary, header=first_run, comment=comment)
                 first_run = False
                 print('Success')
             elif code == 1:
                 print('Fail')
 
+            if s is None:
+                return
+
+            if code == 0:
+                cycles = Cycles(simulation=cxt.name, path=self.path)
+                self._write_summary(cycles, summary, header=first_run, comment=comment)
             if rm_input:
                 self._remove_inputs(cxt)
             if rm_output:
@@ -233,7 +235,7 @@ class CyclesRunner:
                 (self.path / INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
 
 
-    def _resolve(self, simulation: dict[str, Any], control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
+    def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
         control = _resolve_dict_values(control_dict, simulation)
         assert isinstance(self.path, Path)
         return SimulationContext(
@@ -296,3 +298,33 @@ def _generate_comment(executable: str, options: str) -> str:
         'dynamically reduced fertilization rates' if 'x' in options else None,
     ]
     return ', '.join(p for p in parts if p) + '\n'
+
+
+def _run_cycles_simulation(path: Path, executable: str, simulation: str, options: str, silence: bool) -> tuple[int, str]:
+    cwd = os.getcwd()
+    cmd = [executable, *(options.split() if options else []), simulation]
+
+    os.chdir(path)
+    result = subprocess.run(
+        cmd,
+        shell=os.name == 'nt',
+        capture_output=True,
+        text=True,
+    )
+    if not silence:
+        print(result.stdout)
+    if result.stderr:
+        print(result.stderr)
+
+    os.chdir(cwd)
+
+    return result.returncode, result.stdout
+
+
+def _prepare_simulations(simulations: SimulationConfig) -> list:
+    if simulations is None:
+        simulations = [None]
+    if isinstance(simulations, pd.DataFrame):
+        simulations = simulations.to_dict(orient='records')
+
+    return simulations

@@ -1,8 +1,6 @@
 from __future__ import annotations
 import numpy as np
-import os
 import pandas as pd
-import subprocess
 from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -24,13 +22,12 @@ class Output:
 class Cycles:
     """Interface for executing one Cycles simulation and reading its files.
 
-    Provides methods to run simulations, read outputs, and inspect soil/weather/operation configurations. Automatically
-    loads the control file upon initialization.
+    Provides methods to read outputs, and inspect soil/weather/operation configurations. Automatically loads the control
+    file upon initialization.
 
     Args:
         path: Path to the simulation directory (containing input/ and output/ subdirs).
         simulation: Name of the simulation (base name of control file without extension).
-        executable: Optional absolute path to the Cycles executable binary. This is required to run simulations using the `run` method.
 
     Attributes:
         path: Path to the simulation directory (containing input/ and output/ subdirs).
@@ -42,12 +39,10 @@ class Cycles:
         curve_number: Runoff curve number for hydrologic calculations.
         slope: Land slope used in erosion and runoff models.
         weather: DataFrame of weather forcing data (temperature, precipitation, etc.).
-        executable: Absolute path to the Cycles executable binary.
     """
 
     simulation: str
     path: Path | str = '.'
-    executable: Path | str | None = None
     output: dict[str, Output] = field(init=False, default_factory=dict[str, Output])
     control: ControlConfig | None = field(init=False, default=None)
     operations: list | None = field(init=False, default=None)
@@ -61,42 +56,6 @@ class Cycles:
         self.path = Path(self.path)
         assert isinstance(self.path, Path)
         self.control = _read_control_file(self.path / 'input' / f'{self.simulation}.ctrl')
-        if self.executable is not None:
-            self.executable = str(Path(self.executable).resolve())
-
-
-    def run(self, options: str, silence: bool=False) -> tuple[int, str]:
-        """Run the Cycles executable for this simulation.
-
-        To use the `run` method, the `executable` attribute must be set to the path of the Cycles executable. The
-        `options` string is passed directly to the command line when invoking Cycles, allowing you to specify any
-        command-line options supported by Cycles (e.g., `-s` for spin-up, etc.).
-
-        Args:
-            options: Command-line options passed to Cycles.
-            silence: If True, suppress stdout and stderr printing.
-
-        Returns:
-            A tuple with process return code and stdout text.
-        """
-        cwd = os.getcwd()
-        cmd = [self.executable, *(options.split() if options else []), self.simulation]
-
-        os.chdir(self.path)
-        result = subprocess.run(
-            cmd,
-            shell=os.name == 'nt',
-            capture_output=True,
-            text=True,
-        )
-        if not silence:
-            print(result.stdout)
-        if result.stderr:
-            print(result.stderr)
-
-        os.chdir(cwd)
-
-        return result.returncode, result.stdout
 
 
     def read_output(self, output_types: Collection) -> None:
