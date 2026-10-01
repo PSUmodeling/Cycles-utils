@@ -212,12 +212,7 @@ class CyclesRunner:
             self._write_inputs(cxt, operation_template)
 
             code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
-
-            if code == 0:
-                first_run = False
-                print('Success')
-            elif code == 1:
-                print('Fail')
+            print('Success' if code == 0 else 'Fail')
 
             if s is None:
                 return
@@ -225,6 +220,7 @@ class CyclesRunner:
             if code == 0:
                 cycles = Cycles(simulation=cxt.name, path=self.path)
                 self._write_summary(cycles, summary, header=first_run, comment=comment)
+                first_run = False
             if rm_input:
                 self._remove_inputs(cxt)
             if rm_output:
