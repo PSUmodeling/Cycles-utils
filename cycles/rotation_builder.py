@@ -102,23 +102,38 @@ class CyclesRotationBuilder:
     break-point, and iteratively builds a multi-year rotation. Integrates economic scoring with agronomic constraints
     (e.g., minimum planting interval, crop group penalties).
 
+    Builds one rotation per "site": pass `simulations=None` to build a single rotation using `control_dict` directly, or
+    pass `simulations=list[dict] | DataFrame` to build one independent rotation per row (each row typically overriding
+    site-specific fields in `control_dict`, e.g., `weather_file`/`soil_file`, via the same callable-resolution rules as
+    `CyclesRunner`). All rows share one `path` (and hence one `input/`/`summary/`/`template/` directory tree) but are
+    kept distinct by `simulation_name`, exactly like `CyclesRunner`'s batch convention.
+
+    Note construction is expensive: `__post_init__` builds (or reads) the yield matrix for every row in `simulations` up
+    front, since the yield matrix is site-specific (depends on each row's resolved `control_dict`, e.g. its weather/soil
+    files).
+
     Args:
-        simulation: Base simulation name for generated input/output directories.
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.
-        control_dict: Base control file parameters (simulation years, options, etc.).
-        path: Working directory containing (or to contain) the `input/`, `summary/`, and
-            `template/` subdirectories. Defaults to the current directory.
-        build_yield_matrix: Optional flag: If True, run simulations to build yield matrix; else read from disk.
+        control_dict: Base control file values/callables, resolved per row exactly like `CyclesRunner.control_dict`
+            (see `_resolve_dict_values`).
+        path: Working directory containing (or to contain) the `input/`, `summary/`, and `template/` subdirectories,
+            shared across all rows. Defaults to the current directory.
+        simulations: None to build a single rotation directly from `control_dict`; otherwise a list of dicts or a
+            DataFrame, one row per site.
+        build_yield_matrix: Keyword-only. If True (default), run simulations to build each row's yield matrix; if False,
+            read previously-built yield matrices from disk instead.
 
     Attributes:
-        simulation: Base simulation name for generated input/output directories.
         executable: Absolute path to the Cycles executable binary.
         crops: List of Crop objects with available operations for rotation.
-        control_dict: Base control file parameters (simulation years, options, etc.).
+        control_dict: Base control file values/callables as passed in.
         path: Working directory containing the `input/`, `summary/`, and `template/` subdirectories.
+        simulations: Normalized list of per-row configs (`[None]` if constructed with `simulations=None`), resolved via
+            `_prepare_simulations`.
         fertilizers: Dictionary mapping fertilizer names to Fertilizer objects.
-        yield_matrix: Dictionary mapping crop names to yield prediction DataFrames.
+        yield_matrix: Nested dict mapping each row's resolved `simulation_name` to a dict of crop name -> yield
+            prediction DataFrame for that site.
         build_yield_matrix: If True, run simulations to build yield matrix; else read from disk.
         crop_price_data: DataFrame of crop prices indexed by calendar year.
         fertilizer_price_data: DataFrame of fertilizer prices indexed by year, or None.
@@ -157,14 +172,20 @@ class CyclesRotationBuilder:
             self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.build_yield_matrix)
 
 
-    def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None) -> None:
-        """Run the dynamic rotation-building loop.
+    def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None, silence: bool=False) -> None:
+        """Run the dynamic rotation-building loop for every row in `simulations`.
+
+        A row (site) that fails -- either because Cycles itself exits with a non-zero code, or because building/scoring
+        its rotation raises -- is logged and skipped; it does not abort the rest of the batch, matching
+        `CyclesRunner.run()`'s per-row failure handling. In single-run mode (constructed with `simulations=None`) the
+        one row's exception is still caught and reported the same way, for a consistent Success/Fail UI either way.
 
         Args:
             crop_price: CSV file of crop prices indexed by year.
             fertilizer_price: Optional fertilizer price table indexed by year.
             production_cost: Optional crop production cost table indexed by year.
             rotation_frequency: Optional min/max frequency constraints per crop symbol.
+            silence: If True, suppress simulation screen output.
         """
         self.crop_price_data = _optional_csv(crop_price)
         self.fertilizer_price_data = _optional_csv(fertilizer_price)
@@ -176,10 +197,18 @@ class CyclesRotationBuilder:
 
         assert isinstance(self.simulations, list)
         for s in self.simulations:
-            self._run_autonomous_rotation_builder(_resolve_dict_values(self.control_dict, s))
+            control_dict = _resolve_dict_values(self.control_dict, s)
+            name = control_dict.get('simulation_name', '<unnamed>')
+            print(f'{name} - ', end='')
+            try:
+                self._run_autonomous_rotation_builder(control_dict, silence)
+            except Exception as exc:
+                print(f'Failed: {exc}')
+                continue
+            print('Success')
 
 
-    def _run_autonomous_rotation_builder(self, control_dict: dict) -> None:
+    def _run_autonomous_rotation_builder(self, control_dict: dict, silence: bool) -> None:
         operations: list[Operation] = []
         simulation = control_dict['simulation_name']
         start_year = control_dict['simulation_start_year']
@@ -195,7 +224,7 @@ class CyclesRotationBuilder:
         times_planted: dict[str, int] = {c.symbol: 0 for c in self.crops}
         options = '-b'
         while True:
-            status, screen_output = _run_cycles_simulation(self.path, self.executable, simulation, options, silence=False)
+            status, screen_output = _run_cycles_simulation(self.path, self.executable, simulation, options, silence=silence)
             all_screen_output += screen_output
             if status != BREAK_POINT_REACHED:
                 break
@@ -216,13 +245,20 @@ class CyclesRotationBuilder:
 
             generate_operation_file(self.path / f'input/{simulation}.operation', operations)
 
+        if status != 0:
+            # status == BREAK_POINT_REACHED is handled by the loop itself; any other non-zero
+            # code here means the final Cycles run (after the loop broke out) failed, so the
+            # harvest output this site would need for _output_economic_return doesn't exist.
+            # Mirrors CyclesRunner.run(), which likewise skips summary-writing for a failed run.
+            raise RuntimeError(f"Cycles simulation '{simulation}' failed with exit code {status}")
+
         self._output_economic_return(simulation, start_year, all_screen_output)
 
 
     def _output_economic_return(self, simulation: str, start_year: int, screen_output: str) -> None:
         cycles = Cycles(simulation, self.path)
         cycles.read_output('harvest')
-        df = cycles.output['harvest'].data[['date', 'crop', 'grain_yield']]
+        df = cycles.output['harvest'].data[['date', 'crop', 'grain_yield']].copy()
         df['event'] = 'harvest'
         df['amount'] = df.apply(lambda x: x['grain_yield'] * self.crop_price_data.loc[x['date'].year, _find_crop(self.crops, x['crop']).symbol], axis=1)    # type: ignore
         df.rename(columns={'crop': 'item', 'grain_yield': 'quantity'}, inplace=True)

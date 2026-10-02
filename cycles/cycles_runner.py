@@ -68,10 +68,14 @@ class CyclesRunner:
         Args:
             simulations: Simulation configurations as list of dicts or a DataFrame. Each dict or DataFrame row should be
                 corresponding to a single simulation and contain values to support the control, operation, and
-                calibration dictionaries.
+                calibration dictionaries. If None, a single simulation is run directly from `control_dict`/
+                `operation_dict` (no per-row substitution). In this single-run mode, the summary CSV is **not**
+                written and `rm_input`/`rm_output`/`rm_steady_state_soil` are **not** applied, regardless of how
+                those flags are set -- the full input/output is always left in place for inspection.
             control_dict: Control-file values or callables evaluated per simulation.
-            summary: Summary CSV name for the summary harvest file written under summary directory. If a dictionary is provided, the keys are output file types and the values are
-                summary CSV names. If None, only the harvest summary is written into `summary/summary.csv`.
+            summary: Summary CSV name for the summary harvest file written under summary directory. If a dictionary is
+                provided, the keys are output file types and the values are summary CSV names. If None, only the harvest
+                summary is written into `summary/summary.csv`.
             operation_template: Template file for generated operation files.
             operation_dict: Substitutions used with operation template.
             calibration_dict: Nudge-file values or callables per simulation.
@@ -81,6 +85,10 @@ class CyclesRunner:
             rm_steady_state_soil: Remove generated steady-state soil file.
             silence: If True, suppress simulation screen output.
             user_comment: Optional text prefixed to summary header comments.
+
+        In batch mode (`simulations` is a list/DataFrame), a simulation that fails (non-zero exit code) is skipped --
+        its summary row is not written -- but does not abort the remaining batch; cleanup (`rm_input`/`rm_output`)
+        still runs for the failed row if requested.
 
         The following fields are required in `control_dict`:
 
@@ -140,8 +148,9 @@ class CyclesRunner:
         }
         ```
 
-        The operation dictionary should work with a template operation file to generate the appropriate operation files for each simulation. In the template operation file, use
-        placeholders for planting `DOY`, `END_DOY`, and `CROP` like below:
+        The operation dictionary should work with a template operation file to generate the appropriate operation files
+        for each simulation. In the template operation file, use placeholders for planting `DOY`, `END_DOY`, and `CROP`
+        like below:
 
         ```
         DOY         $PD1
@@ -149,7 +158,8 @@ class CyclesRunner:
         CROP        $CROP
         ```
 
-        Then define the operation dictionary to substitute the placeholders with values from the simulation configurations:
+        Then define the operation dictionary to substitute the placeholders with values from the simulation
+        configurations:
 
         ```python
         operation_dict: dict = {
@@ -212,7 +222,7 @@ class CyclesRunner:
             self._write_inputs(cxt, operation_template)
 
             code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
-            print('Success' if code == 0 else 'Fail')
+            print('Success' if code == 0 else f'Fail (exit code {code})')
 
             if s is None:
                 return
@@ -231,7 +241,8 @@ class CyclesRunner:
                 (self.path / INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
 
 
-    def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], operation_dict: dict[str, Any] | None, calibration_dict: dict[str, Any] | None) -> SimulationContext:
+    def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], operation_dict: dict[str, Any] | None,
+                 calibration_dict: dict[str, Any] | None) -> SimulationContext:
         control = _resolve_dict_values(control_dict, simulation)
         assert isinstance(self.path, Path)
         return SimulationContext(
