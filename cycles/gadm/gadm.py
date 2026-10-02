@@ -1,6 +1,7 @@
 from __future__ import annotations
 import geopandas as gpd
 import pandas as pd
+import re
 from enum import Enum
 from pathlib import Path
 
@@ -22,7 +23,7 @@ def _gadm_path(path: Path, country: str, level: GADMLevel) -> Path:
     return path / f'gadm41_{country}_{level.value}.shp'
 
 
-def _read_csv(fn: Path, dtypes: dict, index_col: str) -> pd.DataFrame:
+def _read_csv(fn: Path, dtypes: dict, index_col: str | None) -> pd.DataFrame:
     return pd.read_csv(fn, dtype=dtypes, index_col=index_col)
 
 
@@ -52,6 +53,61 @@ def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
         'County name not found for: '
         + ', '.join(f'{k}={v}' for k, v in kwargs.items() if v is not None)
     )
+
+
+# Matches a trailing county-equivalent designation (e.g. "Centre County" -> "Centre") so lookups accept both the bare
+# name and the full GADM/Census "place name" style, case-insensitively.
+_COUNTY_SUFFIX_RE = re.compile(r'\s+(county|parish|borough|census area|municipality)$', re.IGNORECASE)
+
+
+def _resolve_state_name(state: str) -> str:
+    """Normalize a state token to its full name, accepting a 2-letter abbreviation too."""
+    state = state.strip()
+    if len(state) == 2 and state.isalpha():
+        return state_name(abbreviation=state.upper())
+    return state
+
+
+def _split_county_state(name: str) -> tuple[str, str]:
+    try:
+        county, state = name.split(',', 1)
+    except ValueError:
+        raise ValueError(f"Expected a 'County, State' formatted name, got: {name!r}")
+    return county.strip(), _resolve_state_name(state.strip())
+
+
+def _find_county_by_name(csv: Path, dtypes: dict, name: str) -> pd.Series:
+    """Look up a county row by a 'County, State' formatted name.
+
+    Both the county and state tokens are matched case-insensitively.
+    The county token may optionally include a trailing designation
+    ("Centre" or "Centre County" both match), and the state token may be
+    either the full state name or its 2-letter abbreviation (e.g. both
+    'Centre, PA' and 'Centre, Pennsylvania' resolve to the same county).
+
+    Args:
+        csv: Path to the county FIPS/GID conversion CSV.
+        dtypes: Column dtypes to apply when reading the CSV.
+        name: County name formatted as 'County, State'.
+
+    Returns:
+        The matching row as a pandas Series.
+
+    Raises:
+        ValueError: If `name` isn't in 'County, State' format.
+        KeyError: If no county, or more than one county, matches.
+    """
+    county, state = _split_county_state(name)
+    county = _COUNTY_SUFFIX_RE.sub('', county).strip()
+
+    df = _read_csv(csv, dtypes, index_col=None)
+    match = df[(df['name_2'].str.casefold() == county.casefold()) & (df['name_1'].str.casefold() == state.casefold())]
+
+    if match.empty:
+        raise KeyError(f'County not found for name={name!r}')
+    if len(match) > 1:
+        raise KeyError(f'Multiple counties matched for name={name!r}')
+    return match.iloc[0]
 
 
 def read_gadm(path: str | Path, country: str, level_str: str, *, conus: bool=True) -> gpd.GeoDataFrame:
@@ -147,33 +203,43 @@ def state_name(*, abbreviation: str | None=None, gid: str | None=None, fips: int
     return str(_find_representation(STATE_CSV, STATE_DTYPES, 'state', abbreviation=abbreviation, gid=gid, fips=fips))
 
 
-def county_gid(*, fips: int) -> str:
-    """Look up county GID by county FIPS code.
+def county_gid(*, fips: int | None=None, name: str | None=None) -> str:
+    """Look up county GID by county FIPS code or by name.
 
     Args:
         fips: Numeric county FIPS code.
+        name: County name formatted as 'County, State', e.g. 'Centre, PA' or 'Centre, Pennsylvania' (county suffix and
+            state form are both optional/interchangeable; matching is case-insensitive).
 
     Returns:
         County GID string.
 
     Raises:
+        ValueError: If `name` isn't in 'County, State' format.
         KeyError: If no matching county record is found.
     """
+    if name is not None:
+        return str(_find_county_by_name(COUNTY_CSV, COUNTY_DTYPES, name)['gid'])
     return str(_find_representation(COUNTY_CSV, COUNTY_DTYPES, 'gid', fips=fips))
 
 
-def county_fips(*, gid: str) -> int:
-    """Look up county FIPS code by county GID.
+def county_fips(*, gid: str | None=None, name: str | None=None) -> int:
+    """Look up county FIPS code by county GID or by name.
 
     Args:
         gid: County GID string.
+        name: County name formatted as 'County, State', e.g. 'Centre, PA' or 'Centre, Pennsylvania' (county suffix and
+            state form are both optional/interchangeable; matching is case-insensitive).
 
     Returns:
         Numeric county FIPS code.
 
     Raises:
+        ValueError: If `name` isn't in 'County, State' format.
         KeyError: If no matching county record is found.
     """
+    if name is not None:
+        return int(_find_county_by_name(COUNTY_CSV, COUNTY_DTYPES, name)['fips'])
     return int(_find_representation(COUNTY_CSV, COUNTY_DTYPES, 'fips', gid=gid))
 
 
