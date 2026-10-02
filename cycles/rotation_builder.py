@@ -223,9 +223,8 @@ class CyclesRotationBuilder:
         cycles = Cycles(simulation, self.path)
         cycles.read_output('harvest')
         df = cycles.output['harvest'].data[['date', 'crop', 'grain_yield']]
-        assert self.crop_price_data is not None
         df['event'] = 'harvest'
-        df['amount'] = df.apply(lambda x: _calculate_harvest_income(x['date'], x['crop'], x['grain_yield'], self.crops, self.crop_price_data), axis=1)
+        df['amount'] = df.apply(lambda x: x['grain_yield'] * self.crop_price_data.loc[x['date'].year, _find_crop(self.crops, x['crop']).symbol], axis=1)    # type: ignore
         df.rename(columns={'crop': 'item', 'grain_yield': 'quantity'}, inplace=True)
 
         lines = [
@@ -242,13 +241,17 @@ class CyclesRotationBuilder:
             assert year is not None
             year = int(year.split()[-1])
             date = datetime(year, 1, 1) + timedelta(days=int(line.split()[1]) - 1)
-            if 'planting' in line.lower():
+            if 'planting' in line.lower() and self.production_cost_data is not None:
                 crop = _find_crop(self.crops, line.split()[-1])
-                costs.append({'date': date, 'item': crop.name, 'quantity': 1.0, 'event': 'planting','amount': -self.production_cost_data.loc[year, crop.symbol]})
-            else:
+                cost = self.production_cost_data.loc[year, crop.symbol]
+                assert isinstance(cost, float)
+                costs.append({'date': date, 'item': crop.name, 'quantity': 1.0, 'event': 'planting','amount': -cost})
+            elif 'fixed fertilization' in line.lower() and self.fertilizer_price_data is not None:
                 fertilizer = line.split()[4]
                 mass = float(line.split()[-2])
-                costs.append({'date': date, 'item': fertilizer, 'quantity': mass, 'event': 'fertilization', 'amount': -self.fertilizer_price_data.loc[year, fertilizer] * mass})
+                price = self.fertilizer_price_data.loc[year, fertilizer]
+                assert isinstance(price, float)
+                costs.append({'date': date, 'item': fertilizer, 'quantity': mass, 'event': 'fertilization', 'amount': -price * mass})
 
         df = pd.concat([df, pd.DataFrame(costs)], ignore_index=True).sort_values(by='date')
 
@@ -262,9 +265,10 @@ class CyclesRotationBuilder:
 
 def _calculate_harvest_income(date: datetime, crop_name: str, crop_yield: float, crops: list[Crop], crop_price_data: pd.DataFrame):
     crop = _find_crop(crops, crop_name)
-    year = date.year
+    price = crop_price_data.loc[date.year, crop.symbol]
+    assert isinstance(price, float)
 
-    return crop_price_data.loc[year, crop.symbol] * crop_yield
+    return crop_yield * price
 
 
 def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int, last_crop: Crop | None, times_planted: dict[str, int],
