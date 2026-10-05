@@ -11,8 +11,9 @@ from enum import Enum
 from netCDF4 import Dataset
 from pathlib import Path
 from scipy.interpolate import interp1d
-from tqdm import tqdm
-from .._base_file import _disable_progress_bar
+from .._base_file import _disable_progress_bar, _if_ipython
+if _if_ipython(): from tqdm.notebook import tqdm
+else: from tqdm import tqdm
 
 pt = os.path.dirname(os.path.realpath(__file__))
 

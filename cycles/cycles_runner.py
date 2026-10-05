@@ -7,11 +7,12 @@ import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
-from tqdm import tqdm
 from typing import Any
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file
 from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
+if _if_ipython(): from tqdm.notebook import tqdm
+else: from tqdm import tqdm
 
 SimulationConfig = list[dict] | pd.DataFrame | list[None] | None
 

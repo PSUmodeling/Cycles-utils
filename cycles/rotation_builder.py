@@ -6,7 +6,6 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from itertools import product
 from pathlib import Path
-from tqdm import tqdm
 from typing import NamedTuple
 from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations
 from .cycles import Cycles
@@ -14,6 +13,8 @@ from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
 from .cycles_tools.operation_file import _format_operation
 from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
+if _if_ipython(): from tqdm.notebook import tqdm
+else: from tqdm import tqdm
 
 FrequencyConfig = dict[str, tuple[float, float]] | None
 
