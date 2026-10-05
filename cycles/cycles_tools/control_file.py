@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, get_type_hints
-from ._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, FMT_1F
+from .._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, FMT_1F
 
 @dataclass(kw_only=True)
 class SimulationYears:

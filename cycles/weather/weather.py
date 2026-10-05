@@ -12,6 +12,7 @@ from netCDF4 import Dataset
 from pathlib import Path
 from scipy.interpolate import interp1d
 from tqdm import tqdm
+from .._base_file import _disable_progress_bar
 
 pt = os.path.dirname(os.path.realpath(__file__))
 
@@ -339,12 +340,12 @@ def generate_weather_files(data_path: Path | str, weather_path: Path | str, forc
 
 
 def _download_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime, date_end: datetime) -> None:
-    for d in tqdm(pd.date_range(start=date_start, end=date_end), desc=f'Download {reanalysis.name} files', unit=' days'):
+    for d in tqdm(pd.date_range(start=date_start, end=date_end), desc=f'Download {reanalysis.name} files', unit=' days', disable=_disable_progress_bar()):
         _download_daily_xldas(data_path, reanalysis, d)
 
 
 def _download_gridmet(data_path: Path, gridmet: REANALYSIS, year_start: int, year_end: int) -> None:
-    with tqdm(total=(year_end - year_start + 1) * len(gridmet.netcdf_variables), desc='Download gridMET files', unit=' files') as progress_bar:
+    with tqdm(total=(year_end - year_start + 1) * len(gridmet.netcdf_variables), desc='Download gridMET files', unit=' files', disable=_disable_progress_bar()) as progress_bar:
         for year in range(year_start, year_end + 1):
             for var in gridmet.netcdf_variables:
                 cmd = [
@@ -489,7 +490,7 @@ def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime
     # Arrays to store daily values
     weather_data = {var: [] for var in reanalysis.weather_file_variables if resolution in WEATHER_FILE_VARIABLES[var].resolution}
 
-    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process {reanalysis.name} files', unit=' days'):
+    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process {reanalysis.name} files', unit=' days', disable=_disable_progress_bar()):
         _process_daily_xldas(data_path, reanalysis, d, grid_df, resolution, weather_data)
 
     weather_data = {key: np.array(value) for key, value in weather_data.items()}
@@ -520,7 +521,7 @@ def _process_gridmet(data_path: Path, date_start: datetime, date_end: datetime, 
     nc_data = {var: [] for var in gridmet.netcdf_variables}
 
     year = -9999
-    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process gridMET files', unit=' days'):
+    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process gridMET files', unit=' days', disable=_disable_progress_bar()):
         if d.year != year:
             # Close netCDF files that are open
             if year != -9999:

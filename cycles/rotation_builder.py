@@ -6,13 +6,14 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from itertools import product
 from pathlib import Path
+from tqdm import tqdm
 from typing import NamedTuple
 from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations
 from .cycles import Cycles
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
 from .cycles_tools.operation_file import _format_operation
-from .cycles_tools._base_file import _resolve_dict_values
+from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 
 FrequencyConfig = dict[str, tuple[float, float]] | None
 
@@ -196,16 +197,27 @@ class CyclesRotationBuilder:
             raise ValueError('Crop price data is required to run the rotation builder.')
 
         assert isinstance(self.simulations, list)
+
+        progress = tqdm(self.simulations, unit='simulation', disable=_disable_progress_bar()) if silence and len(self.simulations) > 1 else None
+
+        def _report(message: str) -> None:
+            tqdm.write(message) if progress is not None else print(message)
+
         for s in self.simulations:
             control_dict = _resolve_dict_values(self.control_dict, s)
             name = control_dict.get('simulation_name', '<unnamed>')
-            print(f'{name} - ', end='')
+            if progress is not None:
+                progress.set_description(name)
             try:
                 self._run_autonomous_rotation_builder(control_dict, silence)
             except Exception as exc:
-                print(f'Failed: {exc}')
-                continue
-            print('Success')
+                _report(f'{name} - Failed: {exc}')
+
+            if progress is not None:
+                progress.update()
+
+        if progress is not None:
+            progress.set_description('Done')
 
 
     def _run_autonomous_rotation_builder(self, control_dict: dict, silence: bool) -> None:
@@ -299,14 +311,6 @@ class CyclesRotationBuilder:
         )
 
 
-def _calculate_harvest_income(date: datetime, crop_name: str, crop_yield: float, crops: list[Crop], crop_price_data: pd.DataFrame):
-    crop = _find_crop(crops, crop_name)
-    price = crop_price_data.loc[date.year, crop.symbol]
-    assert isinstance(price, float)
-
-    return crop_yield * price
-
-
 def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int, last_crop: Crop | None, times_planted: dict[str, int],
                         rotation_frequency: FrequencyConfig, economic_parameters: EconomicParameters) -> RotationResult:
     best = RotationResult(crop=crops[0], doy=0, n_rate=None, economic_return=float('-inf'))
@@ -386,11 +390,23 @@ def _load_yield_matrix(executable: str, path: Path, control_dict: dict, crops: l
     return {c.name: _read_yield_matrix(path, control_dict['simulation_name'], control_dict, c) for c in crops}
 
 
+def _planting_window_length(crop: Crop) -> int:
+    return _last_planting(crop.operations).end_doy - _last_planting(crop.operations).doy + 1
+
+
 def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: list[Crop]) -> None:
     _write_operation_templates(crops, path)
+    progress = tqdm(
+        range(sum([_planting_window_length(c) for c in crops])),
+        disable=_disable_progress_bar(),
+        unit=' simulation',
+        bar_format='{l_bar}{bar}| [{elapsed}<{remaining}, {rate_fmt}{postfix}]',
+        leave=False,
+    )
 
     cycles_runner = CyclesRunner(executable, path)
     for c in crops:
+        progress.set_description(f'{user_dict["simulation_name"]} - Building yield matrix for {c.name}')
         simulation_config, control_dict, operation_dict = _build_simulations(c.operations, user_dict)
         cycles_runner.run(
             simulations=simulation_config,
@@ -400,7 +416,9 @@ def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: lis
             operation_template=path / 'template' / f'{c.name}.operation',
             rm_input=True,
             rm_output=True,
+            _progress_bar=progress,
         )
+    progress.set_description(f'{user_dict["simulation_name"]} - Yield matrix built for all crops')
 
 
 def _read_yield_matrix(path: Path, simulation: str, control_dict: dict, crop: Crop) -> pd.DataFrame:

@@ -2,8 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-from ._base_file import _write_file, _resolve_dict_values, _extract
-from ._base_file import FMT_2F
+from .._base_file import _write_file, _resolve_dict_values, _extract
+from .._base_file import FMT_2F
 
 @dataclass(kw_only=True)
 class CalibrationMultipliers:

@@ -7,10 +7,11 @@ import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
+from tqdm import tqdm
 from typing import Any
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file
-from .cycles_tools._base_file import _resolve_dict_values
+from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 
 SimulationConfig = list[dict] | pd.DataFrame | list[None] | None
 
@@ -59,10 +60,11 @@ class CyclesRunner:
 
 
     def run(self, *, control_dict: dict[str, Any], simulations: SimulationConfig=None,
-        summary: str | dict[str, str] | None=None,
-        operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
-        calibration_dict: dict[str, Any] | None=None,
-        options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='') -> None:
+            summary: str | dict[str, str] | None=None,
+            operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
+            calibration_dict: dict[str, Any] | None=None,
+            options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='',
+            _progress_bar: tqdm | None=None) -> None:
         """Execute a batch of simulations and write a consolidated summary.
 
         Args:
@@ -195,8 +197,7 @@ class CyclesRunner:
             )
 
         operation_template = Path(operation_template) if operation_template is not None else None
-        if user_comment:
-            user_comment = f'# {user_comment.lstrip("# ").rstrip()}\n'
+        user_comment = f'# {user_comment.lstrip("# ").rstrip()}\n' if user_comment else ''
         comment = user_comment + _generate_comment(self.executable, options)
         first_run = True
 
@@ -214,15 +215,26 @@ class CyclesRunner:
         (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
 
         simulations = _prepare_simulations(simulations)
-        assert isinstance(simulations, list)
+
+        owns_progress = _progress_bar is None and silence and len(simulations) > 1
+        progress = tqdm(simulations, unit='simulation', disable=_disable_progress_bar()) if owns_progress else _progress_bar
+
+        def _report(message: str) -> None:
+            tqdm.write(message) if progress is not None else print(message)
+
+        assert simulations is not None
         for s in simulations:
             cxt: SimulationContext = self._resolve(s, control_dict, operation_dict, calibration_dict)
-            print(f'{cxt.name} - ', end='')
+            if owns_progress and progress is not None:
+                progress.set_description(f'Running {cxt.name}')
 
             self._write_inputs(cxt, operation_template)
 
             code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
-            print('Success' if code == 0 else f'Fail (exit code {code})')
+            if code != 0:
+                _report(f'{cxt.name} - Fail (exit code {code})')
+            if progress is not None:
+                progress.update()
 
             if s is None:
                 return
@@ -239,6 +251,9 @@ class CyclesRunner:
                 # Steady-state soil should only be removed if generated during this run (i.e., spin-up was requested).
                 # If using an existing steady-state soil file, it should not be removed.
                 (self.path / INPUT_DIR / f'{cxt.name}_ss.soil').unlink(missing_ok=True)
+
+        if owns_progress and progress is not None:
+            progress.set_description('Done')
 
 
     def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], operation_dict: dict[str, Any] | None,

@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 from dataclasses import dataclass, field, fields
 from typing import get_type_hints, Protocol, Any
-from ._base_file import _parse_value, FMT_1F, FMT_2F, _format_field
+from .._base_file import _parse_value, FMT_1F, FMT_2F, _format_field
 
 class Operation(Protocol):
     year: int | None

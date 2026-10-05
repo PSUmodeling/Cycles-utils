@@ -1,4 +1,6 @@
 from __future__ import annotations
+import os
+import sys
 import types
 from dataclasses import fields
 from pathlib import Path
@@ -74,3 +76,23 @@ def _unwrap_optional(t) -> type:
     if origin is Union or origin is types.UnionType or isinstance(t, types.UnionType):
         return next(arg for arg in t.__args__ if arg is not type(None))
     return t
+
+
+def _if_ipython() -> bool:
+    try:
+        from IPython import get_ipython
+        shell = get_ipython()
+        return shell is not None and shell.__class__.__name__ == 'ZMQInteractiveShell'
+    except ImportError:
+        return False
+
+
+def _disable_progress_bar() -> bool:
+    if _if_ipython():
+        return False
+    if os.environ.get('SLURM_JOB_ID') is not None:
+        return True
+    try:
+        return not sys.stderr.isatty()
+    except AttributeError:
+        return True
