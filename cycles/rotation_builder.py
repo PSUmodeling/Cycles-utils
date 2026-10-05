@@ -90,7 +90,7 @@ class EconomicParameters:
         )
 
 class RotationResult(NamedTuple):
-    crop: Crop
+    crop: Crop | None
     doy: int
     n_rate: float | None
     economic_return: float
@@ -248,13 +248,22 @@ class CyclesRotationBuilder:
             last_crop = _find_crop(self.crops, _last_planting(operations).crop) if operations else None
 
             result = _find_best_rotation(self.crops, start_year, year, doy, last_crop, times_planted, self.rotation_frequency, economic_parameters)
-            planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2
-            if planting_year + start_year - 1 <= end_year:
-                _append_operations(result, planting_year, doy, operations)
-                times_planted[result.crop.symbol] += 1
-                options = '-rb'
+            if result.crop is None:
+                if doy + result.doy % 365 == 0:
+                    break_year = year + (doy + result.doy) // 365 - 1
+                    break_doy = 365
+                else:
+                    break_year = year + (doy + result.doy) // 365
+                    break_doy = (doy + result.doy) % 365
+                options = f'-rb{break_year}{break_doy:03}'
             else:
-                options = '-r'
+                planting_year = year - start_year + 1 if result.doy > doy else year - start_year + 2
+                if planting_year + start_year - 1 <= end_year:
+                    _append_operations(result, planting_year, doy, operations)
+                    times_planted[result.crop.symbol] += 1
+                    options = '-rb'
+                else:
+                    options = '-r'
 
             generate_operation_file(self.path / f'input/{simulation}.operation', operations)
 
@@ -329,7 +338,7 @@ def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int,
 
         result = _calculate_economic_return(year, doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)
 
-        if rotation_frequency is not None:
+        if rotation_frequency is not None and result.crop is not None:
             rotation_year = year - start_year + 1
             result = RotationResult(
                 crop=result.crop,
@@ -476,24 +485,37 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
 
     total_income = ((grain_yield1 + forage_yield1) * economic_parameters.crop_price[crop1.symbol] * (1.0 - penalty1) +
         (grain_yield2 + forage_yield2) * economic_parameters.crop_price[crop2.symbol] * (1.0 - penalty2))
+    fallow_first_income = (grain_yield2 + forage_yield2) * economic_parameters.crop_price[crop2.symbol]
 
     if economic_parameters.production_cost is not None:
         total_income -= economic_parameters.production_cost[crop1.symbol] + economic_parameters.production_cost[crop2.symbol]
+        fallow_first_income -= economic_parameters.production_cost[crop2.symbol]
 
     if economic_parameters.fertilizer_price is not None:
         fertilizer_cost1 = sum(n_rate1 / crop1.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop1.operations if isinstance(op, FixedFertilization))
         fertilizer_cost2 = sum(n_rate2 / crop2.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop2.operations if isinstance(op, FixedFertilization))
         total_income -= fertilizer_cost1 + fertilizer_cost2
+        fallow_first_income -= fertilizer_cost2
 
     daily_incomes = total_income / total_days
+    fallow_first_daily_incomes = fallow_first_income / total_days
     idx = np.unravel_index(np.argmax(daily_incomes), daily_incomes.shape)
 
-    return RotationResult(
-        crop=crop1,
-        doy=int(doys1[idx[0]]),
-        n_rate=None if is_legume1 else float(nitrogen_in_harvest1[idx[0], 0]),
-        economic_return=float(daily_incomes[idx]),
-    )
+    if fallow_first_daily_incomes[idx] > daily_incomes[idx]:
+        print("fallow first")
+        return RotationResult(
+                crop=None,
+                doy=total_days[idx] - growing_window2[0, idx[1]],
+                n_rate=None,
+                economic_return=float(fallow_first_daily_incomes[idx]),
+            )
+    else:
+        return RotationResult(
+            crop=crop1,
+            doy=int(doys1[idx[0]]),
+            n_rate=None if is_legume1 else float(n_rate1[idx[0], 0]),
+            economic_return=float(daily_incomes[idx]),
+        )
 
 
 def _write_operation_templates(crops: list[Crop], path: Path) -> None:
