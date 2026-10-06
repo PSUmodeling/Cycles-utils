@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import Any, get_type_hints
 from .._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, FMT_1F
 
+DEFAULT_CROP_FILE = 'GenericCrops.crop'
+
 @dataclass(kw_only=True)
 class SimulationYears:
     simulation_start_year: int
@@ -13,7 +15,7 @@ class SimulationYears:
 
 @dataclass(kw_only=True)
 class InputFiles:
-    crop_file: str = 'GenericCrops.crop'
+    crop_file: str = DEFAULT_CROP_FILE
     operation_file: str
     soil_file: str
     weather_file: str

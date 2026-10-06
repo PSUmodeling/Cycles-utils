@@ -10,6 +10,7 @@ from string import Template
 from typing import Any
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file
+from .cycles_tools.control_file import DEFAULT_CROP_FILE
 from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 if _if_ipython(): from tqdm.notebook import tqdm
 else: from tqdm import tqdm
@@ -36,8 +37,10 @@ OUTPUT_CONTROL_FLAGS: dict = {
 class SimulationContext:
     name: str
     control_dict: dict
+    crop_dict: dict | None
     operation_dict: dict | None
     calibration_dict: dict | None
+    crop_fn: Path
     operation_fn: Path
 
 
@@ -63,6 +66,7 @@ class CyclesRunner:
     def run(self, *, control_dict: dict[str, Any], simulations: SimulationConfig=None,
             summary: str | dict[str, str] | None=None,
             operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
+            crop_template: Path | str | None=None, crop_dict: dict[str, Any] | None=None,
             calibration_dict: dict[str, Any] | None=None,
             options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='',
             _progress_bar: tqdm | None=None) -> None:
@@ -79,6 +83,8 @@ class CyclesRunner:
             summary: Summary CSV name for the summary harvest file written under summary directory. If a dictionary is
                 provided, the keys are output file types and the values are summary CSV names. If None, only the harvest
                 summary is written into `summary/summary.csv`.
+            crop_template: Template file for generated crop files.
+            crop_dict: Substitutions used with crop template.
             operation_template: Template file for generated operation files.
             operation_dict: Substitutions used with operation template.
             calibration_dict: Nudge-file values or callables per simulation.
@@ -190,13 +196,10 @@ class CyclesRunner:
         if calibration_dict is not None and 'n' not in options:
             warnings.warn('Nudge parameters are provided but Cycles is not running in nudge mode.', UserWarning)
 
-        if (operation_template is None) != (operation_dict is None):
-            raise ValueError(
-                "operation_template and operation_dict must be provided together or not at all. "
-                f"Got operation_template={'None' if operation_template is None else repr(operation_template)}, "
-                f"operation_dict={'None' if operation_dict is None else '...'}"
-            )
+        _check_template_and_dict('crop', crop_template, crop_dict)
+        _check_template_and_dict('operation', operation_template, operation_dict)
 
+        crop_template = Path(crop_template) if crop_template is not None else None
         operation_template = Path(operation_template) if operation_template is not None else None
         user_comment = f'# {user_comment.lstrip("# ").rstrip()}\n' if user_comment else ''
         comment = user_comment + _generate_comment(self.executable, options)
@@ -225,11 +228,11 @@ class CyclesRunner:
 
         assert simulations is not None
         for s in simulations:
-            cxt: SimulationContext = self._resolve(s, control_dict, operation_dict, calibration_dict)
+            cxt: SimulationContext = self._resolve(s, control_dict, crop_dict, operation_dict, calibration_dict)
             if owns_progress and progress is not None:
                 progress.set_description(f'Running {cxt.name}')
 
-            self._write_inputs(cxt, operation_template)
+            self._write_inputs(cxt, crop_template, operation_template)
 
             code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
             if code != 0:
@@ -257,21 +260,26 @@ class CyclesRunner:
             progress.set_description('Done')
 
 
-    def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], operation_dict: dict[str, Any] | None,
+    def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], crop_dict: dict[str, Any] | None, operation_dict: dict[str, Any] | None,
                  calibration_dict: dict[str, Any] | None) -> SimulationContext:
         control = _resolve_dict_values(control_dict, simulation)
         assert isinstance(self.path, Path)
         return SimulationContext(
             name=control['simulation_name'],
             control_dict=control,
+            crop_dict=_resolve_dict_values(crop_dict, simulation) if crop_dict is not None else None,
             operation_dict=_resolve_dict_values(operation_dict, simulation) if operation_dict is not None else None,
             calibration_dict=_resolve_dict_values(calibration_dict, simulation) if calibration_dict is not None else None,
             operation_fn=self.path / INPUT_DIR / control['operation_file'],
+            crop_fn=self.path / INPUT_DIR / control.get('crop_file', DEFAULT_CROP_FILE),
         )
 
 
-    def _write_inputs(self, cxt: SimulationContext, operation_template: Path | None) -> None:
+    def _write_inputs(self, cxt: SimulationContext, crop_template: Path | None, operation_template: Path | None) -> None:
         assert isinstance(self.path, Path)
+        if crop_template is not None:
+            assert cxt.crop_dict is not None
+            _render_template(crop_template, cxt.crop_fn, cxt.crop_dict)
         if operation_template is not None:
             assert cxt.operation_dict is not None
             _render_template(operation_template, cxt.operation_fn, cxt.operation_dict)
@@ -299,6 +307,15 @@ class CyclesRunner:
                 if header:
                     f.write(comment)
                 cycles.output[key].data.to_csv(f, header=header, index=False)
+
+
+def _check_template_and_dict(input_type: str, template_name: Path | str | None, dict_name: dict | None):
+    if (template_name is None) != (dict_name is None):
+        raise ValueError(
+            f"{input_type}_template and {input_type}_dict must be provided together or not at all. "
+            f"Got {input_type}_template={'None' if template_name is None else repr(template_name)}, "
+            f"{input_type}_dict={'None' if dict_name is None else '...'}"
+        )
 
 
 def _render_template(template_fn: Path, dest_fn: Path, substitutions: dict) -> None:
