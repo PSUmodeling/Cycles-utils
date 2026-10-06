@@ -4,6 +4,7 @@ import pandas as pd
 import shutil
 import subprocess
 import warnings
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from string import Template
@@ -64,7 +65,8 @@ class CyclesRunner:
 
 
     def run(self, *, control_dict: dict[str, Any], simulations: SimulationConfig=None,
-            summary: str | dict[str, str] | None=None,
+            summary: Sequence[str] | None=None,
+            summary_prefix: str | None=None,
             operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
             crop_template: Path | str | None=None, crop_dict: dict[str, Any] | None=None,
             calibration_dict: dict[str, Any] | None=None,
@@ -80,9 +82,8 @@ class CyclesRunner:
                 written and `rm_input`/`rm_output`/`rm_steady_state_soil` are **not** applied, regardless of how
                 those flags are set -- the full input/output is always left in place for inspection.
             control_dict: Control-file values or callables evaluated per simulation.
-            summary: Summary CSV name for the summary harvest file written under summary directory. If a dictionary is
-                provided, the keys are output file types and the values are summary CSV names. If None, only the harvest
-                summary is written into `summary/summary.csv`.
+            summary: List or tuple of output file types to be summarized/aggregated. If None, only the harvest summary is written into `summary/harvest.csv`.
+            summary_prefix: Prefix for the summary CSV files. If None, no prefix is added.
             crop_template: Template file for generated crop files.
             crop_dict: Substitutions used with crop template.
             operation_template: Template file for generated operation files.
@@ -186,12 +187,11 @@ class CyclesRunner:
             control_dict=control_dict,
             operation_template='path/to/template.operation',
             operation_dict=operation_dict,
-            summary='summary.csv',
             options='-s',
         )
         ```
 
-        The `-s` option enables spin-up for the simulations. The results will be consolidated into `summary/summary.csv`.
+        The `-s` option enables spin-up for the simulations. The results will be consolidated into `summary/harvest.csv`.
         """
         if calibration_dict is not None and 'n' not in options:
             warnings.warn('Nudge parameters are provided but Cycles is not running in nudge mode.', UserWarning)
@@ -206,14 +206,13 @@ class CyclesRunner:
         first_run = True
 
         if summary is None:
-            summary = {'harvest': 'summary.csv'}
-        elif isinstance(summary, str):
-            summary = {'harvest': summary}
-        assert isinstance(summary, dict)
+            summary = ['harvest']
+        else:
+            summary = list(set(summary) | {'harvest'})
 
-        for key in summary.keys():
-            if key == 'harvest': continue
-            control_dict[OUTPUT_CONTROL_FLAGS[key]] = 1
+        for s in summary:
+            if s == 'harvest': continue
+            control_dict[OUTPUT_CONTROL_FLAGS[s]] = 1
 
         assert isinstance(self.path, Path)
         (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
@@ -245,7 +244,7 @@ class CyclesRunner:
 
             if code == 0:
                 cycles = Cycles(simulation=cxt.name, path=self.path)
-                self._write_summary(cycles, summary, header=first_run, comment=comment)
+                _write_summary(self.path, cycles, summary, summary_prefix, header=first_run, comment=comment)
                 first_run = False
             if rm_input:
                 self._remove_inputs(cxt)
@@ -298,17 +297,16 @@ class CyclesRunner:
             cxt.operation_fn.unlink(missing_ok=True)
 
 
-    def _write_summary(self, cycles: Cycles, summary: dict, *, header: bool, comment: str) -> None:
-        assert isinstance(self.path, Path)
-        cycles.read_output(summary.keys())
-        for key, fn in summary.items():
-            cycles.output[key].data.insert(0, 'simulation', cycles.simulation)
+def _write_summary(path: Path, cycles: Cycles, summary: list[str], summary_prefix: str | None, *, header: bool, comment: str) -> None:
+    cycles.read_output(summary)
+    for s in summary:
+        cycles.output[s].data.insert(0, 'simulation', cycles.simulation)
 
-            mode = 'w' if header else 'a'
-            with open(self.path / SUMMARY_DIR / fn, mode) as f:
-                if header:
-                    f.write(comment)
-                cycles.output[key].data.to_csv(f, header=header, index=False)
+        mode = 'w' if header else 'a'
+        with open(path / SUMMARY_DIR / (f'{summary_prefix}_{s}.csv' if summary_prefix else f'{s}.csv'), mode) as f:
+            if header:
+                f.write(comment)
+            cycles.output[s].data.to_csv(f, header=header, index=False)
 
 
 def _check_template_and_dict(input_type: str, template_name: Path | str | None, dict_name: dict | None):
