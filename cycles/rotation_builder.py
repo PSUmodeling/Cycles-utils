@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 from itertools import product
 from pathlib import Path
 from typing import NamedTuple, Any
-from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations, _render_template
+from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations, _render_template, _write_summary, _generate_comment, SUMMARY_DIR
 from .cycles import Cycles
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
@@ -151,6 +151,7 @@ class CyclesRotationBuilder:
     simulations: SimulationConfig = None
     crop_template: Path | str | None = field(default=None, kw_only=True)
     crop_dict: dict[str, Any] | None = field(default=None, kw_only=True)
+    summary_prefix: str | None = field(default=None, kw_only=True)
     build_yield_matrix: bool = field(default=True, kw_only=True)
     yield_matrix: dict[str, dict[str, pd.DataFrame]] = field(init=False)
     fertilizers: dict[str, Fertilizer] = field(init=False, default_factory=dict)
@@ -202,6 +203,10 @@ class CyclesRotationBuilder:
             raise ValueError('Crop price data is required to run the rotation builder.')
 
         assert isinstance(self.simulations, list)
+        assert isinstance(self.path, Path)
+        (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
+
+        first_run = True
 
         progress = tqdm(self.simulations, unit='simulation', disable=_disable_progress_bar()) if silence and len(self.simulations) > 1 else None
 
@@ -223,6 +228,12 @@ class CyclesRotationBuilder:
                 self._run_autonomous_rotation_builder(control_dict, silence)
             except Exception as exc:
                 _report(f'{name} - Failed: {exc}')
+            else:
+                if s is not None:
+                    cycles = Cycles(name, self.path)
+                    _write_summary(self.path, cycles, ['harvest', 'economic_return'], self.summary_prefix, header=first_run, comment=_generate_comment(self.executable, ''))
+                first_run = False
+
 
             if progress is not None:
                 progress.update()
@@ -324,11 +335,15 @@ class CyclesRotationBuilder:
         df = pd.concat([df, pd.DataFrame(costs)], ignore_index=True).sort_values(by='date')
 
         assert isinstance(self.path, Path)
-        df[['date', 'event', 'item', 'quantity', 'amount']].to_csv(
-            self.path / f'output/{simulation}/economic_return.csv',
-            index=False,
-            float_format='%.2f',
-        )
+        with open(self.path / f'output/{simulation}/economic_return.csv', mode='w', newline='') as f:
+            f.write(','.join(['date', 'event', 'item', 'quantity', 'amount']) + '\n')
+            f.write('#YYYY-MM-DD,-,-,"Mg/ha for harvest, kg/ha for fertilization",$\n')
+            df[['date', 'event', 'item', 'quantity', 'amount']].to_csv(
+                f,
+                index=False,
+                header=False,
+                float_format='%.2f',
+            )
 
 
 def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int, last_crop: Crop | None, times_planted: dict[str, int],
