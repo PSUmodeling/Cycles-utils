@@ -82,7 +82,7 @@ def _if_ipython() -> bool:
     try:
         from IPython import get_ipython     # type: ignore
         shell = get_ipython()
-        return shell is not None and shell.__class__.__name__ == 'ZMQInteractiveShell'
+        return shell is not None and (shell.__class__.__name__ == 'ZMQInteractiveShell' or 'COLAB_RELEASE_TAG' in os.environ)
     except ImportError:
         return False
 
