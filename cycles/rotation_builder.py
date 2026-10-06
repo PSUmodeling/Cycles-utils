@@ -6,11 +6,12 @@ from dataclasses import dataclass, field, replace
 from datetime import datetime, timedelta
 from itertools import product
 from pathlib import Path
-from typing import NamedTuple
-from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations
+from typing import NamedTuple, Any
+from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations, _render_template
 from .cycles import Cycles
 from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
+from .cycles_tools.control_file import DEFAULT_CROP_FILE
 from .cycles_tools.operation_file import _format_operation
 from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 if _if_ipython(): from tqdm.notebook import tqdm
@@ -148,6 +149,8 @@ class CyclesRotationBuilder:
     control_dict: dict
     path: str | Path = '.'
     simulations: SimulationConfig = None
+    crop_template: Path | str | None = field(default=None, kw_only=True)
+    crop_dict: dict[str, Any] | None = field(default=None, kw_only=True)
     build_yield_matrix: bool = field(default=True, kw_only=True)
     yield_matrix: dict[str, dict[str, pd.DataFrame]] = field(init=False)
     fertilizers: dict[str, Fertilizer] = field(init=False, default_factory=dict)
@@ -160,6 +163,7 @@ class CyclesRotationBuilder:
         self.executable = str(Path(self.executable).resolve())
         self.path = Path(self.path)
         self.fertilizers = _read_fertilizer_file(self.path / FERTILIZER_FILE)
+        self.crop_template = Path(self.crop_template) if self.crop_template is not None else None
 
         for crop in self.crops:
             crop.prescribed_n_rate = sum(
@@ -171,7 +175,7 @@ class CyclesRotationBuilder:
         self.yield_matrix = {}
         for s in self.simulations:
             control_dict = _resolve_dict_values(self.control_dict, s)
-            self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.build_yield_matrix)
+            self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.crop_template, self.crop_dict, self.build_yield_matrix)
 
 
     def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None, silence: bool=False) -> None:
@@ -206,7 +210,13 @@ class CyclesRotationBuilder:
 
         for s in self.simulations:
             control_dict = _resolve_dict_values(self.control_dict, s)
+            crop_dict = _resolve_dict_values(self.crop_dict, s) if self.crop_dict is not None else None
             name = control_dict.get('simulation_name', '<unnamed>')
+            if self.crop_template is not None:
+                assert isinstance(self.crop_template, Path)
+                assert isinstance(self.path, Path)
+                assert crop_dict is not None
+                _render_template(self.crop_template, self.path / f'input/{control_dict.get("crop_file", DEFAULT_CROP_FILE)}', crop_dict)
             if progress is not None:
                 progress.set_description(name)
             try:
@@ -393,9 +403,9 @@ def _frequency_adjustment(year: int, crop: Crop, times_planted: dict[str, int], 
     return 0.0
 
 
-def _load_yield_matrix(executable: str, path: Path, control_dict: dict, crops: list[Crop], build_yield_matrix: bool) -> dict[str, pd.DataFrame]:
+def _load_yield_matrix(executable: str, path: Path, control_dict: dict, crops: list[Crop], crop_template: Path | None, crop_dict: dict | None, build_yield_matrix: bool) -> dict[str, pd.DataFrame]:
     if build_yield_matrix:
-        _build_yield_matrix(executable, path, control_dict, crops)
+        _build_yield_matrix(executable, path, control_dict, crops, crop_template, crop_dict)
 
     return {c.name: _read_yield_matrix(path, control_dict['simulation_name'], control_dict, c) for c in crops}
 
@@ -404,7 +414,7 @@ def _planting_window_length(crop: Crop) -> int:
     return _last_planting(crop.operations).end_doy - _last_planting(crop.operations).doy + 1
 
 
-def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: list[Crop]) -> None:
+def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: list[Crop], crop_template: Path | None, crop_dict: dict[str, Any] | None) -> None:
     _write_operation_templates(crops, path)
     progress = tqdm(
         range(sum([_planting_window_length(c) for c in crops])),
@@ -422,6 +432,8 @@ def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: lis
             simulations=simulation_config,
             summary=f'{user_dict["simulation_name"]}_{c.name}.csv',
             control_dict=control_dict,
+            crop_template=crop_template,
+            crop_dict=crop_dict,
             operation_dict=operation_dict,
             operation_template=path / 'template' / f'{c.name}.operation',
             rm_input=True,
