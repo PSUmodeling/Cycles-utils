@@ -292,6 +292,8 @@ class CyclesRunner:
         assert isinstance(self.path, Path)
         (self.path / INPUT_DIR / f'{cxt.name}.ctrl').unlink(missing_ok=True)
         (self.path / INPUT_DIR / f'{cxt.name}.nudge').unlink(missing_ok=True)
+        if cxt.crop_dict is not None:
+            cxt.crop_fn.unlink(missing_ok=True)
         if cxt.operation_dict is not None:
             cxt.operation_fn.unlink(missing_ok=True)
 
