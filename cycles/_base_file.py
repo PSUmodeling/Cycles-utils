@@ -80,7 +80,7 @@ def _unwrap_optional(t) -> type:
 
 def _if_ipython() -> bool:
     try:
-        from IPython import get_ipython
+        from IPython import get_ipython     # type: ignore
         shell = get_ipython()
         return shell is not None and shell.__class__.__name__ == 'ZMQInteractiveShell'
     except ImportError:

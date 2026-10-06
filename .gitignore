@@ -170,6 +170,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+.DS_Store
+
 /bin
 /data
 /input
@@ -187,4 +189,4 @@ cython_debug/
 *.kml
 7z*
 .urs_cookies
-Cycles_*.zip
+Cycles*.zip

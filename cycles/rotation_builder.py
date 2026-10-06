@@ -379,6 +379,7 @@ def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int,
 
 
 def _append_operations(result: RotationResult, planting_year: int, doy: int, operations: list[Operation]) -> None:
+    assert result.crop is not None
     for op in result.crop.operations:
         relative_doy = False
         assert op.doy is not None
@@ -540,7 +541,7 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
         return RotationResult(
             crop=crop1,
             doy=int(doys1[idx[0]]),
-            n_rate=None if is_legume1 else float(n_rate1[idx[0], 0]),
+            n_rate=None if is_legume1 else float(n_rate1[idx[0], 0]),   # type: ignore
             economic_return=float(daily_incomes[idx]),
         )
 

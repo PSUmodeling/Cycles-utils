@@ -71,7 +71,7 @@ class CyclesRunner:
             crop_template: Path | str | None=None, crop_dict: dict[str, Any] | None=None,
             calibration_dict: dict[str, Any] | None=None,
             options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='',
-            _progress_bar: tqdm | None=None) -> None:
+            _progress_bar: tqdm | None=None) -> None:   # type: ignore
         """Execute a batch of simulations and write a consolidated summary.
 
         Args:
