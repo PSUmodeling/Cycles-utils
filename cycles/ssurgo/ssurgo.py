@@ -147,7 +147,7 @@ class Ssurgo:
         self.hsg: str = ''
 
         path = Path(path)
-        luts = _read_all_luts(path, self.state)
+        luts = _read_all_luts(path, self.state, boundary)
         self.components = luts['component']
         self.horizons = luts['horizon']
 
@@ -396,8 +396,12 @@ def _strip_slope_suffix(s: str) -> str:
     return s
 
 
-def _read_lut(path: Path, state: str, table: str, columns: list[str]) -> pd.DataFrame:
-    df = pd.read_csv(_ssurgo_lut(path, state, table), usecols=columns)
+def _read_lut(path: Path, state: str, boundary: gpd.GeoDataFrame | None, table: str, columns: list[str]) -> pd.DataFrame:
+    processed_lut: Path = _ssurgo_lut(path, state, table)
+    if processed_lut.exists():
+        df = pd.read_csv(processed_lut, usecols=columns)
+    else:
+        df = pd.DataFrame(_read_gdb(path, state, table, boundary))
 
     if table == 'chfrags':
         df = df.groupby('chkey').sum().reset_index()
@@ -414,31 +418,46 @@ def _read_lut(path: Path, state: str, table: str, columns: list[str]) -> pd.Data
     return df
 
 
-def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
+def _read_all_luts(path: Path, state: str, boundary: gpd.GeoDataFrame | None) -> dict[str, pd.DataFrame]:
+    KEYS = ['mukey', 'cokey', 'chkey']
+
     luts = {}
     for lut_key, tables in LUT_TABLES.items():
         combined = pd.DataFrame()
         for table, columns in tables.items():
-            df = _read_lut(path, state, table, columns)
+            df = _read_lut(path, state, boundary, table, columns)
             combined = df if combined.empty else combined.merge(df, how='outer')
+
+        key_mapping = {col: int for col in combined.columns.intersection(KEYS)}
+        combined = combined.astype(key_mapping)
         luts[lut_key] = combined
+
     return luts
 
 
 def _read_mupolygon(path: Path, state: str, boundary: gpd.GeoDataFrame) -> gpd.GeoDataFrame:
-    boundary = boundary.to_crs(NAD83)
-
-    gdf = gpd.read_file(
-        _ssurgo_path(path, state),
-        layer='MUPOLYGON',
-        mask=shapely.union_all(boundary['geometry'].values),    # type: ignore
-    )
-    gdf = gpd.clip(gdf, boundary, keep_geom_type=False)
+    gdf = _read_gdb(path, state, 'MUPOLYGON', boundary)
     gdf['area'] = gdf.area
     gdf.columns = [c.lower() for c in gdf.columns]
     gdf.drop(columns=['areasymbol', 'spatialver', 'shape_length', 'shape_area'], inplace=True)
     gdf['mukey'] = gdf['mukey'].astype(int)
     return gdf
+
+
+def _read_gdb(path: Path, state: str, layer: str, boundary: gpd.GeoDataFrame | None) -> gpd.GeoDataFrame:
+    if boundary is not None:
+        boundary = boundary.to_crs(NAD83)
+        gdf = gpd.read_file(
+            _ssurgo_path(path, state),
+            layer=layer,
+            mask=shapely.union_all(boundary['geometry'].values),    # type: ignore
+        )
+        return gpd.clip(gdf, boundary, keep_geom_type=False) if layer == 'MUPOLYGON' else gdf
+    else:
+        return gpd.read_file(
+            _ssurgo_path(path, state),
+            layer=layer,
+        )
 
 
 def _ssurgo_path(path: Path, state: str) -> Path:
