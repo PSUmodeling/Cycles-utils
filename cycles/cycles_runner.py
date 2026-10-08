@@ -54,6 +54,7 @@ class CyclesRunner:
 
     Args:
         executable: Absolute path to the Cycles executable binary.
+        path: Working directory for simulation inputs, outputs, and summaries. Defaults to the current directory.
     """
     executable: str
     path: Path | str = '.'
@@ -137,9 +138,9 @@ class CyclesRunner:
         runner = CyclesRunner(executable='/path/to/Cycles')
 
         simulations: list[dict] = [
-            'GID': 'USA.16.1_1', 'weather': 'NLDAS_41.438Nx94.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.1_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
-            'GID': 'USA.16.2_1', 'weather': 'NLDAS_40.938Nx94.688W', 'soil': 'maize_rainfed_SoilGrids_USA.16.2_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100,
-            'GID': 'USA.16.3_1', 'weather': 'NLDAS_43.188Nx91.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.3_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 90,
+            {'GID': 'USA.16.1_1', 'weather': 'NLDAS_41.438Nx94.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.1_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100},
+            {'GID': 'USA.16.2_1', 'weather': 'NLDAS_40.938Nx94.688W', 'soil': 'maize_rainfed_SoilGrids_USA.16.2_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 100},
+            {'GID': 'USA.16.3_1', 'weather': 'NLDAS_43.188Nx91.562W', 'soil': 'maize_rainfed_SoilGrids_USA.16.3_1.soil', 'plant_start': 112, 'plant_end': 154, 'maturity_group': 90},
         ]
         ```
 
@@ -154,7 +155,7 @@ class CyclesRunner:
             'crop_file': 'GenericCrops.crop',
             'operation_file': lambda x: f'{x["GID"]}.operation',
             'soil_file': lambda x: f'path/to/{x["soil"]}',
-            'weather_file': lambda x: f'path/to/{x["gridMET_weather"]}.weather',
+            'weather_file': lambda x: f'path/to/{x["weather"]}.weather',
         }
         ```
 
@@ -175,14 +176,14 @@ class CyclesRunner:
         operation_dict: dict = {
             'PD1': lambda x: x['plant_start'],
             'PD2': lambda x: x['plant_end'],
-            'CROP': lambda x: f'CornRM.{x["relative_maturity_group"]}',
+            'CROP': lambda x: f'CornRM.{x["maturity_group"]}',
         }
         ```
 
         Finally, run the simulations with the following code snippet:
 
         ```python
-        cycles_runner.run(
+        runner.run(
             simulations=simulations,
             control_dict=control_dict,
             operation_template='path/to/template.operation',

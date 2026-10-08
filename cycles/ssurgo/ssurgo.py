@@ -102,9 +102,11 @@ class Ssurgo:
     that contains the point is selected.
 
     Args:
-        path: Directory containing SSURGO geodatabase and lookup CSV files.
+        path: Directory containing the SSURGO geodatabase. Preprocessed lookup CSV files are optional; missing tables
+            are read from the geodatabase.
         state: Optional state identifier. If omitted, it is inferred from the boundary.
-        lat_lon: Optional latitude/longitude for point-based spatial filtering. The tuple is ordered as (latitude, longitude).
+        lat_lon: Optional latitude/longitude for point-based spatial filtering. The tuple is ordered as
+            (latitude, longitude).
         boundary: Optional boundary GeoDataFrame or path to a supported geospatial file for polygon-based filtering.
 
     Attributes:
@@ -292,7 +294,7 @@ class Ssurgo:
             layers: Optional target layer structure to map onto. The `DEFAULT_PROFILE` has 12 layers from 0-2 m depth.
 
         Returns:
-            None.
+            Tuple of the mapped soil layers, hydrologic soil group, and slope.
         """
         if mukey is not None:
             gdf = self.grouped_mapunits if self.grouped_mapunits is not None else self._mapunits

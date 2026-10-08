@@ -98,7 +98,7 @@ class SoilGrids:
             boundary: Boundary geometry used to clip all rasters after reprojection.
 
         Returns:
-            None.
+            The soil layers written to the output file.
         """
         reference_xds = reference_xds.rio.clip([boundary], from_disk=True)
         df = pd.DataFrame(reference_xds[0].to_series().rename(reference_name))
