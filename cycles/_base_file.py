@@ -53,8 +53,8 @@ def _write_file(fn: Path, config) -> None:
     fn.write_text(content)
 
 
-def _resolve_dict_values(user_dict: dict, simulation: dict[str, Any] | None) -> dict:
-    return {key: func(simulation) if callable(func) else func for key, func in user_dict.items()}
+def _resolve_dict_values(user_dict: dict | None, simulation: dict[str, Any] | None) -> dict | None:
+    return {key: func(simulation) if callable(func) else func for key, func in user_dict.items()} if user_dict is not None else None
 
 
 def _extract(dc_class, resolved: dict) -> dict:

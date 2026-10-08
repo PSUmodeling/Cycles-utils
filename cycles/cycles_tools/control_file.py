@@ -55,7 +55,7 @@ class ControlConfig:
 
 def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | None, input_dir: Path) -> ControlConfig:
     resolved = _resolve_dict_values(control_dict, simulation_dict)
-
+    assert resolved is not None
     if 'soil_layers' not in resolved:
         resolved['soil_layers'] = _get_soil_layers(input_dir / resolved['soil_file'])
 

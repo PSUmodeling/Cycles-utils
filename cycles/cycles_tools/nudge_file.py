@@ -38,6 +38,7 @@ class NudgeConfig:
 
 def _build_nudge_config(user_dict: dict[str, Any], calibration_dict: dict[str, Any] | None) -> NudgeConfig:
     resolved = _resolve_dict_values(user_dict, calibration_dict)
+    assert resolved is not None
 
     return NudgeConfig(
         calibration_multipliers=CalibrationMultipliers(**_extract(CalibrationMultipliers, resolved)),

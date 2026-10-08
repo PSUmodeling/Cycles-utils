@@ -176,7 +176,9 @@ class CyclesRotationBuilder:
         self.yield_matrix = {}
         for s in self.simulations:
             control_dict = _resolve_dict_values(self.control_dict, s)
-            self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.crop_template, self.crop_dict, self.build_yield_matrix)
+            assert control_dict is not None
+            crop_dict = _resolve_dict_values(self.crop_dict, s)
+            self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.crop_template, crop_dict, self.build_yield_matrix)
 
 
     def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None, silence: bool=False) -> None:
@@ -215,7 +217,8 @@ class CyclesRotationBuilder:
 
         for s in self.simulations:
             control_dict = _resolve_dict_values(self.control_dict, s)
-            crop_dict = _resolve_dict_values(self.crop_dict, s) if self.crop_dict is not None else None
+            crop_dict = _resolve_dict_values(self.crop_dict, s)
+            assert control_dict is not None
             name = control_dict.get('simulation_name', '<unnamed>')
             if self.crop_template is not None:
                 assert isinstance(self.crop_template, Path)
@@ -225,6 +228,7 @@ class CyclesRotationBuilder:
             if progress is not None:
                 progress.set_description(name)
             try:
+                assert control_dict is not None
                 self._run_autonomous_rotation_builder(control_dict, silence)
             except Exception as exc:
                 _report(f'{name} - Failed: {exc}')
@@ -446,7 +450,7 @@ def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: lis
         simulation_config, control_dict, operation_dict = _build_simulations(c.operations, user_dict)
         cycles_runner.run(
             simulations=simulation_config,
-            summary=f'{user_dict["simulation_name"]}_{c.name}.csv',
+            summary_prefix=f'{user_dict["simulation_name"]}_{c.name}',
             control_dict=control_dict,
             crop_template=crop_template,
             crop_dict=crop_dict,
@@ -462,7 +466,7 @@ def _build_yield_matrix(executable: str, path: Path, user_dict: dict, crops: lis
 def _read_yield_matrix(path: Path, simulation: str, control_dict: dict, crop: Crop) -> pd.DataFrame:
     assert isinstance(path, Path)
     COLUMNS = ['date', 'planting_date', 'grain_yield', 'forage_yield', 'nitrogen_in_harvest']
-    df = pd.read_csv(path / 'summary' / f'{simulation}_{crop.name}.csv', usecols=COLUMNS, comment='#')
+    df = pd.read_csv(path / 'summary' / f'{simulation}_{crop.name}_harvest.csv', usecols=COLUMNS, comment='#')
     df['date'] = pd.to_datetime(df['date'])
     df['planting_date'] = pd.to_datetime(df['planting_date'])
     df['doy'] = pd.to_datetime(df['planting_date']).dt.dayofyear

@@ -262,13 +262,14 @@ class CyclesRunner:
     def _resolve(self, simulation: dict[str, Any] | None, control_dict: dict[str, Any], crop_dict: dict[str, Any] | None, operation_dict: dict[str, Any] | None,
                  calibration_dict: dict[str, Any] | None) -> SimulationContext:
         control = _resolve_dict_values(control_dict, simulation)
+        assert control is not None
         assert isinstance(self.path, Path)
         return SimulationContext(
             name=control['simulation_name'],
             control_dict=control,
-            crop_dict=_resolve_dict_values(crop_dict, simulation) if crop_dict is not None else None,
-            operation_dict=_resolve_dict_values(operation_dict, simulation) if operation_dict is not None else None,
-            calibration_dict=_resolve_dict_values(calibration_dict, simulation) if calibration_dict is not None else None,
+            crop_dict=_resolve_dict_values(crop_dict, simulation),
+            operation_dict=_resolve_dict_values(operation_dict, simulation),
+            calibration_dict=_resolve_dict_values(calibration_dict, simulation),
             operation_fn=self.path / INPUT_DIR / control['operation_file'],
             crop_fn=self.path / INPUT_DIR / control.get('crop_file', DEFAULT_CROP_FILE),
         )
