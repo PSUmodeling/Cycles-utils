@@ -3,7 +3,7 @@ import warnings
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import Any, get_type_hints
-from .._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, FMT_1F
+from ._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, _read_non_comment_lines, FMT_1F
 
 DEFAULT_CROP_FILE = 'GenericCrops.crop'
 
@@ -70,7 +70,7 @@ def _build_control_config(control_dict: dict, simulation_dict: dict[str, Any] | 
 def _get_soil_layers(file_path: Path) -> int:
     NUM_HEADER_LINES = 2
     try:
-        lines = [line for line in file_path.read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
+        lines = _read_non_comment_lines(file_path)
         return len(lines) - NUM_HEADER_LINES - 1
     except FileNotFoundError:
         warnings.warn(f"Soil file not found: {file_path}")
@@ -87,25 +87,25 @@ def generate_control_file(file_path: str | Path, user_dict: dict[str, Any] | Con
 
     The following fields are required in `user_dict`:
 
-      - `simulation_start_year`
-      - `simulation_end_year`
-      - `rotation_size`
-      - `operation_file`
-      - `soil_file`
-      - `weather_file`
+    - `simulation_start_year`
+    - `simulation_end_year`
+    - `rotation_size`
+    - `operation_file`
+    - `soil_file`
+    - `weather_file`
 
     The default values for other fields are:
 
-      - `crop_file`: `GenericCrops.crop`
-      - `reinit_file`: `N/A`
-      - `soil_layers`: inferred from the soil file (if not provided)
-      - `co2_level`: `-999`
-      - `use_reinitialization`: `0`
-      - `adjusted_yields`: `0`
-      - `hydrology_option`: `1`
-      - `automatic_nitrogen`: `0`
-      - `automatic_phosphorus`: `0`
-      - `automatic_sulfur`: `0`
+    - `crop_file`: `GenericCrops.crop`
+    - `reinit_file`: `N/A`
+    - `soil_layers`: inferred from the soil file (if not provided)
+    - `co2_level`: `-999`
+    - `use_reinitialization`: `0`
+    - `adjusted_yields`: `0`
+    - `hydrology_option`: `1`
+    - `automatic_nitrogen`: `0`
+    - `automatic_phosphorus`: `0`
+    - `automatic_sulfur`: `0`
 
     All output control fields default to `0`.
 
@@ -118,10 +118,8 @@ def generate_control_file(file_path: str | Path, user_dict: dict[str, Any] | Con
         The generated control configuration.
     """
     file_path = Path(file_path)
-    if not isinstance(user_dict, ControlConfig):
-        config = _build_control_config(user_dict, simulation_dict, file_path.parent)
-    else:
-        config = user_dict
+
+    config = user_dict if isinstance(user_dict, ControlConfig) else _build_control_config(user_dict, simulation_dict, file_path.parent)
     _write_file(file_path, config)
 
     return config
@@ -136,9 +134,7 @@ def read_control_file(file_path: str | Path) -> ControlConfig:
     Returns:
         Control configuration.
     """
-    with open(Path(file_path)) as f:
-        lines = f.read().splitlines()
-    lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])
+    lines = iter(_read_non_comment_lines(file_path))
 
     hints = get_type_hints(ControlConfig)   # resolves all string annotations → actual types
 
@@ -146,6 +142,11 @@ def read_control_file(file_path: str | Path) -> ControlConfig:
     for f in fields(ControlConfig):
         target_class = _unwrap_optional(hints[f.name])
         sub_hints = get_type_hints(target_class)
-        control_dict[f.name] = target_class(**{sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
+        control_dict[f.name] = target_class(
+            **{
+                sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name])
+                for sub_field in fields(target_class)
+            }
+        )
 
     return ControlConfig(**control_dict)

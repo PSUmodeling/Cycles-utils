@@ -96,3 +96,8 @@ def _disable_progress_bar() -> bool:
         return not sys.stderr.isatty()
     except AttributeError:
         return True
+
+def _read_non_comment_lines(file_path: str | Path) -> list[str]:
+    with open(Path(file_path)) as f:
+        lines = f.read().splitlines()
+    return [line for line in lines if (not line.strip().startswith('#')) and line.strip()]

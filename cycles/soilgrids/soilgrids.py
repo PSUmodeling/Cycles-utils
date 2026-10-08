@@ -25,9 +25,8 @@ BBOX_BUFFER: float = 2.0   # degrees, used when deriving bbox from boundary poly
 
 @dataclass
 class SoilGridsLayers:
-    # units: m
-    top: float
-    bottom: float
+    top: float      # units: m
+    bottom: float   # units: m
 
     @property
     def thickness(self) -> float:
@@ -81,7 +80,6 @@ class SoilGrids:
         transformer: Pyproj Transformer for converting coordinates from EPSG:4326 to the target CRS.
         matched_maps: DataFrame of reprojected and matched map values, populated after calling reproject_match().
     """
-
     def __init__(self, path: str | Path, *, maps: list[str]=ALL_MAPS, crs: str | None=None, aggregated: int | None=None) -> None:
         if aggregated is not None and aggregated not in [1000, 5000]:
             raise ValueError(f'Invalid value for aggregated: {aggregated}. Supported values are 1000, and 5000.')
@@ -133,7 +131,8 @@ class SoilGrids:
         ) for key, layer in SOILGRIDS_LAYERS.items()]
 
 
-    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *, desc: str | None=None, hsg: str='', slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE) -> list[SoilLayer]:
+    def generate_soil_file(self, fn: Path | str, lat_lon: LatLon, *,
+        desc: str | None=None, hsg: str='', slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE) -> list[SoilLayer]:
         """Generate a Cycles soil file from SoilGrids values.
 
         Args:
@@ -158,7 +157,8 @@ class SoilGrids:
         x, y = self.transformer.transform(lat_lon[1], lat_lon[0])
 
         return {
-            n: m.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[n.split('@')[0]].multiplier for n, m in self.maps.items()
+            n: m.sel(x=x, y=y, method='nearest').values[0] * SOILGRIDS_PROPERTIES[n.split('@')[0]].multiplier
+            for n, m in self.maps.items()
         }
 
 

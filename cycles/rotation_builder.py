@@ -13,7 +13,7 @@ from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
 from .cycles_tools import generate_control_file, generate_operation_file
 from .cycles_tools.control_file import DEFAULT_CROP_FILE
 from .cycles_tools.operation_file import _format_operation
-from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
+from .cycles_tools._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 if _if_ipython(): from tqdm.notebook import tqdm
 else: from tqdm import tqdm
 
@@ -143,7 +143,6 @@ class CyclesRotationBuilder:
         production_cost_data: DataFrame of production costs indexed by year, or None.
         rotation_frequency: Dictionary mapping crop names to (min, max) frequency tuples.
     """
-
     executable: str
     crops: list[Crop]
     control_dict: dict
@@ -238,7 +237,6 @@ class CyclesRotationBuilder:
                     _write_summary(self.path, cycles, ['harvest', 'economic_return'], self.summary_prefix, header=first_run, comment=_generate_comment(self.executable, ''))
                 first_run = False
 
-
             if progress is not None:
                 progress.update()
 
@@ -299,10 +297,10 @@ class CyclesRotationBuilder:
             # Mirrors CyclesRunner.run(), which likewise skips summary-writing for a failed run.
             raise RuntimeError(f"Cycles simulation '{simulation}' failed with exit code {status}")
 
-        self._output_economic_return(simulation, start_year, all_screen_output)
+        self._output_economic_return(simulation, all_screen_output)
 
 
-    def _output_economic_return(self, simulation: str, start_year: int, screen_output: str) -> None:
+    def _output_economic_return(self, simulation: str, screen_output: str) -> None:
         cycles = Cycles(simulation, self.path)
         cycles.read_output('harvest')
         df = cycles.output['harvest'].data[['date', 'crop', 'grain_yield']].copy()
@@ -365,7 +363,7 @@ def _find_best_rotation(crops: list[Crop], start_year: int, year: int, doy: int,
         doys1 = np.arange(planting1.doy, planting1.end_doy + 1)
         doys2 = np.arange(planting2.doy, planting2.end_doy + 1)
 
-        result = _calculate_economic_return(year, doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)
+        result = _calculate_economic_return(doy, doys1, doys2, last_crop, crop1, crop2, economic_parameters)
 
         if rotation_frequency is not None and result.crop is not None:
             rotation_year = year - start_year + 1
@@ -423,7 +421,8 @@ def _frequency_adjustment(year: int, crop: Crop, times_planted: dict[str, int], 
     return 0.0
 
 
-def _load_yield_matrix(executable: str, path: Path, control_dict: dict, crops: list[Crop], crop_template: Path | None, crop_dict: dict | None, build_yield_matrix: bool) -> dict[str, pd.DataFrame]:
+def _load_yield_matrix(executable: str, path: Path, control_dict: dict, crops: list[Crop], crop_template: Path | None, crop_dict: dict | None,
+                       build_yield_matrix: bool) -> dict[str, pd.DataFrame]:
     if build_yield_matrix:
         _build_yield_matrix(executable, path, control_dict, crops, crop_template, crop_dict)
 
@@ -492,7 +491,8 @@ def _read_yield_matrix(path: Path, simulation: str, control_dict: dict, crop: Cr
     return df
 
 
-def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np.ndarray, last_crop: Crop | None, crop1: Crop, crop2: Crop, economic_parameters: EconomicParameters) -> RotationResult:
+def _calculate_economic_return(doy: int, doys1: np.ndarray, doys2: np.ndarray, last_crop: Crop | None, crop1: Crop, crop2: Crop,
+                               economic_parameters: EconomicParameters) -> RotationResult:
     penalty1 = economic_parameters.penalty_factors.get((last_crop.name, crop1.name), 0.0) if last_crop else 0.0
     penalty2 = economic_parameters.penalty_factors.get((crop1.name, crop2.name), 0.0)
 
@@ -524,8 +524,9 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
         fallow_first_income -= economic_parameters.production_cost[crop2.symbol]
 
     if economic_parameters.fertilizer_price is not None:
-        fertilizer_cost1 = sum(n_rate1 / crop1.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop1.operations if isinstance(op, FixedFertilization))
-        fertilizer_cost2 = sum(n_rate2 / crop2.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source] for op in crop2.operations if isinstance(op, FixedFertilization))
+        assert isinstance(n_rate1, float) and isinstance(n_rate2, float)
+        fertilizer_cost1 = _calculate_fertilizer_cost(crop1, n_rate1, economic_parameters)
+        fertilizer_cost2 = _calculate_fertilizer_cost(crop2, n_rate2, economic_parameters)
         total_income -= fertilizer_cost1 + fertilizer_cost2
         fallow_first_income -= fertilizer_cost2
 
@@ -536,11 +537,11 @@ def _calculate_economic_return(year: int, doy: int, doys1: np.ndarray, doys2: np
     if fallow_first_daily_incomes[idx] > daily_incomes[idx]:
         print("fallow first")
         return RotationResult(
-                crop=None,
-                doy=total_days[idx] - growing_window2[0, idx[1]],
-                n_rate=None,
-                economic_return=float(fallow_first_daily_incomes[idx]),
-            )
+            crop=None,
+            doy=total_days[idx] - growing_window2[0, idx[1]],
+            n_rate=None,
+            economic_return=float(fallow_first_daily_incomes[idx]),
+        )
     else:
         return RotationResult(
             crop=crop1,
@@ -580,8 +581,7 @@ def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[li
             assert op.doy is not None
             sim[f'DOY{ind + 1}'] = (
                 doy if isinstance(op, Planting)
-                else _day_of_year(doy + op.doy) if op.doy < 0
-                else f'+{op.doy}'
+                else (_day_of_year(doy + op.doy) if op.doy < 0 else f'+{op.doy}')
             )
         simulations.append(sim)
 
@@ -597,8 +597,10 @@ def _build_simulations(operations: list[Operation], user_dict: dict) -> tuple[li
 
 def _sample_yield_matrix(yield_df: pd.DataFrame, doys: np.ndarray) -> dict[str, np.ndarray]:
     sampled = yield_df.groupby('doy').sample(1).set_index('doy')
-    return {col: sampled.loc[doys, col].to_numpy()
-        for col in ('grain_yield', 'forage_yield', 'nitrogen_in_harvest', 'growing_window')}
+    return {
+        col: sampled.loc[doys, col].to_numpy()
+        for col in ('grain_yield', 'forage_yield', 'nitrogen_in_harvest', 'growing_window')
+    }
 
 
 def _last_planting(operations: list) -> Planting:
@@ -681,3 +683,11 @@ def _read_fertilizer_file(path: str | Path) -> dict[str, Fertilizer]:
         fertilizers[current_name] = Fertilizer(name=current_name, **current_data)
 
     return fertilizers
+
+
+def _calculate_fertilizer_cost(crop: Crop, n_rate: float, economic_parameters: EconomicParameters) -> float:
+    assert economic_parameters.fertilizer_price is not None
+    return sum(
+        n_rate / crop.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source]
+        for op in crop.operations if isinstance(op, FixedFertilization)
+    )

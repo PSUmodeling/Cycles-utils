@@ -10,6 +10,10 @@ _HERE = Path(__file__).parent.resolve()
 STATE_CSV: Path = _HERE / '../data/us_states.csv'
 COUNTY_CSV: Path = _HERE / '../data/fips_gid_conversion.csv'
 
+# Matches a trailing county-equivalent designation (e.g. "Centre County" -> "Centre") so lookups accept both the bare
+# name and the full GADM/Census "place name" style, case-insensitively.
+_COUNTY_SUFFIX_RE = re.compile(r'\s+(county|parish|borough|census area|municipality)$', re.IGNORECASE)
+
 class GADMLevel(Enum):
     COUNTRY = 0
     STATE = 1
@@ -17,7 +21,6 @@ class GADMLevel(Enum):
 
 STATE_DTYPES: dict[str, type] = {'state': str, 'gid': str, 'abbreviation': str, 'fips': int}
 COUNTY_DTYPES: dict[str, type] = {'fips': int}
-
 
 def _gadm_path(path: Path, country: str, level: GADMLevel) -> Path:
     return path / f'gadm41_{country}_{level.value}.shp'
@@ -50,14 +53,11 @@ def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
         except KeyError:
             continue
     raise KeyError(
-        'County name not found for: '
-        + ', '.join(f'{k}={v}' for k, v in kwargs.items() if v is not None)
+        'County name not found for: ' + ', '.join(
+            f'{k}={v}'
+            for k, v in kwargs.items() if v is not None
+        )
     )
-
-
-# Matches a trailing county-equivalent designation (e.g. "Centre County" -> "Centre") so lookups accept both the bare
-# name and the full GADM/Census "place name" style, case-insensitively.
-_COUNTY_SUFFIX_RE = re.compile(r'\s+(county|parish|borough|census area|municipality)$', re.IGNORECASE)
 
 
 def _resolve_state_name(state: str) -> str:

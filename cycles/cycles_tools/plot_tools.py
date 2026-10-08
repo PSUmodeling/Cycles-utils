@@ -159,7 +159,6 @@ def plot_operations(operations: list, rotation_size: int, *, axs: Axes | np.ndar
     for y in range(rotation_size):
         for key, value in OPERATION_TYPES.items():
             sub_list = [op for op in operations if type(op).__name__.lower() == key and op.year == y + 1]
-
             if not sub_list: continue
 
             axs[y].plot(
@@ -236,7 +235,6 @@ def plot_map(gdf: gpd.GeoDataFrame, column: str, *, projection: ccrs.Projection=
     Returns:
         Tuple of figure and GeoAxes.
     """
-
     if fontsize is not None: plt.rcParams.update({'font.size': fontsize})
 
     if ax is None:

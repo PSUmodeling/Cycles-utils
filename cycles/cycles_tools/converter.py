@@ -1,13 +1,11 @@
 from dataclasses import dataclass, field, fields
 from pathlib import Path
 from typing import get_type_hints, Any
-from .._base_file import _unwrap_optional, _format_field, FMT_1F, FMT_2F, FMT_3F
 from .operation_file import Planting, Tillage, FixedFertilization
 from .operation_file import generate_operation_file
-from .crop_file import Crop, generate_crop_file
-from .soil_file import SoilLayer
-from .soil_file import generate_soil_file
-from .soil_file import DEFAULT_PROFILE
+from .crop_file import generate_crop_file, Crop
+from .soil_file import generate_soil_file, SoilLayer, DEFAULT_PROFILE
+from ._base_file import _unwrap_optional, _format_field, _read_non_comment_lines, FMT_1F, FMT_2F, FMT_3F
 
 SOC_FRACTION = 0.58
 OPERATION_TYPES = ('planting', 'tillage', 'fixed_fertilization', 'fixed_irrigation', 'auto_irrigation')
@@ -46,8 +44,7 @@ def _create_object_from_dict(target_class: type, data_dict: dict[str, Any], *, o
     return target_class(
         **{
             f.name: _unwrap_optional(hints[f.name])(data_dict.get(keys[f.name], f.default))
-            for f in fields(target_class)
-            if f.name in keys and keys[f.name] in data_dict
+            for f in fields(target_class) if f.name in keys and keys[f.name] in data_dict
         }
     )
 
@@ -88,9 +85,7 @@ def _add_fertilizer(operation_dict: dict[str, Any], fertilizers: list[Fertilizer
 
 
 def _read_obsolete_crop_file(file_path: str | Path) -> dict[str, dict[str, str]]:
-    with open(Path(file_path)) as f:
-        lines = f.read().splitlines()
-    lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])
+    lines = iter(_read_non_comment_lines(file_path))
 
     crops = {}
     crop_dict = {}
@@ -101,10 +96,10 @@ def _read_obsolete_crop_file(file_path: str | Path) -> dict[str, dict[str, str]]
             if field_name == 'name':
                 if crop_dict:
                     crops.update({crop_name: crop_dict})
+                    crop_dict = {}
 
                 # start of a new crop entry
                 crop_name = line.split()[1]
-                crop_dict = {}
             else:
                 crop_dict[field_name] = line.split()[1]
         except StopIteration:
@@ -141,9 +136,7 @@ def convert_obsolete_crop_files(crop_fns: dict[str | Path, str | Path], *, plant
 
 
 def _read_obsolete_operation_file(file_path: str | Path, tillage_tools: list, fertilizers: list) -> list[dict]:
-    with open(Path(file_path)) as f:
-        lines = f.read().splitlines()
-    lines = iter([line for line in lines if not line.strip().startswith('#') and line.strip()])
+    lines = iter(_read_non_comment_lines(file_path))
 
     operations = []
     operation_dict = {}

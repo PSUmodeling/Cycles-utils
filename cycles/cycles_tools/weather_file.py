@@ -27,7 +27,6 @@ SUBDAILY_COLUMNS: dict[str, type] = {
 
 WEATHER_HEADER_LINES: int = 4
 
-
 def _build_date_index(df: pd.DataFrame, *, subdaily: bool) -> pd.DatetimeIndex:
     base = df['YEAR'].astype(str) + '-' + df['DOY'].astype(str)
     if subdaily:

@@ -125,7 +125,6 @@ class Ssurgo:
     Raises:
         ValueError: If neither `state` nor a boundary is provided, or if both `lat_lon` and `boundary` are provided.
     """
-
     def __init__(self, path: str | Path, *, state: str | None=None, lat_lon: LatLon | None=None, boundary: FieldBoundary | None=None) -> None:
         _validate_geographic_input(state, lat_lon, boundary)
 
@@ -279,7 +278,8 @@ class Ssurgo:
 
 
     def generate_soil_file(self, file_path: Path | str, *,
-        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE, soil_depth: float | None=None) -> tuple[list[SoilLayer], str, float]:
+        mukey: int | None=None, desc: str | None=None, hsg: str | None=None, slope: float | None=None, layers: list[SoilLayer]=DEFAULT_PROFILE,
+        soil_depth: float | None=None) -> tuple[list[SoilLayer], str, float]:
         """Generate a Cycles soil file from SSURGO profile data.
 
         Args:
@@ -407,8 +407,9 @@ def _read_lut(path: Path, state: str, table: str, columns: list[str]) -> pd.Data
         inplace=True,
     )
     for key, param in SSURGO_PARAMETERS.items():
-        if key in df.columns:
-            df[key] *= param.multiplier
+        if key not in df.columns:
+            continue
+        df[key] *= param.multiplier
 
     return df
 
@@ -418,7 +419,7 @@ def _read_all_luts(path: Path, state: str) -> dict[str, pd.DataFrame]:
     for lut_key, tables in LUT_TABLES.items():
         combined = pd.DataFrame()
         for table, columns in tables.items():
-            df       = _read_lut(path, state, table, columns)
+            df = _read_lut(path, state, table, columns)
             combined = df if combined.empty else combined.merge(df, how='outer')
         luts[lut_key] = combined
     return luts

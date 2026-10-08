@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass, asdict
 from pathlib import Path
+from ._base_file import _read_non_comment_lines
 
 CURVE_NUMBERS: dict[str, int] = {
     'A': 67,
@@ -113,10 +114,10 @@ def _trim(target_layers: list[SoilLayer], measured_bottom: float, soil_depth: fl
 
 def _map_layer(target_layers: SoilLayer, profile: list[SoilLayer], parameters: list[str]) -> SoilLayer:
     return SoilLayer(
-        top = target_layers.top,
-        bottom = target_layers.bottom,
-        no3 = target_layers.no3,
-        nh4 = target_layers.nh4,
+        top=target_layers.top,
+        bottom=target_layers.bottom,
+        no3=target_layers.no3,
+        nh4=target_layers.nh4,
         **{p: _weighted_average(p, target_layers, profile) for p in parameters},  # type: ignore
     )
 
@@ -214,7 +215,8 @@ def _parse_token(token: str, param: SoilParameter) -> str | int | float | None:
     return token
 
 
-def _map_layers(profile: list[SoilLayer], target_layers: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS, soil_depth: float | None=None) -> list[SoilLayer]:
+def _map_layers(profile: list[SoilLayer], target_layers: list[SoilLayer]=DEFAULT_PROFILE, parameters: list[str]=MAPPABLE_PARAMETERS,
+    soil_depth: float | None=None) -> list[SoilLayer]:
     trimmed = _trim(target_layers, profile[-1].bottom, soil_depth)
     return [_map_layer(layer, profile, parameters) for layer in trimmed]
 
@@ -263,7 +265,7 @@ def read_soil_file(file_path: str | Path) -> tuple[list[SoilLayer], dict]:
             - List of parsed `SoilLayer` objects.
             - Header metadata dictionary with keys such as `curve_number` and `slope`.
     """
-    lines = [line for line in Path(file_path).read_text().splitlines() if line.strip() and not line.strip().startswith('#')]
+    lines = _read_non_comment_lines(file_path)
 
     meta, data_lines = _parse_header(lines)
     layers = _parse_layers(data_lines)

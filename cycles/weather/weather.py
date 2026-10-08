@@ -11,7 +11,7 @@ from enum import Enum
 from netCDF4 import Dataset
 from pathlib import Path
 from scipy.interpolate import interp1d
-from .._base_file import _disable_progress_bar, _if_ipython
+from ..cycles_tools._base_file import _disable_progress_bar, _if_ipython
 if _if_ipython(): from tqdm.notebook import tqdm
 else: from tqdm import tqdm
 
@@ -44,10 +44,8 @@ class ReanalysisDataMixin:
     netcdf_variables: dict[str, str]
     weather_file_variables: dict[str, Callable]
 
-
     def nearest_grid_index(self, lat, lon) -> int:
         return np.ravel_multi_index((round((lat - self.la1) / self.dj), round((lon - self.lo1) / self.di)), self.netcdf_shape)  # type: ignore
-
 
 class REANALYSIS(ReanalysisDataMixin, Enum):
     GLDAS = astuple(ReanalysisDataMixin(
@@ -335,7 +333,10 @@ def generate_weather_files(data_path: Path | str, weather_path: Path | str, forc
 
     time_index = pd.date_range(start=start, end=date_end + timedelta(days=1), freq=freq, inclusive='left')
 
-    weather_data = {key: _interpolate_to_hourly(reanalysis, np.array(value)) if hourly and reanalysis.data_interval > 1 else np.array(value) for key, value in weather_data.items()}
+    weather_data = {
+        key: _interpolate_to_hourly(reanalysis, np.array(value)) if hourly and reanalysis.data_interval > 1 else np.array(value)
+        for key, value in weather_data.items()
+    }
 
     _write_weather_files(Path(weather_path), time_index, weather_data, grid_df, header, resolution)
 
@@ -469,7 +470,11 @@ def _write_weather_files(weather_path: Path | str, time_ts, weather_data: dict[s
 
     for ind, grid in enumerate(grid_df.index):
         # Choose variables for output
-        output_df = pd.DataFrame({key: weather_data[key][:, ind] for key, var in WEATHER_FILE_VARIABLES.items() if resolution in var.resolution and not var.unit.startswith('#')})
+        output_df = pd.DataFrame({
+            key: weather_data[key][:, ind]
+            for key, var in WEATHER_FILE_VARIABLES.items()
+            if resolution in var.resolution and not var.unit.startswith('#')
+        })
 
         output_df = pd.concat([time_df, output_df.reset_index(drop=True)], axis=1).dropna()
 
@@ -491,12 +496,18 @@ def _process_xldas(data_path: Path, reanalysis: REANALYSIS, date_start: datetime
     # Arrays to store daily values
     weather_data = {var: [] for var in reanalysis.weather_file_variables if resolution in WEATHER_FILE_VARIABLES[var].resolution}
 
-    for d in tqdm(pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'), desc=f'Process {reanalysis.name} files', unit=' days', disable=_disable_progress_bar()):
+    for d in tqdm(
+        pd.date_range(start=date_start, end=date_end + timedelta(days=1), inclusive='left'),
+        desc=f'Process {reanalysis.name} files',
+        unit=' days',
+        disable=_disable_progress_bar()
+    ):
         _process_daily_xldas(data_path, reanalysis, d, grid_df, resolution, weather_data)
 
-    weather_data = {key: np.array(value) for key, value in weather_data.items()}
-
-    return weather_data
+    return {
+        key: np.array(value)
+        for key, value in weather_data.items()
+    }
 
 
 def _process_daily_xldas(data_path: Path, reanalysis: REANALYSIS, t: datetime, grid_df: pd.DataFrame, resolution: Resolution, weather_data: dict[str, list]) -> None:
@@ -512,7 +523,8 @@ def _process_daily_xldas(data_path: Path, reanalysis: REANALYSIS, t: datetime, g
     nc_data = {key: np.array(value) for key, value in nc_data.items()}
 
     for weather_var, func in reanalysis.weather_file_variables.items():
-        if resolution not in WEATHER_FILE_VARIABLES[weather_var].resolution: continue
+        if resolution not in WEATHER_FILE_VARIABLES[weather_var].resolution:
+            continue
         weather_data[weather_var] += func(nc_data, resolution).tolist()
 
 

@@ -14,8 +14,7 @@ from .cycles_tools import generate_operation_file
 from .cycles_tools import convert_obsolete_crop_files
 from .cycles_tools import convert_obsolete_operation_files
 from .cycles_tools import convert_obsolete_soil_files
-from .cycles_tools import SoilLayer
-from .cycles_tools import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
+from .cycles_tools import Planting, Tillage, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .cycles_runner import CyclesRunner
 from .rotation_builder import CyclesRotationBuilder, Crop, CropGroup
 
@@ -40,9 +39,11 @@ __all__ = [
     "convert_obsolete_crop_files",
     "convert_obsolete_operation_files",
     "convert_obsolete_soil_files",
-    "SoilLayer",
-    "Operation", "Planting", "Tillage", "Harvest", "Kill",
-    "FixedFertilization", "FixedIrrigation", "AutoIrrigation",
+    "Planting",
+    "Tillage",
+    "FixedFertilization",
+    "FixedIrrigation",
+    "AutoIrrigation",
     "plot_yield",
     "plot_operations",
     "plot_map",

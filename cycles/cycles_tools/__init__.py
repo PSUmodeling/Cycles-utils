@@ -1,14 +1,12 @@
 from .control_file import generate_control_file
 from .control_file import read_control_file
-from .control_file import ControlConfig
 from .converter import convert_obsolete_crop_files, convert_obsolete_operation_files, convert_obsolete_soil_files
 from .crop_file import read_crop_file, generate_crop_file
 from .nudge_file import generate_nudge_file
 from .operation_file import read_operation_file
 from .operation_file import generate_operation_file
-from .operation_file import Operation, Planting, Tillage, Harvest, Kill, FixedFertilization, FixedIrrigation, AutoIrrigation
+from .operation_file import Planting, Tillage, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .output_file import read_output
-from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
 from .weather_file import read_weather_file
@@ -34,6 +32,11 @@ __all__ = [
     "plot_operations",
     "plot_map",
     "plot_satellite_map",
+    "Planting",
+    "Tillage",
+    "FixedFertilization",
+    "FixedIrrigation",
+    "AutoIrrigation",
 ]
 
 # Names that require the optional plotting/geospatial dependencies

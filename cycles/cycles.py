@@ -40,7 +40,6 @@ class Cycles:
         slope: Land slope used in erosion and runoff models.
         weather: DataFrame of weather forcing data (temperature, precipitation, etc.).
     """
-
     simulation: str
     path: Path | str = '.'
     output: dict[str, Output] = field(init=False, default_factory=dict[str, Output])
@@ -50,7 +49,6 @@ class Cycles:
     curve_number: int | None = field(init=False, default=None)
     slope: float | None = field(init=False, default=None)
     weather: pd.DataFrame | None = field(init=False, default=None)
-
 
     def __post_init__(self):
         self.path = Path(self.path)

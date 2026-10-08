@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 from dataclasses import dataclass, field, fields
 from typing import get_type_hints, Protocol, Any
-from .._base_file import _parse_value, FMT_1F, FMT_2F, _format_field
+from ._base_file import _parse_value, _format_field, _read_non_comment_lines, FMT_1F, FMT_2F
 
 class Operation(Protocol):
     year: int | None
@@ -123,10 +123,8 @@ def read_operation_file(file_path: str | Path) -> list[Operation]:
     Returns:
         A list of operation dataclass instances.
     """
-    with open(Path(file_path)) as f:
-        lines = f.read().splitlines()
+    lines = iter(_read_non_comment_lines(file_path))
 
-    lines = iter([line for line in lines if not line.strip().startswith('#') and line.strip()])
     operations = []
     while True:
         try:
@@ -185,7 +183,6 @@ def read_operation_file(file_path: str | Path) -> list[Operation]:
 
 def _camel_to_snake(text: str) -> str:
     return re.sub(r'([a-z0-9])([A-Z])', r'\1_\2', text).lower()
-
 
 
 def _format_operation(operation: Any, doy_override: dict[str, str] | None=None) -> list[str]:

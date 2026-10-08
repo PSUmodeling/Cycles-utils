@@ -12,7 +12,7 @@ from typing import Any
 from .cycles import Cycles
 from .cycles_tools import generate_control_file, generate_nudge_file
 from .cycles_tools.control_file import DEFAULT_CROP_FILE
-from ._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
+from .cycles_tools._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
 if _if_ipython(): from tqdm.notebook import tqdm
 else: from tqdm import tqdm
 
@@ -55,7 +55,6 @@ class CyclesRunner:
     Args:
         executable: Absolute path to the Cycles executable binary.
     """
-
     executable: str
     path: Path | str = '.'
 
@@ -65,12 +64,13 @@ class CyclesRunner:
 
 
     def run(self, *, control_dict: dict[str, Any], simulations: SimulationConfig=None,
-            summary: Sequence[str] | None=None,
-            summary_prefix: str | None=None,
+            summary: Sequence[str] | None=None, summary_prefix: str | None=None, user_comment: str='',
             operation_template: Path | str | None=None, operation_dict: dict[str, Any] | None=None,
             crop_template: Path | str | None=None, crop_dict: dict[str, Any] | None=None,
             calibration_dict: dict[str, Any] | None=None,
-            options: str='', rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True, silence: bool=True, user_comment: str='',
+            options: str='',
+            rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True,
+            silence: bool=True,
             _progress_bar: tqdm | None=None) -> None:   # type: ignore
         """Execute a batch of simulations and write a consolidated summary.
 
@@ -84,6 +84,7 @@ class CyclesRunner:
             control_dict: Control-file values or callables evaluated per simulation.
             summary: List or tuple of output file types to be summarized/aggregated. If None, only the harvest summary is written into `summary/harvest.csv`.
             summary_prefix: Prefix for the summary CSV files. If None, no prefix is added.
+            user_comment: Optional text prefixed to summary header comments.
             crop_template: Template file for generated crop files.
             crop_dict: Substitutions used with crop template.
             operation_template: Template file for generated operation files.
@@ -94,7 +95,6 @@ class CyclesRunner:
             rm_output: Remove run output directory after each run.
             rm_steady_state_soil: Remove generated steady-state soil file.
             silence: If True, suppress simulation screen output.
-            user_comment: Optional text prefixed to summary header comments.
 
         In batch mode (`simulations` is a list/DataFrame), a simulation that fails (non-zero exit code) is skipped --
         its summary row is not written -- but does not abort the remaining batch; cleanup (`rm_input`/`rm_output`)
@@ -205,10 +205,7 @@ class CyclesRunner:
         comment = user_comment + _generate_comment(self.executable, options)
         first_run = True
 
-        if summary is None:
-            summary = ['harvest']
-        else:
-            summary = list(set(summary) | {'harvest'})
+        summary = ['harvest'] if summary is None else list(set(summary) | {'harvest'})
 
         for s in summary:
             if s == 'harvest': continue
@@ -218,6 +215,7 @@ class CyclesRunner:
         (self.path / SUMMARY_DIR).mkdir(exist_ok=True)
 
         simulations = _prepare_simulations(simulations)
+        assert simulations is not None
 
         owns_progress = _progress_bar is None and silence and len(simulations) > 1
         progress = tqdm(simulations, unit='simulation', disable=_disable_progress_bar()) if owns_progress else _progress_bar
@@ -225,7 +223,6 @@ class CyclesRunner:
         def _report(message: str) -> None:
             tqdm.write(message) if progress is not None else print(message)
 
-        assert simulations is not None
         for s in simulations:
             cxt: SimulationContext = self._resolve(s, control_dict, crop_dict, operation_dict, calibration_dict)
             if owns_progress and progress is not None:

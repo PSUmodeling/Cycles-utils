@@ -1,9 +1,8 @@
 from __future__ import annotations
 from dataclasses import dataclass, field, fields
 from pathlib import Path
-from typing import Any, get_type_hints, Protocol
-from .._base_file import _write_file, _resolve_dict_values, _extract, _parse_value, _unwrap_optional, _format_block
-from .._base_file import FMT_1F, FMT_2F, FMT_3F, FMT_4F
+from typing import get_type_hints
+from ._base_file import _parse_value, _unwrap_optional, _format_block, _read_non_comment_lines, FMT_1F, FMT_2F, FMT_3F, FMT_4F
 
 @dataclass(kw_only=True)
 class Phenology:
@@ -100,7 +99,12 @@ def _read_individual_crop(lines: iter[str], hints: dict[str, type]) -> dict[str,
         for f in fields(Crop):
             target_class = _unwrap_optional(hints[f.name])
             sub_hints = get_type_hints(target_class)
-            crop_dict[f.name] = target_class(**{sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name]) for sub_field in fields(target_class)})
+            crop_dict[f.name] = target_class(
+                **{
+                    sub_field.name: _parse_value(next(lines), sub_field.name, sub_hints[sub_field.name])
+                    for sub_field in fields(target_class)
+                }
+            )
         return {name: Crop(**crop_dict)}
     except StopIteration:
         return None
@@ -115,19 +119,16 @@ def read_crop_file(file_path: str | Path) -> dict[str, Crop]:
     Returns:
         A dictionary mapping crop names to their structured crop definitions.
     """
-    with open(Path(file_path)) as f:
-        lines = f.read().splitlines()
-    lines = iter([line for line in lines if (not line.strip().startswith('#')) and line.strip()])
+    lines = iter(_read_non_comment_lines(file_path))
 
     hints = get_type_hints(Crop)
 
     crops = {}
     while True:
         crop_dict = _read_individual_crop(lines, hints)
-        if crop_dict is not None:
-            crops.update(crop_dict)
-        else:
+        if crop_dict is None:
             break
+        crops.update(crop_dict)
 
     return crops
 
