@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import NamedTuple, Any
 from .cycles_runner import CyclesRunner, _run_cycles_simulation, SimulationConfig, _prepare_simulations, _render_template, _write_summary, _generate_comment, SUMMARY_DIR
 from .cycles import Cycles
-from .cycles_tools import Operation, Planting, Tillage, FixedFertilization
-from .cycles_tools import generate_control_file, generate_operation_file
+from .cycles_tools.operation_file import Operation
+from .cycles_tools import generate_control_file, generate_operation_file, Planting, Tillage, FixedFertilization
 from .cycles_tools.control_file import DEFAULT_CROP_FILE
 from .cycles_tools.operation_file import _format_operation
 from .cycles_tools._base_file import _resolve_dict_values, _if_ipython, _disable_progress_bar
@@ -524,7 +524,6 @@ def _calculate_economic_return(doy: int, doys1: np.ndarray, doys2: np.ndarray, l
         fallow_first_income -= economic_parameters.production_cost[crop2.symbol]
 
     if economic_parameters.fertilizer_price is not None:
-        assert isinstance(n_rate1, float) and isinstance(n_rate2, float)
         fertilizer_cost1 = _calculate_fertilizer_cost(crop1, n_rate1, economic_parameters)
         fertilizer_cost2 = _calculate_fertilizer_cost(crop2, n_rate2, economic_parameters)
         total_income -= fertilizer_cost1 + fertilizer_cost2
@@ -685,7 +684,7 @@ def _read_fertilizer_file(path: str | Path) -> dict[str, Fertilizer]:
     return fertilizers
 
 
-def _calculate_fertilizer_cost(crop: Crop, n_rate: float, economic_parameters: EconomicParameters) -> float:
+def _calculate_fertilizer_cost(crop: Crop, n_rate: float | np.ndarray, economic_parameters: EconomicParameters) -> float | np.ndarray:
     assert economic_parameters.fertilizer_price is not None
     return sum(
         n_rate / crop.prescribed_n_rate * op.mass * economic_parameters.fertilizer_price[op.source]

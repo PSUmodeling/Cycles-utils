@@ -5,7 +5,8 @@ from collections.abc import Collection
 from dataclasses import dataclass, field
 from pathlib import Path
 from matplotlib.axes import Axes
-from .cycles_tools import SoilLayer, ControlConfig
+from .cycles_tools.control_file import ControlConfig
+from .cycles_tools import SoilLayer
 from .cycles_tools import read_control_file as _read_control_file
 from .cycles_tools import read_soil_file as _read_soil_file
 from .cycles_tools import read_weather_file as _read_weather_file

@@ -7,6 +7,7 @@ from .operation_file import read_operation_file
 from .operation_file import generate_operation_file
 from .operation_file import Planting, Tillage, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .output_file import read_output
+from .soil_file import SoilLayer
 from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
 from .weather_file import read_weather_file
@@ -32,6 +33,7 @@ __all__ = [
     "plot_operations",
     "plot_map",
     "plot_satellite_map",
+    "SoilLayer",
     "Planting",
     "Tillage",
     "FixedFertilization",
