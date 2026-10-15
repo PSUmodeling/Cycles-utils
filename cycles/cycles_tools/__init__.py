@@ -12,6 +12,7 @@ from .soil_file import generate_soil_file
 from .soil_file import read_soil_file
 from .weather_file import read_weather_file
 from .reinit_file import generate_reinit_file
+from .basic_plot import plot_yield, plot_operations
 
 __all__ = [
     "generate_control_file",
@@ -41,16 +42,13 @@ __all__ = [
     "AutoIrrigation",
 ]
 
-# Names that require the optional plotting/geospatial dependencies
-# (cartopy, geopandas, fiona). Installed via `pip install cycles-utils[plot]`.
-# These are imported lazily (PEP 562) so that `import cycles_tools` and
-# `import cycles` work without those heavy dependencies for users who only
-# need to read/write Cycles input/output files and run simulations.
+# Names that require the optional plotting/geospatial dependencies (cartopy, geopandas, fiona). Installed via
+# `pip install cycles-utils[plot]`.
+# These are imported lazily (PEP 562) so that `import cycles_tools` and `import cycles` work without those heavy
+# dependencies for users who only need to read/write Cycles input/output files and run simulations.
 _LAZY_ATTRS = {
-    "plot_yield": ".plot_tools",
-    "plot_operations": ".plot_tools",
-    "plot_map": ".plot_tools",
-    "plot_satellite_map": ".plot_tools",
+    "plot_map": ".geospatial_plot",
+    "plot_satellite_map": ".geospatial_plot",
 }
 
 

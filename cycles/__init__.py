@@ -14,6 +14,8 @@ from .cycles_tools import generate_operation_file
 from .cycles_tools import convert_obsolete_crop_files
 from .cycles_tools import convert_obsolete_operation_files
 from .cycles_tools import convert_obsolete_soil_files
+from .cycles_tools import plot_yield
+from .cycles_tools import plot_operations
 from .cycles_tools import SoilLayer, Planting, Tillage, FixedFertilization, FixedIrrigation, AutoIrrigation
 from .cycles_runner import CyclesRunner
 from .rotation_builder import CyclesRotationBuilder, Crop, CropGroup
@@ -51,9 +53,9 @@ __all__ = [
     "plot_satellite_map",
 ]
 
-# Plotting helpers require the optional [plot] extra (cartopy, geopandas,
-# fiona). Import lazily so `import cycles` never requires them.
-_PLOT_ATTRS = ("plot_yield", "plot_operations", "plot_map", "plot_satellite_map")
+# Plotting helpers require the optional [plot] extra (cartopy, geopandas, fiona). Import lazily so `import cycles` never
+# requires them.
+_PLOT_ATTRS = ("plot_map", "plot_satellite_map")
 
 
 def __getattr__(name: str):
