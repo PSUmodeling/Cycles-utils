@@ -42,6 +42,19 @@ def _find_representation(csv: Path, dtypes: dict, representation: str, **kwargs)
     raise KeyError(f'{representation.capitalize()} not found for: ' + ', '.join(f'{k}={v}' for k, v in kwargs.items() if v is not None))
 
 
+def _normalize_county_token(name: str) -> str:
+    """Normalize a county name token for fuzzy matching.
+
+    Strips a trailing county-equivalent designation, then removes all
+    whitespace/hyphens and case, so lookups are insensitive to formatting
+    differences between data sources -- e.g. "Big Stone" vs. "BigStone",
+    "De Kalb" vs. "DeKalb", "Prince of Wales-Outer Ketchikan" vs.
+    "princeofwalesouterketchikan" all normalize to the same token.
+    """
+    name = _COUNTY_SUFFIX_RE.sub('', name.strip())
+    return re.sub(r'[\s\-]+', '', name).casefold()
+
+
 def _find_county_name(csv: Path, dtypes: dict, **kwargs) -> str:
     # County name is a special case — composed from name_2 and name_1
     for col, value in kwargs.items():
@@ -98,10 +111,11 @@ def _find_county_by_name(csv: Path, dtypes: dict, name: str) -> pd.Series:
         KeyError: If no county, or more than one county, matches.
     """
     county, state = _split_county_state(name)
-    county = _COUNTY_SUFFIX_RE.sub('', county).strip()
+    county_norm = _normalize_county_token(county)
 
     df = _read_csv(csv, dtypes, index_col=None)
-    match = df[(df['name_2'].str.casefold() == county.casefold()) & (df['name_1'].str.casefold() == state.casefold())]
+    df_county_norm = df['name_2'].fillna('').map(_normalize_county_token)
+    match = df[(df_county_norm == county_norm) & (df['name_1'].str.casefold() == state.casefold())]
 
     if match.empty:
         raise KeyError(f'County not found for name={name!r}')
