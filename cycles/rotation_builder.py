@@ -180,7 +180,7 @@ class CyclesRotationBuilder:
             self.yield_matrix[control_dict['simulation_name']] = _load_yield_matrix(self.executable, self.path, control_dict, self.crops, self.crop_template, crop_dict, self.build_yield_matrix)
 
 
-    def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None, silence: bool=False) -> None:
+    def run(self, *, crop_price: str | Path, fertilizer_price: str | Path | None=None, production_cost: str | Path | None=None, rotation_frequency: FrequencyConfig=None, silent: bool=False) -> None:
         """Run the dynamic rotation-building loop for every row in `simulations`.
 
         A row (site) that fails -- either because Cycles itself exits with a non-zero code, or because building/scoring
@@ -193,7 +193,7 @@ class CyclesRotationBuilder:
             fertilizer_price: Optional fertilizer price table indexed by year.
             production_cost: Optional crop production cost table indexed by year.
             rotation_frequency: Optional min/max frequency constraints per crop symbol.
-            silence: If True, suppress simulation screen output.
+            silent: If True, suppress simulation screen output.
         """
         self.crop_price_data = _optional_csv(crop_price)
         self.fertilizer_price_data = _optional_csv(fertilizer_price)
@@ -209,7 +209,7 @@ class CyclesRotationBuilder:
 
         first_run = True
 
-        progress = tqdm(self.simulations, unit='simulation', disable=_disable_progress_bar()) if silence and len(self.simulations) > 1 else None
+        progress = tqdm(self.simulations, unit='simulation', disable=_disable_progress_bar()) if silent and len(self.simulations) > 1 else None
 
         def _report(message: str) -> None:
             tqdm.write(message) if progress is not None else print(message)
@@ -228,7 +228,7 @@ class CyclesRotationBuilder:
                 progress.set_description(name)
             try:
                 assert control_dict is not None
-                self._run_autonomous_rotation_builder(control_dict, silence)
+                self._run_autonomous_rotation_builder(control_dict, silent)
             except Exception as exc:
                 _report(f'{name} - Failed: {exc}')
             else:
@@ -244,7 +244,7 @@ class CyclesRotationBuilder:
             progress.set_description('Done')
 
 
-    def _run_autonomous_rotation_builder(self, control_dict: dict, silence: bool) -> None:
+    def _run_autonomous_rotation_builder(self, control_dict: dict, silent: bool) -> None:
         operations: list[Operation] = []
         simulation = control_dict['simulation_name']
         start_year = control_dict['simulation_start_year']
@@ -260,7 +260,7 @@ class CyclesRotationBuilder:
         times_planted: dict[str, int] = {c.symbol: 0 for c in self.crops}
         options = '-b'
         while True:
-            status, screen_output = _run_cycles_simulation(self.path, self.executable, simulation, options, silence=silence)
+            status, screen_output = _run_cycles_simulation(self.path, self.executable, simulation, options, silent=silent)
             all_screen_output += screen_output
             if status != BREAK_POINT_REACHED:
                 break

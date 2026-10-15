@@ -71,7 +71,7 @@ class CyclesRunner:
             calibration_dict: dict[str, Any] | None=None,
             options: str='',
             rm_input: bool=False, rm_output: bool=False, rm_steady_state_soil: bool=True,
-            silence: bool=True,
+            silent: bool=True,
             _progress_bar: tqdm | None=None) -> None:   # type: ignore
         """Execute a batch of simulations and write a consolidated summary.
 
@@ -95,7 +95,7 @@ class CyclesRunner:
             rm_input: Remove generated input files after each run.
             rm_output: Remove run output directory after each run.
             rm_steady_state_soil: Remove generated steady-state soil file.
-            silence: If True, suppress simulation screen output.
+            silent: If True, suppress simulation screen output.
 
         In batch mode (`simulations` is a list/DataFrame), a simulation that fails (non-zero exit code) is skipped --
         its summary row is not written -- but does not abort the remaining batch; cleanup (`rm_input`/`rm_output`)
@@ -218,7 +218,7 @@ class CyclesRunner:
         simulations = _prepare_simulations(simulations)
         assert simulations is not None
 
-        owns_progress = _progress_bar is None and silence and len(simulations) > 1
+        owns_progress = _progress_bar is None and silent and len(simulations) > 1
         progress = tqdm(simulations, unit='simulation', disable=_disable_progress_bar()) if owns_progress else _progress_bar
 
         def _report(message: str) -> None:
@@ -231,7 +231,7 @@ class CyclesRunner:
 
             self._write_inputs(cxt, crop_template, operation_template)
 
-            code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silence)
+            code, _ = _run_cycles_simulation(self.path, self.executable, cxt.name, options, silent)
             if code != 0:
                 _report(f'{cxt.name} - Fail (exit code {code})')
             if progress is not None:
@@ -339,7 +339,7 @@ def _generate_comment(executable: str, options: str) -> str:
     return ', '.join(p for p in parts if p) + '\n'
 
 
-def _run_cycles_simulation(path: Path, executable: str, simulation: str, options: str, silence: bool) -> tuple[int, str]:
+def _run_cycles_simulation(path: Path, executable: str, simulation: str, options: str, silent: bool) -> tuple[int, str]:
     cwd = os.getcwd()
     cmd = [executable, *(options.split() if options else []), simulation]
 
@@ -350,7 +350,7 @@ def _run_cycles_simulation(path: Path, executable: str, simulation: str, options
         capture_output=True,
         text=True,
     )
-    if not silence:
+    if not silent:
         print(result.stdout)
     if result.stderr:
         print(result.stderr)
