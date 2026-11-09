@@ -90,8 +90,8 @@ def _if_ipython() -> bool:
 def _disable_progress_bar() -> bool:
     if _if_ipython():
         return False
-    if os.environ.get('SLURM_JOB_ID') is not None:
-        return True
+    #if os.environ.get('SLURM_JOB_ID') is not None:
+    #    return True
     try:
         return not sys.stderr.isatty()
     except AttributeError:

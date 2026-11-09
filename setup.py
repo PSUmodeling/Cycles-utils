@@ -5,7 +5,7 @@ with open('README.md', 'r') as f:
 
 setup(
     name='Cycles-utils',
-    version='4.2.2',
+    version='4.2.2.post',
     author='Yuning Shi',
     author_email="shiyuning@gmail.com",
     packages=find_packages(),
@@ -18,7 +18,7 @@ setup(
     python_requires='>=3.10',
     install_requires=['pandas>=1.2.4', 'numpy>=1.19.5', 'matplotlib>=3.4.2', 'tqdm>=4.60.0', 'IPython>=7.0.0'],
     extras_require={
-        # cycles.plot_yield / plot_operations / plot_map / plot_satellite_map
+        # cycles.plot_map / plot_satellite_map
         'plot': ['cartopy>=0.18.0', 'geopandas>=0.9.0', 'fiona>=1.8.20', 'shapely>=1.7.1'],
         # cycles.weather (gridded reanalysis/forecast forcing extraction)
         'weather': ['netCDF4>=1.5.7', 'scipy>=1.6.3'],
