@@ -27,7 +27,7 @@ class SimulationOptions:
     co2_level: float = field(default=-999, metadata={'description': 'Atmospheric CO2 concentration (ppm). Use co2.txt file if set to -999', 'fmt': FMT_1F})
     use_reinitialization: int = 0
     adjusted_yields: int = 0
-    hydrology_option: int = field(default=1, metadata={'description': "1: gravity driven, 2: Richards' equation with Crank-Nicholson, 3: Richards' equation with CVode"})
+    hydrology_option: int = field(default=1, metadata={'description': "0: gravity driven, 2: Richards' equation"})
     automatic_nitrogen: int = 0
     automatic_phosphorus: int = 0
     automatic_sulfur: int = 0
